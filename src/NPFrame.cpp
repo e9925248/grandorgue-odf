@@ -300,7 +300,8 @@ void NPFrame::OnGeneratePipes(wxCommandEvent& event) {
 		atkDir.GetAllFiles(
 			m_attackFolderPath,
 			atkFiles,
-			wxT("*.wav")
+			wxT("*.wav"),
+			wxDIR_FILES
 		);
 	}
 
@@ -311,7 +312,8 @@ void NPFrame::OnGeneratePipes(wxCommandEvent& event) {
 		relDir.GetAllFiles(
 			m_releaseFolderPath,
 			relFiles,
-			wxT("*.wav")
+			wxT("*.wav"),
+			wxDIR_FILES
 		);
 	}
 
