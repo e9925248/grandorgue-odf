@@ -290,6 +290,9 @@ void NPFrame::ReadyToGeneratePipes() {
 
 void NPFrame::OnGeneratePipes(wxCommandEvent& event) {
 	m_pipesField->Clear();
+	if (!m_pipes.empty())
+		m_pipes.clear();
+
 	// List all .wav files in the attack folder
 	wxArrayString *atkFiles = new wxArrayString;
 	wxDir atkDir(m_attackFolderPath);
@@ -383,14 +386,16 @@ void NPFrame::OnGeneratePipes(wxCommandEvent& event) {
 			}
 		}
 	}
-	if (m_pipes.size() != 0) {
+	if (!m_pipes.empty()) {
 		for (unsigned i = 0; i < m_pipes.size(); i++) {
 			wxString atkFolder;
 			atkFolder = m_attackFolderPath;
 			atkFolder.Replace(m_odfPath, wxT(""));
+			atkFolder.append(wxT("/"));
 			wxString relFolder;
 			relFolder = m_releaseFolderPath;
 			relFolder.Replace(m_odfPath, wxT(""));
+			relFolder.append(wxT("/"));
 			for (unsigned j = 0; j < m_pipes[i].GetNumberOfAttacks(); j++) {
 				if (j == 0) {
 					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3u=."), i + 1));
