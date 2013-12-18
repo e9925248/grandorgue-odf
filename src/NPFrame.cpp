@@ -431,4 +431,6 @@ void NPFrame::OnGeneratePipes(wxCommandEvent& event) {
 			}
 		}
 	}
+	delete atkFiles;
+	delete relFiles;
 }
