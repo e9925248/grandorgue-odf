@@ -209,6 +209,14 @@ NPFrame::NPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 	m_genPipesButton->Enable(false);
 	fourthRow->Add(m_genPipesButton, 0, wxALL, 5);
 
+	// Label for the process done text
+	m_doneText = new wxStaticText ( 
+		m_organpanel, 
+		wxID_STATIC,
+		wxEmptyString
+	);
+	fourthRow->Add(m_doneText, 0, wxALL, 5);
+
 	// The pipes field textctrl
 	m_pipesField = new wxTextCtrl(
 		m_pipepanel,
@@ -430,6 +438,7 @@ void NPFrame::OnGeneratePipes(wxCommandEvent& event) {
 				m_pipesField->AppendText(wxT("\n"));
 			}
 		}
+		m_doneText->SetLabel(wxT("Pipes generated, see the 'Pipes' tab!"));
 	}
 	delete atkFiles;
 	delete relFiles;

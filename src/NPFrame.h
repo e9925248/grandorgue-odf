@@ -60,6 +60,7 @@ private:
 	wxTextCtrl *m_releasePathField;
 	wxTextCtrl *m_pipesField;
 	wxButton *m_genPipesButton;
+	wxStaticText *m_doneText;
 	std::vector<NPPipe> m_pipes;
 
 	wxString GetOdfDirectoryPath();
