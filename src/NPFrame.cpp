@@ -374,8 +374,8 @@ void NPFrame::OnGeneratePipes(wxCommandEvent& event) {
 						SndfileHandle sfHandle;
 						sfHandle = SndfileHandle(((const char*)fileName.mb_str()));
 
-						if (sfh)
-							fileLength = sfh.frames();
+						if (sfHandle)
+							fileLength = sfHandle.frames();
 
 						currentPipe.AddPipeAttack(atkFiles->Item(j), fileLength - 2, fileLength - 1);
 
@@ -419,14 +419,14 @@ void NPFrame::OnGeneratePipes(wxCommandEvent& event) {
 					if (m_pipes[i].GetNumberOfAttacks() > 1)
 						m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3iAttackCount=%u\n"), i + 1, (m_pipes[i].GetNumberOfAttacks() - 1)));
 				} else {
-					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uAttack%0.3u=."), i + 1, j + 1));
+					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uAttack%0.3u=."), i + 1, j));
 					m_pipesField->AppendText(atkFolder);
 					m_pipesField->AppendText(m_pipes[i].GetAttackPath(j));
 					m_pipesField->AppendText(wxT("\n"));
-					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uAttack%0.3uLoopCount=1\n"), i + 1, j + 1));
-					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uAttack%0.3uLoop001Start=%u\n"), i + 1, j + 1, m_pipes[i].GetAttackLoopStart(j)));
-					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uAttack%0.3uLoop001End=%u\n"), i + 1, j + 1, m_pipes[i].GetAttackLoopEnd(j)));
-					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uAttack%0.3uLoadRelease=N\n"), i + 1, j + 1));
+					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uAttack%0.3uLoopCount=1\n"), i + 1, j));
+					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uAttack%0.3uLoop001Start=%u\n"), i + 1, j, m_pipes[i].GetAttackLoopStart(j)));
+					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uAttack%0.3uLoop001End=%u\n"), i + 1, j, m_pipes[i].GetAttackLoopEnd(j)));
+					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uAttack%0.3uLoadRelease=N\n"), i + 1, j));
 				}
 			}
 			for (unsigned j = 0; j < m_pipes[i].GetNumberOfReleases(); j++) {
