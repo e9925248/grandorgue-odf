@@ -1,0 +1,47 @@
+Usage guide for jMakeOdf
+------------------------
+
+jMakeOdf is a command line based tool designed to help with ODF (organ 
+definiton file) creation for usage with the virtual pipe organ software 
+GrandOrgue. The software is released under a MIT license.
+
+To have any benefit of this software you also need
+
+- to have java (runtime environment) installed on your computer
+- a source of samples
+- a definition file that tell jMakeOdf how to create the ODF
+- to not be afraid of running command line applications! :-)
+
+Samples are expected to be .wav or .wv file types prepared for usage in a VPO
+software (ie. include loops and release marker if not percussive). The program
+can load multiple attacks/releases with the limitation that extra attacks 
+should be located in the same folder as the main attack, extra releases in
+subfolders (often named rel_XXXX where X is numbers like 0250 that indicate
+what key press time is used together with this release. The samples themselves
+should be named with the MIDI keycode preceding the note name like 036-C.wav
+to enable the software to sort them correctly. Extra attacks (or additional
+releases beyond the first) are best named like 036-C_2.wav or similar. For
+auto detection of tremulant samples they should be placed inside the main
+stop/rank folder in a subfolder with the word "trem" in the name.
+
+The definition file should be placed in the same folder as where you want the
+final ODF file created. Also for ease of usage it's recommended that you 
+actually copy the program file (jMakeOdf.jar) to the same location and start
+it with:
+
+java -jar jMakeOdf.jar definitionFile
+
+The reason for this is that the program must be run in the same directory as
+where the ODF file eventually will be placed. (There are ways to workaround
+this inconvenience but I don't deal with them here)
+
+The definition file can be named any way you like, but it's a simple text file.
+The order of appearance of the different lines is important but some parts can
+be repeated as many times as needed to give all the correct information to the
+software.
+
+Included with this program is a definition_example.txt file that try to explain
+the lines and what they do. * is treated like a comment and is stripped away as
+is all whitespace characters before or after the text part of the line.
+
+2014-03-17

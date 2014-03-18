@@ -1,0 +1,46 @@
+Test Sampleset					* organ	name which is also the odf name
+100						* amplitudeLevel of whole organ
+0						* pitch tuning adjustment for whole organ
+Medium						* main panel horizontal size - valid values are: Small, Medium, Medium Large, Large, <any integer value between 100 and 4000>
+Medium						* main panel vertical size - valid values are: Small, Medium, Medium Large, Large, <any integer value between 100 and 4000>
+4						* drawstop columns (2 - 12, must be even)
+6						* drawstop rows (1 - 20)
+0						* extra (middle) drawstop rows (0 - 99)
+0						* extra (middle) drawstop columns (0 - 40)
+no						* load only one sample per pipe
+1						* number of switches, if 0 omit switch related lines below
+Switch Name:no:yes:1:4:1:0			* switch name : default to engaged : is displayed : bitmap number (if displayed) : drawstop column (if displayed) : drawstop row (if displayed) : text break width (if displayed)
+Input:0						* function : number of switches : switch number (as many as number of switches separated with :)
+1						* number of enclosures, if 0 omit enclosure related lines below
+Swell:20:yes:0					* enclosure name: miminum amplitude level (when closed): displayed on main screen: text break width (0 to hide name -1 for default width other positive values control max line length)
+1						* number of tremulants, if 0 omit tremulant related lines below
+Tremulant:Synth:160:20:10:8:no:yes:1:1:2:0	* tremulant name : tremulant type - Wave or Synth (if Synth : period : modulation depth : start time : stop time) : default to engaged : displayed (yes or no) : bitmap number (if displayed) : drawstop column (if displayed): drawstop row (if displayed) : text break width (if displayed)
+Input:0						* function (Input for normal, And, Xor, Nand, Nor, Or, Not if switches): number of switches : switch number (as many as number of switches separated with :)
+1						* number of windchests
+Main windchest:1:1:1:1				* windchest name : number of enclosures : enclosure order nr (if number > 0) : ... : number of tremulants: tremulant order nr (if number > 0)
+2						* number of keyboards, including pedal board
+Ped:PED:27:36:yes				* keyboard definition (keyboard name (used for labels): keyboard code (PED/I/II/III... to XVI): number of physical keys : first physical key midi code : is displayed)
+1						* number of couplers (if 0 omit coupler lines below)
+Coupler Name:N:=:I:no:yes:1:2:2:-1		* Coupler name: coupler type (N = normal, B = bass, M = melody : destination keyshift = = 0, - = octave lower, + octave up : destination keyboard code : default to engaged : is displayed : bitmap number (if displayed) : drawstop column (if displayed): drawstop row (if displayed) : text break width (if displayed)
+Input:0						* above coupler function : number of switches : switch number : ... (as many as number of switches)
+0						* number of tremulants : tremulant number : ... (as many as number of tremulants for this keyboard)
+0						* number of switches : switch number : ... (as many as number of switches for this keyboard)
+1						* number of stops
+Stop Name:27:1:100:4:0:0:1:no:no:yes:1:2:1:-1	* stop name : number of pipes: first key number : amplitude level : harmonic number : pitch tuning : pitch correction : windchest group : is percussive : default to engaged : is displayed : bitmap number (if displayed) : drawstop column (if displayed): drawstop row (if displayed) : text break width (if displayed)
+27:L36:Path/To/Samples:yes:no			* pipes to load : load method (LX = load samples from midi nr X : path to samples (subfolders are used for additional releases) : load attack sample release : is percussive, RX = reference samples starting from pipe X on : keyboardcode : Stop number, CX = copy previous pipes starting at X : pitch transposing in cent, M = manually specify attacks/releases : path to attack sample including sample : yes/no load attack release - if no : path to release sample including sample)
+Input:0						* function (Input for normal, And, Xor, Nand, Nor, Or, Not if switches): number of switches : switch number (as many as number of switches separated with :)
+Manual:I:56:36:yes				* keyboard definition (keyboard name (used for labels): keyboard code (PED/I/II/III... to XVI): number of physical keys : first physical key midi code : is displayed)
+0
+1:1
+0
+2
+Stop1 Name:56:1:100:4:0:0:1:no:no:yes:1:1:1:-1
+56:L36:Path/To/Samples:yes:no
+Input:0
+Stop2 Name:56:1:100:4:0:0:1:no:no:yes:1:3:1:-1
+12:R1:I:1
+44:L48:Path/To/Samples:yes:no
+Input:0
+1						* number of ranks, if 0 omit rank related lines below
+Rank Name:56:36:100:8:0:0:1:no			* rank name : number of pipes: first midi note number: amplitude level: harmonic number: pitch tuning: pitch correction: windchest group: is percussive
+56:L36:Path/To/Samples:yes:no			* number of pipes to load: load method (LX = load samples from midi nr X : path to samples (subfolders are used for additional releases) : load attack sample release : is percussive, RX = reference samples starting from pipe X on : keyboardcode : Stop number, CX = copy previous pipes starting at X : pitch transposing in cent, M = manually specify attacks/releases : path to attack sample including sample : yes/no load attack release - if no : path to release sample including sample)
