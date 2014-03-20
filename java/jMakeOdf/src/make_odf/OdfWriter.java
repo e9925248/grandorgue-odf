@@ -273,7 +273,7 @@ public class OdfWriter {
 				System.out.println("Writing rank section.");
 			for (int i = 0; i < org.m_Ranks.size(); i++) {
 				System.out.println("Writing rank " + org.m_Ranks.get(i).name);
-				outfile.println("[Rank" + String.format("%03d", (i + 1)));
+				outfile.println("[Rank" + String.format("%03d", (i + 1)) + "]");
 				outfile.println("Name=" + org.m_Ranks.get(i).name);
 				outfile.println("FirstMidiNoteNumber=" + org.m_Ranks.get(i).firstMidiNoteNumber);
 				outfile.println("NumberOfLogicalPipes=" + org.m_Ranks.get(i).numberOfLogicalPipes);
