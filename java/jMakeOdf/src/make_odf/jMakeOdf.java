@@ -32,7 +32,7 @@ public class jMakeOdf {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println("\njMakeOdf 2014-03-17");
+		System.out.println("\njMakeOdf 2014-03-20");
 		System.out.println("Released under a MIT license");
 		System.out.println("Copyright (C) 2014 Lars Palo");
 		System.out.println("Based on (partly ported from) make_odf by Jean-Luc Derouineau under MIT License\n");

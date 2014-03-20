@@ -433,7 +433,7 @@ public class TextFileParser {
 							// The stops have ranks instead
 							int nbOfRanks = convertToInt(stringParts.get(1));
 							for (int k = 0; k < nbOfRanks; k++) {
-								s.m_Ranks.add(convertToInt(stringParts.get(1 + k)));
+								s.m_Ranks.add(convertToInt(stringParts.get(2 + k)));
 							}
 							pipesLoaded = s.numberOfAccessiblePipes;
 						}
@@ -584,6 +584,7 @@ public class TextFileParser {
 					}
 					processedPipes += pipesThisLine;
 				}
+				org.m_Ranks.add(rk);
 			}
 			
 		}
