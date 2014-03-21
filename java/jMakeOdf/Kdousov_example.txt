@@ -1,0 +1,235 @@
+Kdousov_shareware			* organ	name which is also the odf name
+100					* amplitudeLevel of whole organ
+0					* pitch tuning adjustment for whole organ
+Medium					* main panel horizontal size - valid values are: Small, Medium, Medium Large, Large, <any integer value between 100 and 4000>
+Medium					* main panel vertical size - valid values are: Small, Medium, Medium Large, Large, <any integer value between 100 and 4000>
+4					* drawstop columns (2 - 12, must be even)
+4					* drawstop rows (1 - 20)
+0					* extra (middle) drawstop rows (0 - 99)
+0					* extra (middle) drawstop columns (0 - 40)
+no					* load only one sample per pipe
+20					* number of switches, if 0 omit switch related lines below
+Motor:yes:no				* switch name : default to engaged : is displayed : bitmap number (if displayed) : drawstop column (if displayed) : drawstop row (if displayed) : text break width (if displayed)
+Input:0					* function : number of switches : switch number (as many as number of switches separated with :)
+Ped action:yes:no
+Input:0
+Man I action:yes:no
+Input:0
+Man II action:yes:no
+Input:0
+Subbass 16:no:yes:1:1:4:-1
+Input:0
+Octav bass 8':no:yes:1:3:4:-1
+Input:0
+Superoctav bass 4':no:yes:1:4:4:-1
+Input:0
+Principal 4':no:yes:1:3:2:-1
+Input:0
+Octav 2':no:yes:1:4:2:-1
+Input:0
+Quint 3':no:yes:1:2:2:-1
+Input:0
+Superoctav 1':no:yes:1:1:3:-1
+Input:0
+Mixtur:no:yes:1:1:2:-1
+Input:0
+Fletten 8':no:yes:1:2:4:-1
+Input:0
+Fletten 4':no:yes:1:2:3:-1
+Input:0
+Quintadena 8':no:yes:1:4:3:-1
+Input:0
+Fugara 4':no:yes:1:3:3:-1
+Input:0
+Copula maior 8':no:yes:1:1:1:-1
+Input:0
+Copula minor 4':no:yes:1:4:1:-1
+Input:0
+Principal 2':no:yes:1:2:1:-1
+Input:0
+Octav 1':no:yes:1:3:1:-1
+Input:0
+0						* number of enclosures, if 0 omit enclosure related lines below
+0						* number of tremulants, if 0 omit tremulant related lines below
+3						* number of windchests
+Ped windchest:0:0
+Man I windchest:0:0				* windchest name : number of enclosures : enclosure order nr (if number > 0) : ... : number of tremulants: tremulant order nr (if number > 0)
+Man II windchest:0:0
+6						* number of keyboards, including pedal board
+Pedal:PED:22:36:yes				* keyboard definition (keyboard name (used for labels): keyboard code (PED/I/II/III... to XVI): number of physical keys : first physical key midi code : is displayed)
+0						* number of couplers (if 0 omit coupler lines below)
+0						* number of tremulants : tremulant number : ... (as many as number of tremulants for this keyboard)
+3:5:6:7						* number of switches : switch number : ... (as many as number of switches for this keyboard)
+7						* number of stops
+Subbass 16':22:1:100:4:0:0:1:no:no:no		* stop name : number of pipes: first key number : amplitude level : harmonic number : pitch tuning : pitch correction : windchest group : is percussive : default to engaged : is displayed : bitmap number (if displayed) : drawstop column (if displayed): drawstop row (if displayed) : text break width (if displayed)
+0:1:1						* pipes to load : load method (LX = load samples from midi nr X : path to samples (subfolders are used for additional releases) : load attack sample release : is percussive, RX = reference samples starting from pipe X on : keyboardcode : Stop number, CX = copy previous pipes starting at X : pitch transposing in cent, M = manually specify attacks/releases : path to attack sample including sample : yes/no load attack release - if no : path to release sample including sample)
+And:1:5						* function (Input for normal, And, Xor, Nand, Nor, Or, Not if switches): number of switches : switch number (as many as number of switches separated with :)
+Octav bass 8':22:1:100:8:0:0:1:no:no:no
+0:1:2						* 0 pipes to load means that there are ranks instead : number of ranks : rank numbers ... (separaded by : as needed)
+And:1:6
+Superoctav bass 4':22:1:100:16:0:0:1:no:no:no
+0:1:3
+And:1:7
+Pedal action:22:1:8:8:0:0:1:yes:yes:no		* The action noises pipe lines should be replaced by lines from NoisePipes and stop changed to not being percussive
+22:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/ped_mokry/atk:yes:yes
+And:1:2
+S16 SN:1:1:100:8:0:0:1:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes	* The manually loaded (M = load specified sample(s)) stop noises should be replaced with correct numbers and lines output from NoisePipes
+And:1:5
+O8 SN:1:1:100:8:0:0:1:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:6
+SO4 SN:1:1:100:8:0:0:1:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:7
+Manual I:I:49:36:yes
+0
+0
+9:8:9:10:11:12:13:14:15:16
+19
+Principal 4':49:1:100:16:0:0:2:no:no:no
+0:1:4
+And:1:8
+Octav 2':49:1:100:32:0:0:2:no:no:no
+0:1:5
+And:1:9
+Quint 3':49:1:100:24:0:0:2:no:no:no
+0:1:6
+And:1:10
+Superoctav 1':49:1:100:64:0:0:2:no:no:no
+0:1:7
+And:1:11
+Mixtur:49:1:100:96:0:0:2:no:no:no
+0:1:8
+And:1:12
+Fletten 8':49:1:100:8:0:0:2:no:no:no
+0:1:9
+And:1:13
+Fletten 4':49:1:100:16:0:0:2:no:no:no
+0:1:10
+And:1:14
+Quintadena 8':49:1:100:8:0:0:2:no:no:no
+0:1:11
+And:1:15
+Fugara 4':49:1:100:16:0:0:2:no:no:no
+0:1:12
+And:1:16
+Man I action:49:1:7:8:0:0:1:yes:yes:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/kl1_mokry/atk:yes:yes
+And:1:3
+P4 SN:1:1:100:8:0:0:2:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:8
+O2 SN:1:1:100:8:0:0:2:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:9
+Q3 SN:1:1:100:8:0:0:2:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:10
+SO1 SN:1:1:100:8:0:0:2:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:11
+Mix SN:1:1:100:8:0:0:2:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:12
+Fl8 SN:1:1:100:8:0:0:2:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:13
+Fl4 SN:1:1:100:8:0:0:2:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:14
+Q8 SN:1:1:100:8:0:0:2:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:15
+F4 SN:1:1:100:8:0:0:2:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:16
+Manual II:II:49:36:yes
+0
+0
+4:17:18:19:20
+9
+Copula maior 8':49:1:100:8:0:0:3:no:no:no
+0:1:13
+And:1:17
+Copula minor 4':49:1:100:16:0:0:3:no:no:no
+0:1:14
+And:1:18
+Principal 2':49:1:100:32:0:0:3:no:no:no
+0:1:15
+And:1:19
+Octav 1':49:1:100:64:0:0:3:no:no:no
+0:1:16
+And:1:20
+Man II action:49:1:7:8:0:0:1:yes:yes:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/kl2_mokry/atk:yes:yes
+And:1:4
+CM8 SN:1:1:100:8:0:0:3:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:17
+CM4 SN:1:1:100:8:0:0:3:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:18
+P2 SN:1:1:100:8:0:0:3:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:19
+O1 SN:1:1:100:8:0:0:3:no:no:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/tahla_mokry/tahlaatk/01.wav:yes
+And:1:20
+FC Pedal:III:22:36:no		* The FC (full compass) manuals are prepared to be used on another panel while main panel should be modified for short octave layout instead
+1
+Pedal:N:=:PED:yes:no
+Input:0
+0
+0
+1
+Motor:1:36:15:8:0:0:1:no:yes:no
+1:M:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/mech/mech2.wav:yes
+And:1:1
+FC Manual I:IV:49:36:no
+1
+Man I:N:=:I:yes:no
+Input:0
+0
+0
+0
+FC Manual II:V:49:36:no
+1
+Man II:N:=:II:yes:no
+Input:0
+0
+0
+0
+16
+Subbass 16':22:36:100:4:0:0:1:no
+22:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/p_subbass16:no:no
+Octav bass 8':22:36:100:8:0:0:1:no
+22:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/p_octavbass8:no:no
+Superoctav bass 4':22:36:100:16:0:0:1:no
+22:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/p_superoctavbass4:no:no
+Principal 4':49:36:100:16:0:0:2:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/i_principal4:no:no
+Octav 2':49:36:100:32:0:0:2:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/i_octav2:no:no
+Quint 3':49:36:100:24:0:0:2:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/i_quint3:no:no
+Superoctav 1':49:36:100:64:0:0:2:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/i_superoctav1:no:no
+Mixtur:49:36:100:96:0:0:2:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/i_mixtur:no:no
+Fletten 8':49:36:100:8:0:0:2:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/i_fletten8:no:no
+Fletten 4':49:36:100:16:0:0:2:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/i_fletten4:no:no
+Quintadena 8':49:36:100:8:0:0:2:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/i_quintadena8:no:no
+Fugara 4':49:36:100:16:0:0:2:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/i_fugara4:no:no
+Copula maior 8':49:36:100:8:0:0:3:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/ii_copulamaior:no:no
+Copula minor 4':49:36:100:16:0:0:3:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/ii_copulaminor:no:no
+Principal 2':49:36:100:32:0:0:3:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/ii_principal2:no:no
+Octav 1':49:36:100:64:0:0:3:no
+49:L36:Kdousov_Wet.CompPkg.Hauptwerk/OrganInstallationPackages/000348/pipe/ii_octav1:no:no

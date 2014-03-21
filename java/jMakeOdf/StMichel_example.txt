@@ -1,0 +1,130 @@
+StMichelEnThierache				* organ	name which is also the odf name
+100						* amplitudeLevel of whole organ
+0						* pitch tuning adjustment for whole organ
+Medium						* main panel horizontal size - valid values are: Small, Medium, Medium Large, Large, <any integer value between 100 and 4000>
+Medium						* main panel vertical size - valid values are: Small, Medium, Medium Large, Large, <any integer value between 100 and 4000>
+4						* drawstop columns (2 - 12, must be even)
+8						* drawstop rows (1 - 20)
+0						* extra (middle) drawstop rows (0 - 99)
+0						* extra (middle) drawstop columns (0 - 40)
+no						* load only one sample per pipe
+11						* number of switches, if 0 omit switch related lines below
+Tremulant:no:yes:1:3:1:-1			* switch name : default to engaged : is displayed : disp image nr : drawstop col : drawstop row : textbreakwidth (-1 = default value)
+Input:0
+VH Trem:no:yes:1:4:1:-1
+Input:0
+I/PED:no:yes:1:1:1:-1
+Input:0
+Montre 8':no:yes:1:2:1:-1
+Input:0
+Bourdon 8':no:yes:1:2:2:-1
+Input:0
+Prestant 4':no:yes:1:2:3:-1
+Input:0
+Flustre 4':no:yes:1:2:4:-1
+Input:0
+Quinte 3':no:yes:1:2:5:-1
+Input:0
+Doublette 2':no:yes:1:2:6:-1
+Input:0
+Tierce 1 3/5':no:yes:1:2:7:-1
+Input:0
+Voix Humaine 8':no:yes:1:2:8:-1
+Input:0
+0						* number of enclosures, if 0 omit enclosure related lines below
+2						* number of tremulants, if 0 omit tremulant related lines below
+Tremulant:Synth:160:20:10:8:no:no		* tremulant name : period : modulation depth : start time : stop time : displayed (yes or no) : bitmap number (if displayed) : drawstop column (if displayed): drawstop row (if displayed) : text break width (if displayed)
+And:1:1						* function (Input for normal, And, Xor, Nand, Nor, Or, Not if switches): number of switches : switch number (as many as number of switches separated with :)
+VH Trem:Wave:no:no
+And:1:2
+2						* number of windchests
+Main windchest:0:1:1				* windchest name : number of enclosures : enclosure order nr (if number > 0) : ... : number of tremulants: tremulant order nr (if number > 0)
+VH windchest:0:1:2
+2						* number of keyboards, including pedal board
+Ped:PED:30:36:yes				* keyboard definition (keyboard name (used for labels): keyboard code (PED/I/II/III... to XVI): number of physical keys : first physical key midi code : is displayed)
+1						* number of couplers (if 0 omit coupler lines below)
+I/PED:N:=:I:no:no				* Coupler name: coupler type (N = normal, B = bass, M = melody : destination keyshift = = 0, - = octave lower, + octave up : destination keyboard code : is displayed : bitmap number (if displayed) : drawstop column (if displayed): drawstop row (if displayed) : text break width (if displayed)
+And:1:3						* above coupler function : number of switches : switch number : ... (as many as number of switches)
+0						* number of tremulants : tremulant number : ... (as many as number of tremulants for this keyboard)
+0						* number of switches : switch number : ... (as many as number of switches for this keyboard)
+1						* number of stops
+Pedal action:30:1:70:8:0:0:1:yes:yes:no		* stop name : nb of pipes : start at pipe : amplitude level : harmonic number : pitch tuning : pitch correction : windchest group : is percussive : default to engaged : is displayed
+30:L36:000869/pipe/ped_mokry/atk:yes:yes	* the pipes lines for this stop and the manual action should be replaced with pipe lines from NoisePipes and stop set to not being percussive
+Input:0						* responds to normal input = no switches
+Manual:I:54:36:yes:yes				* keyboard definition (keyboard name (used for labels): keyboard code (PED/I/II/III... to XVI): number of physical keys : first physical key midi code : is displayed)
+0
+2:1:2
+0
+21
+Montre 8':54:1:100:8:0:0:1:no:no:no
+49:L36:000869/pipe/GO_montre:no:no
+5:C44:600
+And:1:4
+Bourdon 8':54:1:100:8:0:0:1:no:no:no
+49:L36:000869/pipe/GO_burdon8:no:no
+5:C44:600
+And:1:5
+Prestant 4':54:1:100:16:0:0:1:no:no:no
+49:L36:000869/pipe/GO_prestant:no:no
+5:C44:600
+And:1:6
+Flustre 4':54:1:100:16:0:0:1:no:no:no
+49:L36:000869/pipe/GO_fluste:no:no
+5:C44:600
+And:1:7
+Quinte 3':54:1:100:24:0:0:1:no:no:no
+49:L36:000869/pipe/GO_quinta:no:no
+5:C44:600
+And:1:8
+Doublette 2':54:1:100:32:0:0:1:no:no:no
+49:L36:000869/pipe/GO_doublette:no:no
+5:C44:600
+And:1:9
+Tierce 1 3/5':54:1:100:40:0:0:1:no:no:no
+49:L36:000869/pipe/GO_tierce:no:no
+5:C44:600
+And:1:10
+Voix Humaine 8':54:1:100:8:0:0:2:no:no:no
+49:L36:000869/pipe/GO_voxhumana:no:no
+5:C44:600
+And:1:11
+Motor:1:1:100:8:0:0:1:no:yes:no
+1:M:000869/pipe/mech/mech.wav:yes
+Input:0
+Manual action:54:1:70:8:0:0:1:yes:yes:no
+54:L36:000869/pipe/kl1_mokry/atk:yes:yes
+Input:0
+Trem SN:1:1:100:8:0:0:1:no:no:no
+1:M:000869/ruchy_mokre/tahlaatk/01.wav:yes	* All the sound noise pipes should be replaced with lines output from NoisePipes to function correctly with releases
+And:1:1
+VH trem SN:1:1:100:8:0:0:1:no:no:no
+1:M:000869/ruchy_mokre/tahlaatk/02.wav:yes
+And:1:2
+Coupler SN:1:1:100:8:0:0:1:no:no:no
+1:M:000869/ruchy_mokre/tahlaatk/03.wav:yes
+And:1:3
+Montre SN:1:1:100:8:0:0:1:no:no:no
+1:M:000869/ruchy_mokre/tahlaatk/04.wav:yes
+And:1:4
+Bd SN:1:1:100:8:0:0:1:no:no:no
+1:M:000869/ruchy_mokre/tahlaatk/05.wav:yes
+And:1:5
+P SN:1:1:100:8:0:0:1:no:no:no
+1:M:000869/ruchy_mokre/tahlaatk/06.wav:yes
+And:1:6
+Fl SN:1:1:100:8:0:0:1:no:no:no
+1:M:000869/ruchy_mokre/tahlaatk/07.wav:yes
+And:1:7
+Q SN:1:1:100:8:0:0:1:no:no:no
+1:M:000869/ruchy_mokre/tahlaatk/08.wav:yes
+And:1:8
+Dbl SN:1:1:100:8:0:0:1:no:no:no
+1:M:000869/ruchy_mokre/tahlaatk/09.wav:yes
+And:1:9
+T SN:1:1:100:8:0:0:1:no:no:no
+1:M:000869/ruchy_mokre/tahlaatk/10.wav:yes
+And:1:10
+VH SN:1:1:100:8:0:0:1:no:no:no
+1:M:000869/ruchy_mokre/tahlaatk/11.wav:yes
+And:1:11
+0						* number of ranks
