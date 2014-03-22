@@ -455,6 +455,14 @@ public class TextFileParser {
 			// Make sure manuals are sorted according to keyboard code
 			Collections.sort(org.m_Manuals);
 			
+			org.hasPedals = false;
+			for (int i = 0; i < org.m_Manuals.size(); i++) {
+				if (org.m_Manuals.get(i).keyboardCode == "PED") {
+					org.hasPedals = true;
+					break;
+				}
+			}
+			
 			textLine = getLine(sc);
 			int nbRanks = convertToInt(textLine);
 			for (int i = 0; i < nbRanks; i++) {
