@@ -457,9 +457,8 @@ public class TextFileParser {
 			
 			org.hasPedals = false;
 			for (int i = 0; i < org.m_Manuals.size(); i++) {
-				if (org.m_Manuals.get(i).keyboardCode == "PED") {
+				if (org.m_Manuals.get(i).keyboardCode.equalsIgnoreCase("PED")) {
 					org.hasPedals = true;
-					break;
 				}
 			}
 			
