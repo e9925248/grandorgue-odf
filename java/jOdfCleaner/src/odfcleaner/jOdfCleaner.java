@@ -29,7 +29,7 @@ public class jOdfCleaner {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println("jOdfCleaner version 2014-04-05");
+		System.out.println("jOdfCleaner version 2014-04-07");
 		System.out.println("(C) 2014 Lars Palo");
 		System.out.println("Published under a MIT-license");
 		System.out.println();
@@ -47,6 +47,19 @@ public class jOdfCleaner {
 				PrintWriter outFile = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(args[1]), "ISO-8859-1")));
 				
 				boolean inOrganSection = false;
+				boolean inOldStyleSettings = false;
+				boolean inCombinationSection = false;
+				boolean inManualSection = false;
+				boolean inPanelSection = false;
+				boolean foundNbrStops = true;
+				boolean foundNbrTremulants = true;
+				boolean foundNbrCouplers = true;
+				boolean foundNbrDivisionals = true;
+				int nbStops = 0;
+				int nbTremulants = 0;
+				int nbCouplers = 0;
+				int nbDivisionals = 0;
+				int lineNumber = 0;
 				
 				while (true) {
 					String line = inFile.readLine();
@@ -54,35 +67,108 @@ public class jOdfCleaner {
 					if (line == null)
 						break;
 					
-					// stop if we come to lines with old style settings
-					if (line.startsWith("[_"))
-						break;
+					lineNumber++;
 					
-					// remove comments occuring after a config line
-					if (line.indexOf(';', 1) != -1) {
-						line = line.substring(0, line.indexOf(';'));
-						line = line.trim();
-					}
-					
-					// remove all excess whitespace
-					line = line.trim();
-					
-					// decide if we're in the [Organ] section or not
+					// decide if we're in a certain section or not
 					if (line.startsWith("[")) {
-						if (line.equals("[Organ]"))
+						if (!foundNbrCouplers)
+							outFile.println("NumberOfCouplers=0");
+						if (!foundNbrTremulants)
+							outFile.println("NumberOfTremulants=0");
+						if (!foundNbrStops)
+							outFile.println("NumberOfStops=0");
+						
+						if (line.equals("[Organ]")) {
 							inOrganSection = true;
-						else
+							inOldStyleSettings = false;
+							inCombinationSection = false;
+							inManualSection = false;
+							inPanelSection = false;
+							foundNbrTremulants = true;
+							foundNbrCouplers = true;
+							foundNbrStops = true;
+							foundNbrDivisionals = true;
+						} else if (line.startsWith("[Manual")) {
+							inManualSection = true;
 							inOrganSection = false;
+							inOldStyleSettings = false;
+							inCombinationSection = false;
+							inPanelSection = false;
+							foundNbrTremulants = false;
+							foundNbrCouplers = false;
+							foundNbrStops = false;
+							foundNbrDivisionals = false;
+							nbStops = 0;
+							nbTremulants = 0;
+							nbCouplers = 0;
+							nbDivisionals = 0;
+						} else if (line.startsWith("[_")) {
+							inOldStyleSettings = true;
+							inOrganSection = false;
+							inCombinationSection = false;
+							inManualSection = false;
+							inPanelSection = false;
+							foundNbrTremulants = true;
+							foundNbrCouplers = true;
+							foundNbrStops = true;
+							foundNbrDivisionals = true;
+						} else if (line.startsWith("[General") || line.startsWith("[Divisional")) {
+							inCombinationSection = true;
+							inOrganSection = false;
+							inOldStyleSettings = false;
+							inManualSection = false;
+							inPanelSection = false;
+							foundNbrTremulants = false;
+							foundNbrCouplers = false;
+							foundNbrStops = false;
+							foundNbrDivisionals = true;
+							nbStops = 0;
+							nbTremulants = 0;
+							nbCouplers = 0;
+						} else if (line.startsWith("[Panel") || line.startsWith("[SetterElement") || line.startsWith("[Label")) {
+							inPanelSection = true;
+							inOrganSection = false;
+							inOldStyleSettings = false;
+							inCombinationSection = false;
+							inManualSection = false;
+							foundNbrTremulants = true;
+							foundNbrCouplers = true;
+							foundNbrStops = true;
+							foundNbrDivisionals = true;
+						} else {
+							inOrganSection = false;
+							inOldStyleSettings = false;
+							inCombinationSection = false;
+							inManualSection = false;
+							inPanelSection = false;
+							foundNbrTremulants = true;
+							foundNbrCouplers = true;
+							foundNbrStops = true;
+							foundNbrDivisionals = true;
+						}
 					}
 					
-					if (!line.startsWith(";") && !line.startsWith("[")) {
-						// make sure there's an equal sign on the line
-						if (!line.contains("="))
-							copyLine = false;
-						
-						// except for an empty line
-						if (line.equals(""))
-							copyLine = true;
+					if (inOldStyleSettings)
+						copyLine = false;
+					else {
+						// remove comments occuring after a config line
+						if (line.indexOf(';', 1) != -1 && !line.startsWith(";")) {
+							line = line.substring(0, line.indexOf(';'));
+							line = line.trim();
+						}
+
+						// remove all excess whitespace
+						line = line.trim();
+
+						if (!line.startsWith(";") && !line.startsWith("[")) {
+							// make sure there's an equal sign on the line
+							if (!line.contains("="))
+								copyLine = false;
+
+							// except for an empty line
+							if (line.equals(""))
+								copyLine = true;
+						}
 					}
 					
 					// look for lines that should not be present
@@ -95,9 +181,214 @@ public class jOdfCleaner {
 
 						if (line.startsWith("HighestSampleFormat"))
 							copyLine = false;
-					}
-					
-					if (!inOrganSection) {
+					} else if (inPanelSection) {
+						if (line.startsWith("Displayed"))
+							copyLine = false;
+					} else if (inManualSection) {
+						if (line.startsWith("Comments"))
+							copyLine = false;
+						
+						if (foundNbrCouplers) {
+							if (line.startsWith("NumberOfCouplers"))
+								copyLine = false;
+							
+							if (line.startsWith("Coupler")) {
+								try {
+									int couplerNbr = Integer.parseInt(line.substring(7, line.indexOf('=')));
+									
+									if (couplerNbr > nbCouplers)
+										copyLine = false;
+								} catch (NumberFormatException ne) {
+									System.out.println("Error: Couldn't convert coupler number to integer at line " + lineNumber + ".");
+									System.exit(1);
+								}
+							}
+						}
+						
+						if (foundNbrTremulants) {
+							if (line.startsWith("NumberOfTremulants"))
+								copyLine = false;
+							
+							if (line.startsWith("Tremulant")) {
+								try {
+									int tremulantNbr = Integer.parseInt(line.substring(9, line.indexOf('=')));
+									
+									if (tremulantNbr > nbTremulants)
+										copyLine = false;
+								} catch (NumberFormatException ne) {
+									System.out.println("Error: Couldn't convert tremulant number to integer at line " + lineNumber + ".");
+									System.exit(1);
+								}
+							}
+						}
+						
+						if (foundNbrStops) {
+							if (line.startsWith("NumberOfStops"))
+								copyLine = false;
+							
+							if (line.startsWith("Stop")) {
+								try {
+									int stopNbr = Integer.parseInt(line.substring(4, line.indexOf('=')));
+									
+									if (stopNbr > nbStops)
+										copyLine = false;
+								} catch (NumberFormatException ne) {
+									System.out.println("Error: Couldn't convert stop number to integer at line " + lineNumber + ".");
+									System.exit(1);
+								}
+							}
+						}
+						
+						if (foundNbrDivisionals) {
+							if (line.startsWith("NumberOfDivisionals"))
+								copyLine = false;
+							
+							if (line.startsWith("Divisional")) {
+								try {
+									int divisionalNbr = Integer.parseInt(line.substring(10, line.indexOf('=')));
+									
+									if (divisionalNbr > nbDivisionals)
+										copyLine = false;
+								} catch (NumberFormatException ne) {
+									System.out.println("Error: Couldn't convert divisional number to integer at line " + lineNumber + ".");
+									System.exit(1);
+								}
+							}
+						}
+						
+						if (line.startsWith("NumberOfCouplers")) {
+							foundNbrCouplers = true;
+							try {
+								nbCouplers = Integer.parseInt(line.substring(line.indexOf('=') + 1, line.length()));
+							} catch (NumberFormatException ne) {
+								System.out.println("Error: Couldn't convert number of couplers to integer at line " + lineNumber + ".");
+								System.exit(1);
+							}
+						}
+						
+						if (line.startsWith("NumberOfTremulants")) {
+							foundNbrTremulants = true;
+							try {
+								nbTremulants = Integer.parseInt(line.substring(line.indexOf('=') + 1, line.length()));
+							} catch (NumberFormatException ne) {
+								System.out.println("Error: Couldn't convert number of tremulants to integer at line " + lineNumber + ".");
+								System.exit(1);
+							}
+						}
+						
+						if (line.startsWith("NumberOfStops")) {
+							foundNbrStops = true;
+							try {
+								nbStops = Integer.parseInt(line.substring(line.indexOf('=') + 1, line.length()));
+							} catch (NumberFormatException ne) {
+								System.out.println("Error: Couldn't convert number of stops to integer at line " + lineNumber + ".");
+								System.exit(1);
+							}
+						}
+						
+						if (line.startsWith("NumberOfDivisionals")) {
+							foundNbrDivisionals = true;
+							try {
+								nbDivisionals = Integer.parseInt(line.substring(line.indexOf('=') + 1, line.length()));
+							} catch (NumberFormatException ne) {
+								System.out.println("Error: Couldn't convert number of divisionals to integer at line " + lineNumber + ".");
+								System.exit(1);
+							}
+						}
+					} else if (inCombinationSection) {
+						if (line.startsWith("TremulantManual"))
+							copyLine = false;
+						
+						if (line.startsWith("Comments"))
+							copyLine = false;
+						
+						if (line.startsWith("MIDIProgramChangeNumber"))
+							copyLine = false;
+						
+						if (line.equalsIgnoreCase("ShortcutKey="))
+							copyLine = false;
+						
+						if (foundNbrCouplers) {
+							if (line.startsWith("NumberOfCouplers"))
+								copyLine = false;
+							
+							if (line.startsWith("CouplerManual") || line.startsWith("CouplerNumber")) {
+								try {
+									int couplerNbr = Integer.parseInt(line.substring(13, line.indexOf('=')));
+									
+									if (couplerNbr > nbCouplers)
+										copyLine = false;
+								} catch (NumberFormatException ne) {
+									System.out.println("Error: Couldn't convert CouplerManual/Number number to integer at line " + lineNumber + ".");
+									System.exit(1);
+								}
+							}
+						}
+						
+						if (foundNbrTremulants) {
+							if (line.startsWith("NumberOfTremulants"))
+								copyLine = false;
+							
+							if (line.startsWith("TremulantNumber")) {
+								try {
+									int tremulantNbr = Integer.parseInt(line.substring(15, line.indexOf('=')));
+									
+									if (tremulantNbr > nbTremulants)
+										copyLine = false;
+								} catch (NumberFormatException ne) {
+									System.out.println("Error: Couldn't convert TremulantNumber number to integer at line " + lineNumber + ".");
+									System.exit(1);
+								}
+							}
+						}
+						
+						if (foundNbrStops) {
+							if (line.startsWith("NumberOfStops"))
+								copyLine = false;
+							
+							if (line.startsWith("StopManual") || line.startsWith("StopNumber")) {
+								try {
+									int stopNbr = Integer.parseInt(line.substring(10, line.indexOf('=')));
+									
+									if (stopNbr > nbStops)
+										copyLine = false;
+								} catch (NumberFormatException ne) {
+									System.out.println("Error: Couldn't convert StopManual/Number number to integer at line " + lineNumber + ".");
+									System.exit(1);
+								}
+							}
+						}
+						
+						if (line.startsWith("NumberOfCouplers")) {
+							foundNbrCouplers = true;
+							try {
+								nbCouplers = Integer.parseInt(line.substring(line.indexOf('=') + 1, line.length()));
+							} catch (NumberFormatException ne) {
+								System.out.println("Error: Couldn't convert coupler number to integer at line " + lineNumber + ".");
+								System.exit(1);
+							}
+						}
+						
+						if (line.startsWith("NumberOfTremulants")) {
+							foundNbrTremulants = true;
+							try {
+								nbTremulants = Integer.parseInt(line.substring(line.indexOf('=') + 1, line.length()));
+							} catch (NumberFormatException ne) {
+								System.out.println("Error: Couldn't convert tremulant number to integer at line " + lineNumber + ".");
+								System.exit(1);
+							}
+						}
+						
+						if (line.startsWith("NumberOfStops")) {
+							foundNbrStops = true;
+							try {
+								nbStops = Integer.parseInt(line.substring(line.indexOf('=') + 1, line.length()));
+							} catch (NumberFormatException ne) {
+								System.out.println("Error: Couldn't convert stops number to integer at line " + lineNumber + ".");
+								System.exit(1);
+							}
+						}
+					} else {
 						if (line.startsWith("ChurchName"))
 							copyLine = false;
 						
@@ -123,9 +414,6 @@ public class jOdfCleaner {
 							copyLine = false;
 						
 						if (line.startsWith("StopControlMIDIKeyNumber"))
-							copyLine = false;
-						
-						if (line.startsWith("MIDIProgramChangeNumber"))
 							copyLine = false;
 						
 						if (line.equalsIgnoreCase("ShortcutKey="))
