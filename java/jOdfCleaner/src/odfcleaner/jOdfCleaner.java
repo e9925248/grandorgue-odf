@@ -29,7 +29,7 @@ public class jOdfCleaner {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println("jOdfCleaner version 2014-04-07");
+		System.out.println("jOdfCleaner version 2014-07-17");
 		System.out.println("(C) 2014 Lars Palo");
 		System.out.println("Published under a MIT-license");
 		System.out.println();
@@ -168,6 +168,17 @@ public class jOdfCleaner {
 							// except for an empty line
 							if (line.equals(""))
 								copyLine = true;
+						}
+					}
+					
+					// fix paths that use / as separator instead of \
+					if (line.startsWith("Pipe") ||
+							line.startsWith("Bitmap") ||
+							line.startsWith("Image") ||
+							line.startsWith("Info") ||
+							line.startsWith("Key")) {
+						if (line.contains("/")) {
+							line = line.replace("/", "\\");
 						}
 					}
 					
