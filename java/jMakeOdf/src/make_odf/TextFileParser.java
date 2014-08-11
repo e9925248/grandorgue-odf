@@ -859,7 +859,7 @@ public class TextFileParser {
 
 	public void getParts(String str, ArrayList<String> strList) {
 		strList.clear();
-		if (str != "") {
+		if (!str.isEmpty()) {
 			for (String part : str.split(":")) {
 				strList.add(part);
 			}
