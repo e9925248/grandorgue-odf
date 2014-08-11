@@ -27,7 +27,7 @@ public class WindchestGroup {
 	String name;
 	ArrayList<Integer> m_Enclosures = new ArrayList<Integer>();
 	ArrayList<Integer> m_Tremulants = new ArrayList<Integer>();
-	
+
 	public WindchestGroup() {
 		name = "";
 	}

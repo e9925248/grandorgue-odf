@@ -40,6 +40,7 @@ public class Organ {
 	ArrayList<WindchestGroup> m_WindchestGroups = new ArrayList<WindchestGroup>();
 	ArrayList<Switch> m_Switches = new ArrayList<Switch>();
 	ArrayList<Rank> m_Ranks = new ArrayList<Rank>();
+
 	public Organ() {
 		this.name = "";
 		this.amplitudeLevel = 100;
@@ -52,6 +53,5 @@ public class Organ {
 		this.extraDrawstopRows = 0;
 		this.hasPedals = true;
 	}
-	
-	
+
 }

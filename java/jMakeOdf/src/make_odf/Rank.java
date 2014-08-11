@@ -34,7 +34,7 @@ public class Rank {
 	float pitchCorrection;
 	int m_windchestGroup;
 	ArrayList<Pipe> m_Pipes = new ArrayList<Pipe>();
-	
+
 	public Rank() {
 		this.name = "";
 		this.firstMidiNoteNumber = 36;

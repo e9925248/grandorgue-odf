@@ -21,7 +21,8 @@
 
 package make_odf;
 
-import java.io.*;
+import java.io.File;
+import java.io.FilenameFilter;
 
 public class ReleaseFolderFilter implements FilenameFilter {
 	public boolean accept(File dir, String name) {

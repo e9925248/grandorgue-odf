@@ -27,7 +27,7 @@ public class Enclosure {
 	int MIDIInputNumber;
 	boolean displayed;
 	int textBreakWidth;
-	
+
 	public Enclosure() {
 		this.name = "";
 		this.ampMinimumLevel = 1;

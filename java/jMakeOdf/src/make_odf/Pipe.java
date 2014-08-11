@@ -33,7 +33,7 @@ public class Pipe {
 	int isTremulant;
 	ArrayList<Attack> attacks = new ArrayList<Attack>();
 	ArrayList<Release> releases = new ArrayList<Release>();
-	
+
 	public Pipe() {
 		this.isPercussive = false;
 		this.amplitudeLevel = 100;

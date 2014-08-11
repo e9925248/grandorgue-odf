@@ -35,7 +35,7 @@ public class Stop extends Drawstop {
 	float pitchCorrection;
 	int m_windchestGroup;
 	ArrayList<Pipe> m_Pipes = new ArrayList<Pipe>();
-	
+
 	public Stop() {
 		super();
 		this.firstAccessiblePipeLogicalKeyNumber = 1;

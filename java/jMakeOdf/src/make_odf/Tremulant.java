@@ -27,7 +27,7 @@ public class Tremulant extends Drawstop {
 	int startRate;
 	int stopRate;
 	int ampModDepth;
-	
+
 	public Tremulant() {
 		super();
 		this.tremType = "Synth";
