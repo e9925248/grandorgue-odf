@@ -24,15 +24,14 @@ package make_odf;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class TextFileParser {
 	boolean loadOneSamplePerPipe;
-	ArrayList<String> stringParts = new ArrayList<String>();
 
 	public TextFileParser(File f, Organ org) {
 		try {
@@ -56,34 +55,14 @@ public class TextFileParser {
 
 			textLine = getLine(sc);
 			int nbSwitches = convertToInt(textLine);
+			List<String> stringParts;
 			for (int i = 0; i < nbSwitches; i++) {
 				Switch sw = new Switch();
 
 				textLine = getLine(sc);
-				getParts(textLine, stringParts);
-				sw.name = stringParts.get(0);
-				if (stringParts.get(1).equalsIgnoreCase("yes"))
-					sw.defaultToEngaged = true;
-				else
-					sw.defaultToEngaged = false;
-				if (stringParts.get(2).equalsIgnoreCase("yes")) {
-					sw.displayed = true;
-					sw.dispImageNum = convertToInt(stringParts.get(3));
-					sw.dispDrawstopCol = convertToInt(stringParts.get(4));
-					sw.dispDrawstopRow = convertToInt(stringParts.get(5));
-					sw.textBreakWidth = convertToInt(stringParts.get(6));
-				} else {
-					sw.displayed = false;
-				}
+				String textLine2 = getLine(sc);
+				readSwitch(sw, textLine, textLine2);
 
-				textLine = getLine(sc);
-				getParts(textLine, stringParts);
-				sw.function = Enum.valueOf(Function.class, stringParts.get(0)
-						.toUpperCase());
-				int nbOfSw = convertToInt(stringParts.get(1));
-				for (int j = 0; j < nbOfSw; j++) {
-					sw.m_switches.add(convertToInt(stringParts.get(2 + j)));
-				}
 				org.m_Switches.add(sw);
 			}
 
@@ -93,7 +72,7 @@ public class TextFileParser {
 				Enclosure enc = new Enclosure();
 
 				textLine = getLine(sc);
-				getParts(textLine, stringParts);
+				stringParts = getParts(textLine);
 				enc.name = stringParts.get(0);
 				enc.ampMinimumLevel = convertToInt(stringParts.get(1));
 				if (stringParts.get(2).equalsIgnoreCase("yes")) {
@@ -112,7 +91,7 @@ public class TextFileParser {
 				Tremulant trem = new Tremulant();
 
 				textLine = getLine(sc);
-				getParts(textLine, stringParts);
+				stringParts = getParts(textLine);
 				trem.name = stringParts.get(0);
 				if (stringParts.get(1).equalsIgnoreCase("Synth")) {
 					trem.tremType = stringParts.get(1);
@@ -157,7 +136,7 @@ public class TextFileParser {
 				}
 
 				textLine = getLine(sc);
-				getParts(textLine, stringParts);
+				stringParts = getParts(textLine);
 				trem.function = Enum.valueOf(Function.class, stringParts.get(0)
 						.toUpperCase());
 				int nbOfSw = convertToInt(stringParts.get(1));
@@ -174,7 +153,7 @@ public class TextFileParser {
 				WindchestGroup wc = new WindchestGroup();
 
 				textLine = getLine(sc);
-				getParts(textLine, stringParts);
+				stringParts = getParts(textLine);
 				wc.name = stringParts.get(0);
 				int enclosures = convertToInt(stringParts.get(1));
 				if (enclosures > 0) {
@@ -206,7 +185,7 @@ public class TextFileParser {
 				Manual m = new Manual();
 
 				textLine = getLine(sc);
-				getParts(textLine, stringParts);
+				stringParts = getParts(textLine);
 				m.keyboardName = stringParts.get(0);
 				m.keyboardCode = stringParts.get(1);
 				m.keyboardSize = convertToInt(stringParts.get(2));
@@ -220,7 +199,7 @@ public class TextFileParser {
 				int nbCouplers = convertToInt(textLine);
 				for (int j = 0; j < nbCouplers; j++) {
 					textLine = getLine(sc);
-					getParts(textLine, stringParts);
+					stringParts = getParts(textLine);
 					Coupler cp = new Coupler();
 					cp.name = stringParts.get(0);
 					String couplerString = stringParts.get(1);
@@ -272,7 +251,7 @@ public class TextFileParser {
 						cp.displayed = false;
 					}
 					textLine = getLine(sc);
-					getParts(textLine, stringParts);
+					stringParts = getParts(textLine);
 					cp.function = Enum.valueOf(Function.class,
 							stringParts.get(0).toUpperCase());
 					int nbOfSw = convertToInt(stringParts.get(1));
@@ -284,14 +263,14 @@ public class TextFileParser {
 				}
 
 				textLine = getLine(sc);
-				getParts(textLine, stringParts);
+				stringParts = getParts(textLine);
 				int nbTrems = convertToInt(stringParts.get(0));
 				for (int j = 0; j < nbTrems; j++) {
 					m.m_Tremulants.add(convertToInt(stringParts.get(1 + j)));
 				}
 
 				textLine = getLine(sc);
-				getParts(textLine, stringParts);
+				stringParts = getParts(textLine);
 				int nbSw = convertToInt(stringParts.get(0));
 				for (int j = 0; j < nbSw; j++) {
 					m.m_Switches.add(convertToInt(stringParts.get(1 + j)));
@@ -303,7 +282,7 @@ public class TextFileParser {
 					Stop s = new Stop();
 
 					textLine = getLine(sc);
-					getParts(textLine, stringParts);
+					stringParts = getParts(textLine);
 					s.name = stringParts.get(0);
 					s.numberOfAccessiblePipes = convertToInt(stringParts.get(1));
 					s.firstAccessiblePipeLogicalKeyNumber = convertToInt(stringParts
@@ -336,7 +315,7 @@ public class TextFileParser {
 							+ s.name);
 					while (pipesLoaded < s.numberOfAccessiblePipes) {
 						textLine = getLine(sc);
-						getParts(textLine, stringParts);
+						stringParts = getParts(textLine);
 
 						int nbPipesToLoad = convertToInt(stringParts.get(0));
 						if (nbPipesToLoad > 0) {
@@ -485,7 +464,7 @@ public class TextFileParser {
 					}
 
 					textLine = getLine(sc);
-					getParts(textLine, stringParts);
+					stringParts = getParts(textLine);
 					s.function = Enum.valueOf(Function.class, stringParts
 							.get(0).toUpperCase());
 					int nbOfSw = convertToInt(stringParts.get(1));
@@ -514,7 +493,7 @@ public class TextFileParser {
 				Rank rk = new Rank();
 
 				textLine = getLine(sc);
-				getParts(textLine, stringParts);
+				stringParts = getParts(textLine);
 				rk.name = stringParts.get(0);
 				int nbPipes = convertToInt(stringParts.get(1));
 				rk.numberOfLogicalPipes = nbPipes;
@@ -532,7 +511,7 @@ public class TextFileParser {
 				int processedPipes = 0;
 				while (processedPipes < nbPipes) {
 					textLine = getLine(sc);
-					getParts(textLine, stringParts);
+					stringParts = getParts(textLine);
 					int pipesThisLine = convertToInt(stringParts.get(0));
 					String loadString = stringParts.get(1);
 					switch (loadString.charAt(0)) {
@@ -660,6 +639,33 @@ public class TextFileParser {
 		} catch (FileNotFoundException fe) {
 			System.out.println("ERROR: Couldn't read anything from file!");
 			System.exit(1);
+		}
+	}
+
+	private void readSwitch(Switch sw, String textLine, String textLine2) {
+		List<String> stringParts;
+		stringParts = getParts(textLine);
+		sw.name = stringParts.get(0);
+		if (stringParts.get(1).equalsIgnoreCase("yes"))
+			sw.defaultToEngaged = true;
+		else
+			sw.defaultToEngaged = false;
+		if (stringParts.get(2).equalsIgnoreCase("yes")) {
+			sw.displayed = true;
+			sw.dispImageNum = convertToInt(stringParts.get(3));
+			sw.dispDrawstopCol = convertToInt(stringParts.get(4));
+			sw.dispDrawstopRow = convertToInt(stringParts.get(5));
+			sw.textBreakWidth = convertToInt(stringParts.get(6));
+		} else {
+			sw.displayed = false;
+		}
+
+		stringParts = getParts(textLine2);
+		sw.function = Enum.valueOf(Function.class, stringParts.get(0)
+				.toUpperCase());
+		int nbOfSw = convertToInt(stringParts.get(1));
+		for (int j = 0; j < nbOfSw; j++) {
+			sw.m_switches.add(convertToInt(stringParts.get(2 + j)));
 		}
 	}
 
@@ -857,20 +863,16 @@ public class TextFileParser {
 		return result;
 	}
 
-	public void getParts(String str, ArrayList<String> strList) {
-		strList.clear();
-		if (!str.isEmpty()) {
-			for (String part : str.split(":")) {
-				strList.add(part);
-			}
-			if (strList.isEmpty()) {
-				System.out.println("ERROR: Nothing in the list of strings!");
-				System.exit(1);
-			}
-		} else {
-			System.out.println("ERROR: No string to split!");
-			System.exit(1);
+	private List<String> getParts(String str) {
+		if (str.isEmpty()) {
+			throw new TextFileParserException("ERROR: No string to split!");
 		}
+		List<String> parts = Arrays.asList(str.split(":"));
+		if (parts.isEmpty()) {
+			throw new TextFileParserException(
+					"ERROR: Nothing in the list of strings!");
+		}
+		return parts;
 	}
 
 	public float convertToFloat(String s) {
