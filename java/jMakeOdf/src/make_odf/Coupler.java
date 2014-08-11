@@ -25,11 +25,12 @@ public class Coupler extends Drawstop {
 	String destinationManualCode;
 	int destinationKeyShift;
 	CouplerType m_type;
+
 	public Coupler() {
 		super();
 		this.destinationManualCode = "";
 		this.destinationKeyShift = 0;
 		this.m_type = CouplerType.NORMAL;
 	}
-	
+
 }

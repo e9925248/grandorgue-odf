@@ -25,7 +25,7 @@ public class Release {
 	String fileName;
 	int maxKeyPressTime;
 	int isTremulant;
-	
+
 	public Release() {
 		fileName = "";
 		maxKeyPressTime = -1;

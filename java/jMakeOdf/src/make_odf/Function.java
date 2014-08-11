@@ -22,16 +22,11 @@
 package make_odf;
 
 public enum Function {
-	INPUT("Input"),
-	AND("And"),
-	XOR("Xor"),
-	NAND("Nand"),
-	NOR("Nor"),
-	OR("Or"),
-	NOT("Not");
-	
+	INPUT("Input"), AND("And"), XOR("Xor"), NAND("Nand"), NOR("Nor"), OR("Or"), NOT(
+			"Not");
+
 	public final String func;
-	
+
 	Function(String str) {
 		func = str;
 	}

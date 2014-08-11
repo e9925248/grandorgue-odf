@@ -21,9 +21,10 @@
 
 package make_odf;
 
-import java.io.*;
+import java.io.File;
+import java.io.FilenameFilter;
 
-public class TremulantFolderFilter implements FilenameFilter{
+public class TremulantFolderFilter implements FilenameFilter {
 	public boolean accept(File dir, String name) {
 		File f = new File(dir, name);
 		boolean containTrem;

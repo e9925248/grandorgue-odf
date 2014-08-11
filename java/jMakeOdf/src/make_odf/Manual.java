@@ -33,7 +33,7 @@ public class Manual implements Comparable<Manual> {
 	ArrayList<Stop> m_Stops = new ArrayList<Stop>();
 	ArrayList<Integer> m_Tremulants = new ArrayList<Integer>();
 	ArrayList<Integer> m_Switches = new ArrayList<Integer>();
-	
+
 	public Manual() {
 		keyboardName = "";
 		keyboardCode = "";
@@ -41,7 +41,7 @@ public class Manual implements Comparable<Manual> {
 		keyboardFirstMidiCode = 0;
 		isDisplayed = true;
 	}
-	
+
 	public int compareTo(Manual m) {
 		if (translateKeyCode(keyboardCode) < translateKeyCode(m.keyboardCode))
 			return -1;
@@ -50,7 +50,7 @@ public class Manual implements Comparable<Manual> {
 		else
 			return 0;
 	}
-	
+
 	private int translateKeyCode(String keybCode) {
 		if (keybCode.equalsIgnoreCase("PED"))
 			return 0;

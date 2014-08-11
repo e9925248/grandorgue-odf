@@ -27,7 +27,7 @@ public class Attack {
 	int attackVelocity;
 	int maxKeyPressTime;
 	int isTremulant;
-	
+
 	public Attack() {
 		this.fileName = "";
 		this.loadRelease = true;

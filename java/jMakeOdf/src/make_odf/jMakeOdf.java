@@ -27,7 +27,7 @@ import java.io.File;
 public class jMakeOdf {
 	static Organ m_Organ;
 	static TextFileParser m_Parser;
-	
+
 	/**
 	 * @param args
 	 */
