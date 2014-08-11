@@ -22,12 +22,10 @@
 package make_odf;
 
 public enum CouplerType {
-	NORMAL("Normal"),
-	BASS("Bass"),
-	MELODY("Melody");
-	
+	NORMAL("Normal"), BASS("Bass"), MELODY("Melody");
+
 	public final String type;
-	
+
 	CouplerType(String str) {
 		type = str;
 	}

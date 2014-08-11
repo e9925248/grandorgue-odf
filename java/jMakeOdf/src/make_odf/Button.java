@@ -31,7 +31,7 @@ public class Button {
 	int dispDrawstopRow;
 	int dispDrawstopCol;
 	int textBreakWidth;
-	
+
 	public Button() {
 		this.name = "";
 		this.displayed = true;

@@ -28,7 +28,7 @@ public class Drawstop extends Button {
 	ArrayList<Integer> m_switches = new ArrayList<Integer>();
 	boolean defaultToEngaged;
 	int gcState;
-	
+
 	public Drawstop() {
 		super();
 		this.function = Function.INPUT;
