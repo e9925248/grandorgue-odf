@@ -27,10 +27,12 @@ import java.io.FileNotFoundException;
 
 public class TextFileParser {
 
-	public TextFileParser(File f, Organ org) {
+	public Organ parse(File f) {
 		try (Tokenizer tok = new Tokenizer(f);) {
+			Organ org = new Organ();
 			try {
 				org.read(tok);
+				return org;
 			} catch (TextFileParserException e) {
 				throw new TextFileParserException(
 						"Error while processing line " + tok.getLineNumber(), e);
