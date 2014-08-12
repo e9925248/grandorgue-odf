@@ -21,6 +21,7 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -189,5 +190,31 @@ public class Rank {
 			int pipesThisLine = readPipesLine(tok, loadOneSamplePerPipe);
 			processedPipes += pipesThisLine;
 		}
+	}
+
+	public void write(PrintWriter outfile) {
+		writeHeader(outfile);
+		for (int j = 0; j < m_Pipes.size(); j++) {
+			// First attack must always exist
+			String pipeNr = "Pipe" + String.format("%03d", (j + 1));
+			boolean isRankPercussive = isPercussive;
+			Pipe pipe = m_Pipes.get(j);
+			pipe.writeInsideRank(outfile, pipeNr, isRankPercussive);
+		}
+	}
+
+	public void writeHeader(PrintWriter outfile) {
+		outfile.println("Name=" + name);
+		outfile.println("FirstMidiNoteNumber=" + firstMidiNoteNumber);
+		outfile.println("NumberOfLogicalPipes=" + numberOfLogicalPipes);
+		outfile.println("WindchestGroup=" + m_windchestGroup);
+		if (isPercussive)
+			outfile.println("Percussive=Y");
+		else
+			outfile.println("Percussive=N");
+		outfile.println("AmplitudeLevel=" + amplitudeLevel);
+		outfile.println("PitchTuning=" + pitchTuning);
+		outfile.println("PitchCorrection=" + pitchCorrection);
+		outfile.println("HarmonicNumber=" + harmonicNumber);
 	}
 }

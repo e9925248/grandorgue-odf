@@ -21,6 +21,7 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
 import java.util.List;
 
 public class Coupler extends Drawstop {
@@ -86,6 +87,47 @@ public class Coupler extends Drawstop {
 		function = Enum.valueOf(Function.class, stringParts.get(0)
 				.toUpperCase());
 		Tokenizer.readNumericReferencesOffset1(stringParts, m_switches);
+	}
+
+	public void write(PrintWriter outfile) {
+		outfile.println("Name=" + name);
+		if (function != Function.INPUT) {
+			// The coupler has switches
+			outfile.println("Function=" + function.func);
+			outfile.println("SwitchCount=" + m_switches.size());
+			for (int k = 0; k < m_switches.size(); k++)
+				outfile.println("Switch" + String.format("%03d", (k + 1)) + "="
+						+ m_switches.get(k));
+		}
+		if (m_type != CouplerType.NORMAL)
+			outfile.println("CouplerType=" + m_type.type);
+		outfile.println("UnisonOff=N");
+		outfile.println("DestinationManual="
+				+ String.format("%03d",
+						Manual.translateKeyCode(destinationManualCode)));
+		outfile.println("DestinationKeyshift=" + destinationKeyShift);
+		outfile.println("CoupleToSubsequentUnisonIntermanualCouplers=N");
+		outfile.println("CoupleToSubsequentUpwardIntermanualCouplers=N");
+		outfile.println("CoupleToSubsequentDownwardIntermanualCouplers=N");
+		outfile.println("CoupleToSubsequentUpwardIntramanualCouplers=N");
+		outfile.println("CoupleToSubsequentDownwardIntramanualCouplers=N");
+		if (displayed) {
+			outfile.println("Displayed=Y");
+			outfile.println("DispImageNum=" + dispImageNum);
+			outfile.println("DispDrawstopCol=" + dispDrawstopCol);
+			outfile.println("DispDrawstopRow=" + dispDrawstopRow);
+			outfile.println("DispLabelColour=Black");
+			outfile.println("DispLabelFontSize=Normal");
+			if (textBreakWidth >= 0)
+				outfile.println("TextBreakWidth=" + textBreakWidth);
+		} else
+			outfile.println("Displayed=N");
+		if (function == Function.INPUT) {
+			if (defaultToEngaged)
+				outfile.println("DefaultToEngaged=Y");
+			else
+				outfile.println("DefaultToEngaged=N");
+		}
 	}
 
 }
