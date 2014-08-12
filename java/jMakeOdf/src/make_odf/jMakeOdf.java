@@ -35,32 +35,36 @@ public class jMakeOdf {
 		System.out.println("\njMakeOdf 2014-03-26");
 		System.out.println("Released under a MIT license");
 		System.out.println("Copyright (C) 2014 Lars Palo");
-		System.out.println("Based on (partly ported from) make_odf by Jean-Luc Derouineau under MIT License\n");
+		System.out
+				.println("Based on (partly ported from) make_odf by Jean-Luc Derouineau under MIT License\n");
 
-	    if (args.length != 1 || args[0].compareTo("--help") == 0 || args[0].compareTo("-h") == 0) {
-	    	printUsageHelp();
-	    	System.exit(0);
-	    } else {
-	    	File f = new File(args[0]);
-	    	if (f.exists() == false) {
-	    		System.out.println("No description file with name " + args[0] + " exist!");
-	    		System.exit(0);
-	    	} else {
-	    		System.out.println("Parsing file " + args[0]);
-	    		m_Organ = new Organ();
-	    		m_Parser = new TextFileParser(f, m_Organ);
-	    		@SuppressWarnings("unused")
+		if (args.length != 1 || args[0].compareTo("--help") == 0
+				|| args[0].compareTo("-h") == 0) {
+			printUsageHelp();
+			System.exit(0);
+		} else {
+			File f = new File(args[0]);
+			if (f.exists() == false) {
+				System.out.println("No description file with name " + args[0]
+						+ " exist!");
+				System.exit(0);
+			} else {
+				System.out.println("Parsing file " + args[0]);
+				m_Parser = new TextFileParser();
+				m_Organ = m_Parser.parse(f);
+				@SuppressWarnings("unused")
 				OdfWriter ow = new OdfWriter(m_Organ);
-	    		System.exit(0);
-	    	}
-	    }
+				System.exit(0);
+			}
+		}
 	}
 
 	public static void printUsageHelp() {
-	    System.out.println("Usage:\njMakeOdf <description file>");
-	    System.out.println("\tTry parsing existing description file in current folder and create an .organ file");
-	    System.out.println("jMakeOdf --help");
-	    System.out.println("jMakeOdf -h");
-	    System.out.println("\tPrints this message and exit");
+		System.out.println("Usage:\njMakeOdf <description file>");
+		System.out
+				.println("\tTry parsing existing description file in current folder and create an .organ file");
+		System.out.println("jMakeOdf --help");
+		System.out.println("jMakeOdf -h");
+		System.out.println("\tPrints this message and exit");
 	}
 }
