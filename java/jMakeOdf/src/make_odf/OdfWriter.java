@@ -300,8 +300,8 @@ public class OdfWriter {
 					outfile.println("DestinationManual="
 							+ String.format(
 									"%03d",
-									translateKeyCode(org.m_Manuals.get(i).m_Couplers
-											.get(j).destinationManualCode)));
+									Manual.translateKeyCode(org.m_Manuals
+											.get(i).m_Couplers.get(j).destinationManualCode)));
 					outfile.println("DestinationKeyshift="
 							+ org.m_Manuals.get(i).m_Couplers.get(j).destinationKeyShift);
 					outfile.println("CoupleToSubsequentUnisonIntermanualCouplers=N");
@@ -718,41 +718,6 @@ public class OdfWriter {
 		} catch (IOException ie) {
 			System.out.println("ERROR: Couldn't write ODF file!");
 			System.exit(1);
-		}
-	}
-
-	private int translateKeyCode(String keybCode) {
-		if (keybCode.equalsIgnoreCase("PED"))
-			return 0;
-		else {
-			int nr = 0;
-			int prevNr = 0;
-			String str = keybCode.toUpperCase();
-			for (int i = str.length() - 1; i >= 0; i--) {
-				switch (str.charAt(i)) {
-				case 'X':
-					nr = CalculateRomans(10, prevNr, nr);
-					prevNr = 10;
-					break;
-				case 'V':
-					nr = CalculateRomans(5, prevNr, nr);
-					prevNr = 5;
-					break;
-				case 'I':
-					nr = CalculateRomans(1, prevNr, nr);
-					prevNr = 1;
-					break;
-				}
-			}
-			return nr;
-		}
-	}
-
-	private int CalculateRomans(int i, int prevNr, int nr) {
-		if (prevNr > i) {
-			return nr - i;
-		} else {
-			return nr + i;
 		}
 	}
 }
