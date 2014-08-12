@@ -21,6 +21,7 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -228,5 +229,74 @@ public class Stop extends Drawstop {
 		function = Enum.valueOf(Function.class, stringParts.get(0)
 				.toUpperCase());
 		Tokenizer.readNumericReferencesOffset1(stringParts, m_switches);
+	}
+
+	public void write(PrintWriter outfile) {
+		outfile.println("Name=" + name);
+		if (function != Function.INPUT) {
+			// This stop has switches
+			outfile.println("Function=" + function.func);
+			outfile.println("SwitchCount=" + m_switches.size());
+			for (int k = 0; k < m_switches.size(); k++)
+				outfile.println("Switch" + String.format("%03d", (k + 1)) + "="
+						+ m_switches.get(k));
+		}
+		if (!m_Ranks.isEmpty()) {
+			// This stop has ranks
+			outfile.println("NumberOfRanks=" + m_Ranks.size());
+			for (int k = 0; k < m_Ranks.size(); k++)
+				outfile.println("Rank" + String.format("%03d", (k + 1)) + "="
+						+ m_Ranks.get(k));
+
+			outfile.println("NumberOfAccessiblePipes="
+					+ numberOfAccessiblePipes);
+			outfile.println("FirstAccessiblePipeLogicalKeyNumber="
+					+ firstAccessiblePipeLogicalKeyNumber);
+		} else {
+			outfile.println("NumberOfLogicalPipes=" + numberOfAccessiblePipes);
+			outfile.println("NumberOfAccessiblePipes="
+					+ numberOfAccessiblePipes);
+			outfile.println("FirstAccessiblePipeLogicalPipeNumber="
+					+ firstAccessiblePipeLogicalPipeNumber);
+			outfile.println("FirstAccessiblePipeLogicalKeyNumber="
+					+ firstAccessiblePipeLogicalKeyNumber);
+			outfile.println("WindchestGroup=" + m_windchestGroup);
+			if (isPercussive)
+				outfile.println("Percussive=Y");
+			else
+				outfile.println("Percussive=N");
+			outfile.println("AmplitudeLevel=" + amplitudeLevel);
+			outfile.println("PitchTuning=" + pitchTuning);
+			outfile.println("PitchCorrection=" + pitchCorrection);
+			outfile.println("HarmonicNumber=" + harmonicNumber);
+		}
+		if (function == Function.INPUT) {
+			if (defaultToEngaged)
+				outfile.println("DefaultToEngaged=Y");
+			else
+				outfile.println("DefaultToEngaged=N");
+		}
+		if (displayed) {
+			outfile.println("Displayed=Y");
+			outfile.println("DispImageNum=" + dispImageNum);
+			outfile.println("DispDrawstopCol=" + dispDrawstopCol);
+			outfile.println("DispDrawstopRow=" + dispDrawstopRow);
+			outfile.println("DispLabelColour=Black");
+			outfile.println("DispLabelFontSize=Normal");
+			outfile.println("DisplayInInvertedState=N");
+			if (textBreakWidth >= 0)
+				outfile.println("TextBreakWidth=" + textBreakWidth);
+		} else {
+			outfile.println("Displayed=N");
+		}
+		if (m_Ranks.isEmpty()) {
+			// This stop has pipes
+			for (int k = 0; k < m_Pipes.size(); k++) {
+				// First attack must always exist
+				String pipeNr = "Pipe" + String.format("%03d", (k + 1));
+				Pipe pipe = m_Pipes.get(k);
+				pipe.writeInsideStop(outfile, this, pipeNr);
+			}
+		}
 	}
 }

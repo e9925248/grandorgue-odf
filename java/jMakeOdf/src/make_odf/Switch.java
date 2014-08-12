@@ -21,6 +21,7 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
 import java.util.List;
 
 public class Switch extends Drawstop {
@@ -48,5 +49,32 @@ public class Switch extends Drawstop {
 		function = Enum.valueOf(Function.class, stringParts.get(0)
 				.toUpperCase());
 		Tokenizer.readNumericReferencesOffset1(stringParts, m_switches);
+	}
+
+	public void write(PrintWriter outfile) {
+		if (function != Function.INPUT) {
+			// The switch has switches
+			outfile.println("Function=" + function.func);
+			for (int j = 0; j < m_switches.size(); j++)
+				outfile.println("Switch" + String.format("%03d", (j + 1)) + "="
+						+ m_switches.get(j));
+		}
+		if (defaultToEngaged)
+			outfile.println("DefaultToEngaged=Y");
+		else
+			outfile.println("DefaultToEngaged=N");
+		if (displayed) {
+			outfile.println("Displayed=Y");
+			outfile.println("DispImageNum=" + dispImageNum);
+			outfile.println("DispDrawstopCol=" + dispDrawstopCol);
+			outfile.println("DispDrawstopRow=" + dispDrawstopRow);
+			outfile.println("DispLabelColour=Black");
+			outfile.println("DispLabelFontSize=Normal");
+			outfile.println("DisplayInInvertedState=N");
+			if (textBreakWidth >= 0)
+				outfile.println("TextBreakWidth=" + textBreakWidth);
+		} else {
+			outfile.println("Displayed=N");
+		}
 	}
 }

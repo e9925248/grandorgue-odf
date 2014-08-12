@@ -21,6 +21,7 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,5 +93,42 @@ public class Tremulant extends Drawstop {
 				.toUpperCase());
 		ArrayList<Integer> references = m_switches;
 		Tokenizer.readNumericReferencesOffset1(stringParts, references);
+	}
+
+	public void write(PrintWriter outfile) {
+		outfile.println("Name=" + name);
+		if (function != Function.INPUT) {
+			outfile.println("Function=" + function.func);
+			int sw = m_switches.size();
+			outfile.println("SwitchCount=" + sw);
+			for (int j = 0; j < sw; j++) {
+				outfile.println("Switch" + String.format("%03d", j + 1) + "="
+						+ m_switches.get(j));
+			}
+		}
+		if (tremType.equalsIgnoreCase("Synth")) {
+			outfile.println("Period=" + period);
+			outfile.println("AmpModDepth=" + ampModDepth);
+			outfile.println("StartRate=" + startRate);
+			outfile.println("StopRate=" + stopRate);
+		} else {
+			outfile.println("TremulantType=" + tremType);
+		}
+		if (displayed) {
+			outfile.println("Displayed=Y");
+			if (textBreakWidth >= 0)
+				outfile.println("TextBreakWidth=" + textBreakWidth);
+			outfile.println("DispDrawstopCol=" + dispDrawstopCol);
+			outfile.println("DispDrawstopRow=" + dispDrawstopRow);
+			outfile.println("DispImageNum=" + dispImageNum);
+		} else {
+			outfile.println("Displayed=N");
+		}
+		if (function == Function.INPUT) {
+			if (defaultToEngaged)
+				outfile.println("DefaultToEngaged=Y");
+			else
+				outfile.println("DefaultToEngaged=N");
+		}
 	}
 }

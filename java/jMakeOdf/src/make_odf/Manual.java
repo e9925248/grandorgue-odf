@@ -21,6 +21,7 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,6 +121,65 @@ public class Manual implements Comparable<Manual> {
 			s.read(tok, loadOneSamplePerPipe);
 
 			m_Stops.add(s);
+		}
+	}
+
+	public void writeStopsReferences(PrintWriter outfile, Counters counters) {
+		int nbStops = m_Stops.size();
+		outfile.println("NumberOfStops=" + nbStops);
+		for (int j = 0; j < nbStops; j++) {
+			counters.totalNbStops++;
+			outfile.println("Stop" + String.format("%03d", (j + 1)) + "="
+					+ String.format("%03d", counters.totalNbStops));
+		}
+	}
+
+	public void writeSwitchesReferences(PrintWriter outfile) {
+		int nbSwitches = m_Switches.size();
+		outfile.println("NumberOfSwitches=" + nbSwitches);
+		for (int j = 0; j < nbSwitches; j++) {
+			outfile.println("Switch" + String.format("%03d", (j + 1)) + "="
+					+ String.format("%03d", m_Switches.get(j)));
+		}
+	}
+
+	public void writeTremulantsReferences(PrintWriter outfile) {
+		int nbTrems = m_Tremulants.size();
+		outfile.println("NumberOfTremulants=" + nbTrems);
+		for (int j = 0; j < nbTrems; j++) {
+			outfile.println("Tremulant" + String.format("%03d", (j + 1)) + "="
+					+ String.format("%03d", m_Tremulants.get(j)));
+		}
+	}
+
+	public void write(PrintWriter outfile, Counters counters,
+			int midiInputNumber) {
+		outfile.println("Name=" + keyboardName);
+		outfile.println("MIDIInputNumber=" + midiInputNumber);
+		outfile.println("NumberOfLogicalKeys=" + keyboardSize);
+		outfile.println("NumberOfAccessibleKeys=" + keyboardSize);
+		outfile.println("FirstAccessibleKeyLogicalKeyNumber=1");
+		outfile.println("FirstAccessibleKeyMIDINoteNumber="
+				+ keyboardFirstMidiCode);
+		writeStopsReferences(outfile, counters);
+		writeSwitchesReferences(outfile);
+		writeCouplersRefernces(outfile, counters);
+		writeTremulantsReferences(outfile);
+		outfile.println("NumberOfDivisionals=0");
+		if (isDisplayed) {
+			outfile.println("Displayed=Y");
+			outfile.println("DispKeyColourInverted=N");
+		} else
+			outfile.println("Displayed=N");
+	}
+
+	public void writeCouplersRefernces(PrintWriter outfile, Counters counters) {
+		int nbCouplers = m_Couplers.size();
+		outfile.println("NumberOfCouplers=" + nbCouplers);
+		for (int j = 0; j < nbCouplers; j++) {
+			counters.totalNbCouplers++;
+			outfile.println("Coupler" + String.format("%03d", (j + 1)) + "="
+					+ String.format("%03d", counters.totalNbCouplers));
 		}
 	}
 }
