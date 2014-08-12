@@ -22,6 +22,8 @@
 package make_odf;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -51,9 +53,8 @@ public class Pipe {
 		Pipe p = new Pipe();
 		File f1 = new File(path);
 
-		TremulantFolderFilter tremFilter = new TremulantFolderFilter();
-		String[] tremFolders = f1.list(tremFilter);
-		Arrays.sort(tremFolders);
+		String[] tremFolders = listFolder(f1, new TremulantFolderFilter());
+
 		boolean hasTremSamples;
 		if (tremFolders.length > 0) {
 			hasTremSamples = true;
@@ -63,8 +64,7 @@ public class Pipe {
 		}
 
 		MIDINrSampleFilter nrFilter = new MIDINrSampleFilter(midiNr);
-		String[] fileList = f1.list(nrFilter);
-		Arrays.sort(fileList);
+		String[] fileList = listFolder(f1, nrFilter);
 		for (String str : fileList) {
 			Attack a = new Attack();
 			a.fileName = path + File.separator + str;
@@ -84,8 +84,7 @@ public class Pipe {
 		if (hasTremSamples && (!loadOneSamplePerPipe)) {
 			for (int i = 0; i < tremFolders.length; i++) {
 				File f3 = new File(f1, tremFolders[i]);
-				String[] tremSamples = f3.list(nrFilter);
-				Arrays.sort(tremSamples);
+				String[] tremSamples = listFolder(f3, nrFilter);
 				for (String trems : tremSamples) {
 					Attack a = new Attack();
 					a.fileName = path + File.separator + tremFolders[i]
@@ -98,9 +97,8 @@ public class Pipe {
 				}
 
 				// also take care of possible additional trem releases
-				ReleaseFolderFilter rff = new ReleaseFolderFilter();
-				String[] tremRelFolders = f3.list(rff);
-				Arrays.sort(tremRelFolders);
+				String[] tremRelFolders = listFolder(f3,
+						new ReleaseFolderFilter());
 				for (String str : tremRelFolders) {
 					// extract keypresstime from folder name
 					int firstNum = -1;
@@ -117,8 +115,7 @@ public class Pipe {
 					}
 
 					File f4 = new File(f1, str);
-					String[] releaseList = f4.list(nrFilter);
-					Arrays.sort(releaseList);
+					String[] releaseList = listFolder(f4, nrFilter);
 					for (String rel : releaseList) {
 						Release r = new Release();
 						r.fileName = path + File.separator + tremFolders[i]
@@ -132,9 +129,7 @@ public class Pipe {
 		}
 
 		// deal with possible additional releases
-		ReleaseFolderFilter rff = new ReleaseFolderFilter();
-		String[] folders = f1.list(rff);
-		Arrays.sort(folders);
+		String[] folders = listFolder(f1, new ReleaseFolderFilter());
 		for (String str : folders) {
 			// extract keypresstime from folder name
 			int firstNum = -1;
@@ -151,8 +146,7 @@ public class Pipe {
 			}
 
 			File f2 = new File(f1, str);
-			String[] releaseList = f2.list(nrFilter);
-			Arrays.sort(releaseList);
+			String[] releaseList = listFolder(f2, nrFilter);
 			for (String rel : releaseList) {
 				Release r = new Release();
 				r.fileName = path + File.separator + str + File.separator + rel;
@@ -171,6 +165,16 @@ public class Pipe {
 		return p;
 	}
 
+	public static String[] listFolder(File f1, FilenameFilter tremFilter) {
+		String[] list = f1.list(tremFilter);
+		if (list == null) {
+			throw new TextFileParserException("The path " + f1
+					+ " does not point to a directory");
+		}
+		Arrays.sort(list);
+		return list;
+	}
+
 	static Pipe createReference(int targetPipe, String keybCode, int stop) {
 		Pipe p = new Pipe();
 		Attack a = new Attack();
@@ -183,5 +187,114 @@ public class Pipe {
 		a.maxKeyPressTime = -1;
 		p.attacks.add(a);
 		return p;
+	}
+
+	public void writeInsideRank(PrintWriter outfile, String pipeNr,
+			boolean isRankPercussive) {
+		if (!attacks.get(0).fileName.startsWith("REF")) {
+			outfile.println(pipeNr + "=." + File.separator
+					+ attacks.get(0).fileName);
+			if (attacks.get(0).isTremulant != -1)
+				outfile.println(pipeNr + "IsTremulant="
+						+ attacks.get(0).isTremulant);
+			if (isPercussive != isRankPercussive) {
+				if (isPercussive)
+					outfile.println("Percussive=Y");
+				else
+					outfile.println("Percussive=N");
+			}
+			if (!attacks.get(0).loadRelease)
+				outfile.println(pipeNr + "LoadRelease=N");
+			// Deal with possible additional attacks
+			if (attacks.size() > 1) {
+				outfile.println(pipeNr + "AttackCount=" + (attacks.size() - 1));
+				for (int k = 1; k < attacks.size(); k++) {
+					outfile.println(pipeNr + "Attack"
+							+ String.format("%03d", k) + "=." + File.separator
+							+ attacks.get(k).fileName);
+					if (attacks.get(k).isTremulant != -1)
+						outfile.println(pipeNr + "Attack"
+								+ String.format("%03d", k) + "IsTremulant="
+								+ attacks.get(k).isTremulant);
+					if (!attacks.get(k).loadRelease)
+						outfile.println(pipeNr + "Attack"
+								+ String.format("%03d", k) + "LoadRelease=N");
+				}
+			}
+			// Deal with possible additional releases
+			if (!releases.isEmpty()) {
+				outfile.println(pipeNr + "ReleaseCount=" + releases.size());
+				for (int k = 0; k < releases.size(); k++) {
+					outfile.println(pipeNr + "Release"
+							+ String.format("%03d", (k + 1)) + "=."
+							+ File.separator + releases.get(k).fileName);
+					outfile.println(pipeNr + "Release"
+							+ String.format("%03d", (k + 1))
+							+ "MaxKeyPressTime="
+							+ releases.get(k).maxKeyPressTime);
+					if (releases.get(k).isTremulant != -1)
+						outfile.println(pipeNr + "Release"
+								+ String.format("%03d", (k + 1))
+								+ "IsTremulant=" + releases.get(k).isTremulant);
+				}
+			}
+		} else {
+			outfile.println(pipeNr + "=" + attacks.get(0).fileName);
+		}
+	}
+
+	public void writeInsideStop(PrintWriter outfile, Stop stop, String pipeNr) {
+		if (!attacks.get(0).fileName.startsWith("REF")) {
+			outfile.println(pipeNr + "=." + File.separator
+					+ attacks.get(0).fileName);
+			if (attacks.get(0).isTremulant != -1)
+				outfile.println(pipeNr + "IsTremulant="
+						+ attacks.get(0).isTremulant);
+			if (pitchTuning != 0)
+				outfile.println(pipeNr + "PitchTuning=" + pitchTuning);
+			if (isPercussive != stop.isPercussive) {
+				if (isPercussive)
+					outfile.println("Percussive=Y");
+				else
+					outfile.println("Percussive=N");
+			}
+			if (!attacks.get(0).loadRelease)
+				outfile.println(pipeNr + "LoadRelease=N");
+			// Deal with possible additional attacks
+			if (attacks.size() > 1) {
+				outfile.println(pipeNr + "AttackCount=" + (attacks.size() - 1));
+				for (int l = 1; l < attacks.size(); l++) {
+					outfile.println(pipeNr + "Attack"
+							+ String.format("%03d", l) + "=." + File.separator
+							+ attacks.get(l).fileName);
+					if (attacks.get(l).isTremulant != -1)
+						outfile.println(pipeNr + "Attack"
+								+ String.format("%03d", l) + "IsTremulant="
+								+ attacks.get(l).isTremulant);
+					if (!attacks.get(l).loadRelease)
+						outfile.println(pipeNr + "Attack"
+								+ String.format("%03d", l) + "LoadRelease=N");
+				}
+			}
+			// Deal with possible additional releases
+			if (!releases.isEmpty()) {
+				outfile.println(pipeNr + "ReleaseCount=" + releases.size());
+				for (int l = 0; l < releases.size(); l++) {
+					outfile.println(pipeNr + "Release"
+							+ String.format("%03d", (l + 1)) + "=."
+							+ File.separator + releases.get(l).fileName);
+					outfile.println(pipeNr + "Release"
+							+ String.format("%03d", (l + 1))
+							+ "MaxKeyPressTime="
+							+ releases.get(l).maxKeyPressTime);
+					if (releases.get(l).isTremulant != -1)
+						outfile.println(pipeNr + "Release"
+								+ String.format("%03d", (l + 1))
+								+ "IsTremulant=" + releases.get(l).isTremulant);
+				}
+			}
+		} else {
+			outfile.println(pipeNr + "=" + attacks.get(0).fileName);
+		}
 	}
 }

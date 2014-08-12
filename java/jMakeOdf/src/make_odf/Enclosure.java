@@ -21,6 +21,7 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
 import java.util.List;
 
 public class Enclosure {
@@ -48,5 +49,18 @@ public class Enclosure {
 			displayed = false;
 		}
 		textBreakWidth = Tokenizer.convertToInt(stringParts.get(3));
+	}
+
+	public void write(PrintWriter outfile, int midiInputNumber) {
+		outfile.println("Name=" + name);
+		outfile.println("AmpMinimumLevel=" + ampMinimumLevel);
+		outfile.println("MIDIInputNumber=" + midiInputNumber);
+		if (displayed) {
+			outfile.println("Displayed=Y");
+			if (textBreakWidth >= 0)
+				outfile.println("TextBreakWidth=" + textBreakWidth);
+		} else {
+			outfile.println("Displayed=N");
+		}
 	}
 }

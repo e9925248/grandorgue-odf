@@ -21,6 +21,7 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -134,6 +135,182 @@ public class Organ {
 
 			m_Ranks.add(rk);
 		}
+	}
+
+	public void write(PrintWriter outfile) {
+		// Organ section
+		System.out.println("Writing organ section.");
+		outfile.println("[Organ]");
+		writeHeader(outfile);
+		outfile.println();
+
+		// Manual section
+		System.out.println("Writing manual section.");
+		int adjustedIndex;
+
+		Counters counters = new Counters();
+
+		if (hasPedals)
+			adjustedIndex = 0;
+		else
+			adjustedIndex = 1;
+		for (int i = 0; i < m_Manuals.size(); i++) {
+			outfile.println("[Manual"
+					+ String.format("%03d", (i + adjustedIndex)) + "]");
+			Manual manual = m_Manuals.get(i);
+			int midiInputNumber = adjustedIndex + i + 1;
+			manual.write(outfile, counters, midiInputNumber);
+
+			outfile.println();
+		}
+
+		// Windchests section
+		System.out.println("Writing windchest section.");
+		for (int i = 0; i < m_WindchestGroups.size(); i++) {
+			outfile.println("[WindchestGroup" + String.format("%03d", i + 1)
+					+ "]");
+			WindchestGroup windchestGroup = m_WindchestGroups.get(i);
+			windchestGroup.write(outfile);
+			outfile.println();
+		}
+
+		// Enclosures section
+		System.out.println("Writing enclosure section.");
+		for (int i = 0; i < m_Enclosures.size(); i++) {
+			outfile.println("[Enclosure" + String.format("%03d", i + 1) + "]");
+			Enclosure enclosure = m_Enclosures.get(i);
+			enclosure.write(outfile, i + 1);
+			outfile.println();
+		}
+
+		// Tremulants section
+		System.out.println("Writing tremulant section.");
+		for (int i = 0; i < m_Tremulants.size(); i++) {
+			outfile.println("[Tremulant" + String.format("%03d", i + 1) + "]");
+			Tremulant tremulant = m_Tremulants.get(i);
+
+			tremulant.write(outfile);
+			outfile.println();
+		}
+
+		// Coupler section
+		System.out.println("Writing coupler section.");
+		counters = new Counters();
+
+		for (int i = 0; i < m_Manuals.size(); i++) {
+			Manual manual = m_Manuals.get(i);
+			int nbCouplers = manual.m_Couplers.size();
+			for (int j = 0; j < nbCouplers; j++) {
+				counters.totalNbCouplers += 1;
+				outfile.println("[Coupler"
+						+ String.format("%03d", counters.totalNbCouplers) + "]");
+				Coupler coupler = manual.m_Couplers.get(j);
+				coupler.write(outfile);
+				outfile.println();
+			}
+		}
+
+		// Rank section
+		if (!m_Ranks.isEmpty())
+			System.out.println("Writing rank section.");
+		for (int i = 0; i < m_Ranks.size(); i++) {
+			Rank rank = m_Ranks.get(i);
+			System.out.println("Writing rank " + rank.name);
+			outfile.println("[Rank" + String.format("%03d", (i + 1)) + "]");
+			rank.write(outfile);
+			outfile.println();
+		}
+
+		// Stop section
+		System.out.println("Writing stop section.");
+		for (int i = 0; i < m_Manuals.size(); i++) {
+			Manual manual = m_Manuals.get(i);
+			for (int j = 0; j < manual.m_Stops.size(); j++) {
+				counters.totalNbStops += 1;
+				Stop stop = manual.m_Stops.get(j);
+				System.out.println("Writing stop " + stop.name);
+				outfile.println("[Stop"
+						+ String.format("%03d", counters.totalNbStops) + "]");
+				stop.write(outfile);
+				outfile.println();
+			}
+		}
+
+		// Switch section
+		if (!m_Switches.isEmpty())
+			System.out.println("Writing switch section");
+		for (int i = 0; i < m_Switches.size(); i++) {
+			outfile.println("[Switch" + String.format("%03d", (i + 1)) + "]");
+			Switch switch_ = m_Switches.get(i);
+			outfile.println("Name=" + switch_.name);
+			switch_.write(outfile);
+
+			outfile.println();
+		}
+		System.out.println("Done writing ODF file!");
+	}
+
+	public void writeHeader(PrintWriter outfile) {
+		outfile.println("ChurchName=" + name);
+		outfile.println("ChurchAddress=?");
+		outfile.println("OrganBuilder=?");
+		outfile.println("OrganBuildDate=?");
+		outfile.println("OrganComments=?");
+		outfile.println("RecordingDetails=?");
+		outfile.println("InfoFilename=?");
+		if (hasPedals) {
+			outfile.println("NumberOfManuals=" + (m_Manuals.size() - 1));
+			outfile.println("HasPedals=Y");
+		} else {
+			outfile.println("NumberOfManuals=" + m_Manuals.size());
+			outfile.println("HasPedals=N");
+		}
+		outfile.println("NumberOfGenerals=0");
+		outfile.println("NumberOfEnclosures=" + m_Enclosures.size());
+		outfile.println("NumberOfTremulants=" + m_Tremulants.size());
+		outfile.println("NumberOfWindchestGroups=" + m_WindchestGroups.size());
+		outfile.println("NumberOfReversiblePistons=0");
+		outfile.println("NumberOfLabels=0");
+		outfile.println("NumberOfDivisionalCouplers=0");
+		outfile.println("NumberOfImages=0");
+		outfile.println("NumberOfSetterElements=0");
+		outfile.println("NumberOfPanels=0");
+		outfile.println("NumberOfRanks=" + m_Ranks.size());
+		outfile.println("NumberOfSwitches=" + m_Switches.size());
+		outfile.println("DispDrawstopCols=" + drawstopCols);
+		outfile.println("DispDrawstopRows=" + drawstopRows);
+		outfile.println("DispDrawstopColsOffset=N");
+		outfile.println("DispDrawstopOuterColOffsetUp=N");
+		outfile.println("DispPairDrawstopCols=N");
+		outfile.println("DispExtraDrawstopCols=" + extraDrawstopCols);
+		outfile.println("DispExtraDrawstopRows=" + extraDrawstopRows);
+		outfile.println("DispExtraDrawstopRowsAboveExtraButtonRows=N");
+		outfile.println("DispScreenSizeHoriz=" + dispScreenSizeHoriz);
+		outfile.println("DispScreenSizeVert=" + dispScreenSizeVert);
+		outfile.println("DispControlLabelFont=Arial");
+		outfile.println("DispShortcutKeyLabelFont=Arial");
+		outfile.println("DispShortcutKeyLabelColour=Yellow");
+		outfile.println("DispGroupLabelFont=Arial");
+		outfile.println("DispDrawstopBackgroundImageNum=7");
+		outfile.println("DispConsoleBackgroundImageNum=43");
+		outfile.println("DispKeyHorizBackgroundImageNum=8");
+		outfile.println("DispKeyVertBackgroundImageNum=37");
+		outfile.println("DispDrawstopInsetBackgroundImageNum=5");
+		outfile.println("DispExtraButtonRows=1");
+		outfile.println("DispButtonCols=10");
+		outfile.println("DispExtraPedalButtonRow=N");
+		outfile.println("DispExtraPedalButtonRowOffset=Y");
+		outfile.println("DispExtraPedalButtonRowOffsetRight=Y");
+		outfile.println("DispButtonsAboveManuals=N");
+		outfile.println("DispTrimAboveExtraRows=Y");
+		outfile.println("DispTrimAboveManuals=Y");
+		outfile.println("DispTrimBelowManuals=N");
+		outfile.println("DivisionalsStoreTremulants=Y");
+		outfile.println("DivisionalsStoreIntermanualCouplers=Y");
+		outfile.println("DivisionalsStoreIntramanualCouplers=Y");
+		outfile.println("GeneralsStoreDivisionalCouplers=Y");
+		outfile.println("CombinationsStoreNonDisplayedDrawstops=Y");
+		outfile.println("AmplitudeLevel=" + amplitudeLevel);
 	}
 
 }

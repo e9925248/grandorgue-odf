@@ -21,6 +21,7 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +59,22 @@ public class WindchestGroup {
 						.get(j + 3));
 				m_Tremulants.add(tremulantRef);
 			}
+		}
+	}
+
+	public void write(PrintWriter outfile) {
+		outfile.println("Name=" + name);
+		int enclosures = m_Enclosures.size();
+		outfile.println("NumberOfEnclosures=" + enclosures);
+		for (int j = 0; j < enclosures; j++) {
+			outfile.println("Enclosure" + String.format("%03d", j + 1) + "="
+					+ String.format("%03d", m_Enclosures.get(j)));
+		}
+		int tremulants = m_Tremulants.size();
+		outfile.println("NumberOfTremulants=" + tremulants);
+		for (int j = 0; j < tremulants; j++) {
+			outfile.println("Tremulant" + String.format("%03d", j + 1) + "="
+					+ String.format("%03d", m_Tremulants.get(j)));
 		}
 	}
 }

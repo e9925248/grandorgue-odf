@@ -29,13 +29,14 @@ public class TextFileParser {
 
 	public Organ parse(File f) {
 		try (Tokenizer tok = new Tokenizer(f);) {
-			Organ org = new Organ();
+			Organ organ = new Organ();
 			try {
-				org.read(tok);
-				return org;
-			} catch (TextFileParserException e) {
+				organ.read(tok);
+				return organ;
+			} catch (Exception e) {
 				throw new TextFileParserException(
-						"Error while processing line " + tok.getLineNumber(), e);
+						"Error while processing line " + tok.getLineNumber()
+								+ " of file " + f.getName(), e);
 			}
 		} catch (FileNotFoundException fe) {
 			throw new TextFileParserException(

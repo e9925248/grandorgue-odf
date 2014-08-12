@@ -25,13 +25,16 @@ package make_odf;
 import java.io.File;
 
 public class jMakeOdf {
-	static Organ m_Organ;
-	static TextFileParser m_Parser;
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
+		try {
+			new jMakeOdf().run(args);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void run(String[] args) {
 		System.out.println("\njMakeOdf 2014-03-26");
 		System.out.println("Released under a MIT license");
 		System.out.println("Copyright (C) 2014 Lars Palo");
@@ -41,22 +44,28 @@ public class jMakeOdf {
 		if (args.length != 1 || args[0].compareTo("--help") == 0
 				|| args[0].compareTo("-h") == 0) {
 			printUsageHelp();
-			System.exit(0);
 		} else {
-			File f = new File(args[0]);
-			if (f.exists() == false) {
-				System.out.println("No description file with name " + args[0]
-						+ " exist!");
-				System.exit(0);
-			} else {
-				System.out.println("Parsing file " + args[0]);
-				m_Parser = new TextFileParser();
-				m_Organ = m_Parser.parse(f);
-				@SuppressWarnings("unused")
-				OdfWriter ow = new OdfWriter(m_Organ);
-				System.exit(0);
-			}
+			String pathname = args[0];
+			runForFile(pathname);
 		}
+	}
+
+	public void runForFile(String pathname) {
+		File f = new File(pathname);
+		if (f.exists() == false) {
+			System.out.println("No description file with name " + pathname
+					+ " exists!");
+		} else {
+			System.out.println("Parsing file " + pathname);
+			TextFileParser m_Parser = new TextFileParser();
+			Organ m_Organ = m_Parser.parse(f);
+			OdfWriter ow = new OdfWriter();
+			ow.write(m_Organ, getOutputFileName(m_Organ));
+		}
+	}
+
+	public String getOutputFileName(Organ organ) {
+		return organ.name + ".organ";
 	}
 
 	public static void printUsageHelp() {
