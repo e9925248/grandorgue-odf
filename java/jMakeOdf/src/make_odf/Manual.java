@@ -22,6 +22,7 @@
 package make_odf;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Manual implements Comparable<Manual> {
 	String keyboardName;
@@ -42,16 +43,14 @@ public class Manual implements Comparable<Manual> {
 		isDisplayed = true;
 	}
 
+	@Override
 	public int compareTo(Manual m) {
-		if (translateKeyCode(keyboardCode) < translateKeyCode(m.keyboardCode))
-			return -1;
-		else if (translateKeyCode(keyboardCode) > translateKeyCode(m.keyboardCode))
-			return 1;
-		else
-			return 0;
+		int thisCode = translateKeyCode(keyboardCode);
+		int thatCode = translateKeyCode(m.keyboardCode);
+		return Integer.compare(thisCode, thatCode);
 	}
 
-	private int translateKeyCode(String keybCode) {
+	public static int translateKeyCode(String keybCode) {
 		if (keybCode.equalsIgnoreCase("PED"))
 			return 0;
 		else {
@@ -78,11 +77,49 @@ public class Manual implements Comparable<Manual> {
 		}
 	}
 
-	private int CalculateRomans(int i, int prevNr, int nr) {
+	public static int CalculateRomans(int i, int prevNr, int nr) {
 		if (prevNr > i) {
 			return nr - i;
 		} else {
 			return nr + i;
+		}
+	}
+
+	void readHeader(Tokenizer tok) {
+		List<String> stringParts = tok.readAndSplitLine();
+		keyboardName = stringParts.get(0);
+		keyboardCode = stringParts.get(1);
+		keyboardSize = Tokenizer.convertToInt(stringParts.get(2));
+		keyboardFirstMidiCode = Tokenizer.convertToInt(stringParts.get(3));
+		if (stringParts.get(4).equalsIgnoreCase("yes"))
+			isDisplayed = true;
+		else
+			isDisplayed = false;
+	}
+
+	public void read(Tokenizer tok, boolean loadOneSamplePerPipe) {
+		readHeader(tok);
+
+		int nbCouplers = tok.readIntLine();
+		for (int j = 0; j < nbCouplers; j++) {
+			Coupler cp = new Coupler();
+
+			cp.read(tok);
+
+			m_Couplers.add(cp);
+		}
+
+		tok.readLineOfReferences(m_Tremulants);
+
+		tok.readLineOfReferences(m_Switches);
+
+		int nbStops = tok.readIntLine();
+		for (int j = 0; j < nbStops; j++) {
+			Stop s = new Stop();
+
+			s.read(tok, loadOneSamplePerPipe);
+
+			m_Stops.add(s);
 		}
 	}
 }

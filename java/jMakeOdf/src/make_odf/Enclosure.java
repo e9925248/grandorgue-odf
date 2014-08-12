@@ -21,6 +21,8 @@
 
 package make_odf;
 
+import java.util.List;
+
 public class Enclosure {
 	String name;
 	int ampMinimumLevel;
@@ -34,5 +36,17 @@ public class Enclosure {
 		MIDIInputNumber = 0;
 		this.displayed = true;
 		this.textBreakWidth = -1;
+	}
+
+	void read(Tokenizer tok) {
+		List<String> stringParts = tok.readAndSplitLine();
+		name = stringParts.get(0);
+		ampMinimumLevel = Tokenizer.convertToInt(stringParts.get(1));
+		if (stringParts.get(2).equalsIgnoreCase("yes")) {
+			displayed = true;
+		} else {
+			displayed = false;
+		}
+		textBreakWidth = Tokenizer.convertToInt(stringParts.get(3));
 	}
 }

@@ -21,6 +21,9 @@
 
 package make_odf;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tremulant extends Drawstop {
 	String tremType;
 	int period;
@@ -35,5 +38,59 @@ public class Tremulant extends Drawstop {
 		this.startRate = 8;
 		this.stopRate = 8;
 		this.ampModDepth = 18;
+	}
+
+	void read(Tokenizer tok) {
+		List<String> stringParts = tok.readAndSplitLine();
+		name = stringParts.get(0);
+		String type = stringParts.get(1);
+		switch (type.toLowerCase()) {
+		case "synth":
+			tremType = stringParts.get(1);
+			period = Tokenizer.convertToInt(stringParts.get(2));
+			ampModDepth = Tokenizer.convertToInt(stringParts.get(3));
+			startRate = Tokenizer.convertToInt(stringParts.get(4));
+			stopRate = Tokenizer.convertToInt(stringParts.get(5));
+			if (stringParts.get(6).equalsIgnoreCase("yes"))
+				defaultToEngaged = true;
+			else
+				defaultToEngaged = false;
+
+			if (stringParts.get(7).equalsIgnoreCase("yes")) {
+				displayed = true;
+				dispImageNum = Tokenizer.convertToInt(stringParts.get(8));
+				dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(9));
+				dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(10));
+				textBreakWidth = Tokenizer.convertToInt(stringParts.get(11));
+			} else {
+				displayed = false;
+			}
+			break;
+		case "wave":
+			tremType = stringParts.get(1);
+			if (stringParts.get(2).equalsIgnoreCase("yes"))
+				defaultToEngaged = true;
+			else
+				defaultToEngaged = false;
+
+			if (stringParts.get(3).equalsIgnoreCase("yes")) {
+				displayed = true;
+				dispImageNum = Tokenizer.convertToInt(stringParts.get(4));
+				dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(5));
+				dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(6));
+				textBreakWidth = Tokenizer.convertToInt(stringParts.get(7));
+			} else {
+				displayed = false;
+			}
+			break;
+		default:
+			throw new TextFileParserException("ERROR: Tremulant type " + type
+					+ " is not valid!");
+		}
+		stringParts = tok.readAndSplitLine();
+		function = Enum.valueOf(Function.class, stringParts.get(0)
+				.toUpperCase());
+		ArrayList<Integer> references = m_switches;
+		Tokenizer.readNumericReferencesOffset1(stringParts, references);
 	}
 }
