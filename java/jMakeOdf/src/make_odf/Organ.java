@@ -22,6 +22,7 @@
 package make_odf;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Organ {
 	String name;
@@ -52,6 +53,87 @@ public class Organ {
 		this.extraDrawstopCols = 0;
 		this.extraDrawstopRows = 0;
 		this.hasPedals = true;
+	}
+
+	public void read(Tokenizer tok) {
+		name = tok.readLine();
+		amplitudeLevel = tok.readFloatLine();
+		pitchTuning = tok.readFloatLine();
+		dispScreenSizeHoriz = tok.readLine();
+		dispScreenSizeVert = tok.readLine();
+		drawstopCols = tok.readIntLine();
+		drawstopRows = tok.readIntLine();
+		extraDrawstopRows = tok.readIntLine();
+		extraDrawstopCols = tok.readIntLine();
+
+		boolean loadOneSamplePerPipe;
+
+		loadOneSamplePerPipe = tok.readLine().equalsIgnoreCase("yes");
+
+		int nbSwitches = tok.readIntLine();
+		for (int i = 0; i < nbSwitches; i++) {
+			Switch sw = new Switch();
+
+			sw.read(tok);
+
+			m_Switches.add(sw);
+		}
+
+		int nbEnclosures = tok.readIntLine();
+		for (int i = 0; i < nbEnclosures; i++) {
+			Enclosure enc = new Enclosure();
+
+			enc.read(tok);
+
+			m_Enclosures.add(enc);
+		}
+
+		int nbTremulants = tok.readIntLine();
+		for (int i = 0; i < nbTremulants; i++) {
+			Tremulant trem = new Tremulant();
+
+			trem.read(tok);
+
+			m_Tremulants.add(trem);
+		}
+
+		int nbWindchests = tok.readIntLine();
+		for (int i = 0; i < nbWindchests; i++) {
+			WindchestGroup wc = new WindchestGroup();
+
+			wc.read(tok);
+
+			m_WindchestGroups.add(wc);
+		}
+
+		int keybNumber = tok.readIntLine();
+		for (int i = 0; i < keybNumber; i++) {
+			Manual m = new Manual();
+
+			m.read(tok, loadOneSamplePerPipe);
+
+			m_Manuals.add(m);
+		}
+		// Make sure manuals are sorted according to keyboard code
+		Collections.sort(m_Manuals);
+
+		hasPedals = false;
+
+		for (Manual manual : m_Manuals) {
+			if (manual.keyboardCode.equalsIgnoreCase("PED")) {
+				hasPedals = true;
+				break;
+			}
+		}
+
+		int nbRanks = tok.readIntLine();
+		for (int i = 0; i < nbRanks; i++) {
+			Rank rk = new Rank();
+
+			rk.read(tok, loadOneSamplePerPipe);
+
+			m_Ranks.add(rk);
+		}
 	}
 
 }

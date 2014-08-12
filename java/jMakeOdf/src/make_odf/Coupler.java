@@ -21,6 +21,8 @@
 
 package make_odf;
 
+import java.util.List;
+
 public class Coupler extends Drawstop {
 	String destinationManualCode;
 	int destinationKeyShift;
@@ -31,6 +33,59 @@ public class Coupler extends Drawstop {
 		this.destinationManualCode = "";
 		this.destinationKeyShift = 0;
 		this.m_type = CouplerType.NORMAL;
+	}
+
+	void read(Tokenizer tok) {
+		List<String> stringParts = tok.readAndSplitLine();
+		name = stringParts.get(0);
+		String couplerString = stringParts.get(1);
+		switch (couplerString.charAt(0)) {
+		case 'N':
+			m_type = CouplerType.NORMAL;
+			break;
+		case 'M':
+			m_type = CouplerType.MELODY;
+			break;
+		case 'B':
+			m_type = CouplerType.BASS;
+			break;
+		default:
+			throw new TextFileParserException("ERROR: Coupler type for " + name
+					+ " is not recognized!");
+		}
+		couplerString = stringParts.get(2);
+		switch (couplerString.charAt(0)) {
+		case '=':
+			destinationKeyShift = 0;
+			break;
+		case '+':
+			destinationKeyShift = 12;
+			break;
+		case '-':
+			destinationKeyShift = -12;
+			break;
+		default:
+			throw new TextFileParserException("ERROR: Destination keyshift "
+					+ name + " is not recognized!");
+		}
+		destinationManualCode = stringParts.get(3);
+		if (stringParts.get(4).equalsIgnoreCase("yes"))
+			defaultToEngaged = true;
+		else
+			defaultToEngaged = false;
+		if (stringParts.get(5).equalsIgnoreCase("yes")) {
+			displayed = true;
+			dispImageNum = Tokenizer.convertToInt(stringParts.get(6));
+			dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(7));
+			dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(8));
+			textBreakWidth = Tokenizer.convertToInt(stringParts.get(9));
+		} else {
+			displayed = false;
+		}
+		stringParts = tok.readAndSplitLine();
+		function = Enum.valueOf(Function.class, stringParts.get(0)
+				.toUpperCase());
+		Tokenizer.readNumericReferencesOffset1(stringParts, m_switches);
 	}
 
 }

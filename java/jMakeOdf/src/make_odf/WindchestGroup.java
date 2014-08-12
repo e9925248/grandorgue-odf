@@ -22,6 +22,7 @@
 package make_odf;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class WindchestGroup {
 	String name;
@@ -30,5 +31,33 @@ public class WindchestGroup {
 
 	public WindchestGroup() {
 		name = "";
+	}
+
+	void read(Tokenizer tok) {
+		List<String> stringParts = tok.readAndSplitLine();
+		name = stringParts.get(0);
+		int enclosures = Tokenizer.convertToInt(stringParts.get(1));
+		if (enclosures > 0) {
+			int lastIndex = 0;
+			for (int j = 0; j < enclosures; j++) {
+				int enclosureRef = Tokenizer.convertToInt(stringParts
+						.get(j + 2));
+				m_Enclosures.add(enclosureRef);
+				lastIndex = j + 2;
+			}
+			int tremulants = Tokenizer.convertToInt(stringParts.get(lastIndex));
+			for (int j = 0; j < tremulants; j++) {
+				int tremulantRef = Tokenizer.convertToInt(stringParts
+						.get(lastIndex + 1 + j));
+				m_Tremulants.add(tremulantRef);
+			}
+		} else {
+			int tremulants = Tokenizer.convertToInt(stringParts.get(2));
+			for (int j = 0; j < tremulants; j++) {
+				int tremulantRef = Tokenizer.convertToInt(stringParts
+						.get(j + 3));
+				m_Tremulants.add(tremulantRef);
+			}
+		}
 	}
 }
