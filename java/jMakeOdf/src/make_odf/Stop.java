@@ -295,7 +295,7 @@ public class Stop extends Drawstop {
 				// First attack must always exist
 				String pipeNr = "Pipe" + String.format("%03d", (k + 1));
 				Pipe pipe = m_Pipes.get(k);
-				pipe.writeInsideStop(outfile, this, pipeNr);
+				pipe.writeInsideStop(outfile, pipeNr, isPercussive);
 			}
 		}
 	}

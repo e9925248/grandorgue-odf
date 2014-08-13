@@ -191,110 +191,102 @@ public class Pipe {
 
 	public void writeInsideRank(PrintWriter outfile, String pipeNr,
 			boolean isRankPercussive) {
-		if (!attacks.get(0).fileName.startsWith("REF")) {
-			outfile.println(pipeNr + "=." + File.separator
-					+ attacks.get(0).fileName);
-			if (attacks.get(0).isTremulant != -1)
-				outfile.println(pipeNr + "IsTremulant="
-						+ attacks.get(0).isTremulant);
-			if (isPercussive != isRankPercussive) {
-				if (isPercussive)
-					outfile.println("Percussive=Y");
-				else
-					outfile.println("Percussive=N");
-			}
-			if (!attacks.get(0).loadRelease)
-				outfile.println(pipeNr + "LoadRelease=N");
-			// Deal with possible additional attacks
-			if (attacks.size() > 1) {
-				outfile.println(pipeNr + "AttackCount=" + (attacks.size() - 1));
-				for (int k = 1; k < attacks.size(); k++) {
-					outfile.println(pipeNr + "Attack"
-							+ String.format("%03d", k) + "=." + File.separator
-							+ attacks.get(k).fileName);
-					if (attacks.get(k).isTremulant != -1)
-						outfile.println(pipeNr + "Attack"
-								+ String.format("%03d", k) + "IsTremulant="
-								+ attacks.get(k).isTremulant);
-					if (!attacks.get(k).loadRelease)
-						outfile.println(pipeNr + "Attack"
-								+ String.format("%03d", k) + "LoadRelease=N");
-				}
-			}
-			// Deal with possible additional releases
-			if (!releases.isEmpty()) {
-				outfile.println(pipeNr + "ReleaseCount=" + releases.size());
-				for (int k = 0; k < releases.size(); k++) {
-					outfile.println(pipeNr + "Release"
-							+ String.format("%03d", (k + 1)) + "=."
-							+ File.separator + releases.get(k).fileName);
-					outfile.println(pipeNr + "Release"
-							+ String.format("%03d", (k + 1))
-							+ "MaxKeyPressTime="
-							+ releases.get(k).maxKeyPressTime);
-					if (releases.get(k).isTremulant != -1)
-						outfile.println(pipeNr + "Release"
-								+ String.format("%03d", (k + 1))
-								+ "IsTremulant=" + releases.get(k).isTremulant);
-				}
-			}
+		if (!isFirstAttackRefPath()) {
+			writePath(outfile, pipeNr);
+			writeIsTremulant(outfile, pipeNr);
+			writeIsPercussive(outfile, isRankPercussive);
+			writeLoadRelease(outfile, pipeNr);
+			writeAdditionalAttacks(outfile, pipeNr);
+			writeAdditionalReleases(outfile, pipeNr);
 		} else {
-			outfile.println(pipeNr + "=" + attacks.get(0).fileName);
+			writeRef(outfile, pipeNr);
 		}
 	}
 
-	public void writeInsideStop(PrintWriter outfile, Stop stop, String pipeNr) {
-		if (!attacks.get(0).fileName.startsWith("REF")) {
-			outfile.println(pipeNr + "=." + File.separator
-					+ attacks.get(0).fileName);
-			if (attacks.get(0).isTremulant != -1)
-				outfile.println(pipeNr + "IsTremulant="
-						+ attacks.get(0).isTremulant);
-			if (pitchTuning != 0)
+	public void writeInsideStop(PrintWriter outfile, String pipeNr,
+			boolean isStopPercusive) {
+		if (!isFirstAttackRefPath()) {
+			writePath(outfile, pipeNr);
+			writeIsTremulant(outfile, pipeNr);
+			if (pitchTuning != 0) // FIXME that's the only difference with
+									// writeInsideRank: is it intentional?
 				outfile.println(pipeNr + "PitchTuning=" + pitchTuning);
-			if (isPercussive != stop.isPercussive) {
-				if (isPercussive)
-					outfile.println("Percussive=Y");
-				else
-					outfile.println("Percussive=N");
-			}
-			if (!attacks.get(0).loadRelease)
-				outfile.println(pipeNr + "LoadRelease=N");
-			// Deal with possible additional attacks
-			if (attacks.size() > 1) {
-				outfile.println(pipeNr + "AttackCount=" + (attacks.size() - 1));
-				for (int l = 1; l < attacks.size(); l++) {
-					outfile.println(pipeNr + "Attack"
-							+ String.format("%03d", l) + "=." + File.separator
-							+ attacks.get(l).fileName);
-					if (attacks.get(l).isTremulant != -1)
-						outfile.println(pipeNr + "Attack"
-								+ String.format("%03d", l) + "IsTremulant="
-								+ attacks.get(l).isTremulant);
-					if (!attacks.get(l).loadRelease)
-						outfile.println(pipeNr + "Attack"
-								+ String.format("%03d", l) + "LoadRelease=N");
-				}
-			}
-			// Deal with possible additional releases
-			if (!releases.isEmpty()) {
-				outfile.println(pipeNr + "ReleaseCount=" + releases.size());
-				for (int l = 0; l < releases.size(); l++) {
-					outfile.println(pipeNr + "Release"
-							+ String.format("%03d", (l + 1)) + "=."
-							+ File.separator + releases.get(l).fileName);
-					outfile.println(pipeNr + "Release"
-							+ String.format("%03d", (l + 1))
-							+ "MaxKeyPressTime="
-							+ releases.get(l).maxKeyPressTime);
-					if (releases.get(l).isTremulant != -1)
-						outfile.println(pipeNr + "Release"
-								+ String.format("%03d", (l + 1))
-								+ "IsTremulant=" + releases.get(l).isTremulant);
-				}
-			}
+			writeIsPercussive(outfile, isStopPercusive);
+			writeLoadRelease(outfile, pipeNr);
+			writeAdditionalAttacks(outfile, pipeNr);
+			writeAdditionalReleases(outfile, pipeNr);
 		} else {
-			outfile.println(pipeNr + "=" + attacks.get(0).fileName);
+			writeRef(outfile, pipeNr);
 		}
+	}
+
+	public boolean isFirstAttackRefPath() {
+		return attacks.get(0).fileName.startsWith("REF");
+	}
+
+	public void writeLoadRelease(PrintWriter outfile, String pipeNr) {
+		if (!attacks.get(0).loadRelease)
+			outfile.println(pipeNr + "LoadRelease=N");
+	}
+
+	public void writePath(PrintWriter outfile, String pipeNr) {
+		outfile.println(pipeNr + "=." + File.separator
+				+ attacks.get(0).fileName);
+	}
+
+	public void writeIsTremulant(PrintWriter outfile, String pipeNr) {
+		if (attacks.get(0).isTremulant != -1)
+			outfile.println(pipeNr + "IsTremulant="
+					+ attacks.get(0).isTremulant);
+	}
+
+	public void writeIsPercussive(PrintWriter outfile, boolean isParentPercusive) {
+		if (isPercussive != isParentPercusive) {
+			if (isPercussive)
+				outfile.println("Percussive=Y");
+			else
+				outfile.println("Percussive=N");
+		}
+	}
+
+	public void writeAdditionalAttacks(PrintWriter outfile, String pipeNr) {
+		// Deal with possible additional attacks
+		if (attacks.size() > 1) {
+			outfile.println(pipeNr + "AttackCount=" + (attacks.size() - 1));
+			for (int k = 1; k < attacks.size(); k++) {
+				outfile.println(pipeNr + "Attack" + String.format("%03d", k)
+						+ "=." + File.separator + attacks.get(k).fileName);
+				if (attacks.get(k).isTremulant != -1)
+					outfile.println(pipeNr + "Attack"
+							+ String.format("%03d", k) + "IsTremulant="
+							+ attacks.get(k).isTremulant);
+				if (!attacks.get(k).loadRelease)
+					outfile.println(pipeNr + "Attack"
+							+ String.format("%03d", k) + "LoadRelease=N");
+			}
+		}
+	}
+
+	public void writeAdditionalReleases(PrintWriter outfile, String pipeNr) {
+		// Deal with possible additional releases
+		if (!releases.isEmpty()) {
+			outfile.println(pipeNr + "ReleaseCount=" + releases.size());
+			for (int k = 0; k < releases.size(); k++) {
+				outfile.println(pipeNr + "Release"
+						+ String.format("%03d", (k + 1)) + "=."
+						+ File.separator + releases.get(k).fileName);
+				outfile.println(pipeNr + "Release"
+						+ String.format("%03d", (k + 1)) + "MaxKeyPressTime="
+						+ releases.get(k).maxKeyPressTime);
+				if (releases.get(k).isTremulant != -1)
+					outfile.println(pipeNr + "Release"
+							+ String.format("%03d", (k + 1)) + "IsTremulant="
+							+ releases.get(k).isTremulant);
+			}
+		}
+	}
+
+	public void writeRef(PrintWriter outfile, String pipeNr) {
+		outfile.println(pipeNr + "=" + attacks.get(0).fileName);
 	}
 }
