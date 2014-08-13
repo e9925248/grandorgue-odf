@@ -52,7 +52,7 @@ public class jMakeOdf {
 
 	public void runForFile(String pathname) {
 		File f = new File(pathname);
-		if (f.exists() == false) {
+		if (!f.exists()) {
 			System.out.println("No description file with name " + pathname
 					+ " exists!");
 		} else {
