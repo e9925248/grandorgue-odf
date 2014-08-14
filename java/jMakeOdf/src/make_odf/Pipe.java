@@ -179,8 +179,9 @@ public class Pipe {
 		Pipe p = new Pipe();
 		Attack a = new Attack();
 		int manual = Manual.translateKeyCode(keybCode);
-		String refStr = String.format("REF:%03d:%03d:%03d", manual, stop,
-				targetPipe);
+		String refStr = String.format("REF:%s:%s:%s",
+				NumberUtil.format(manual), NumberUtil.format(stop),
+				NumberUtil.format(targetPipe));
 		a.fileName = refStr;
 		a.loadRelease = true;
 		a.attackVelocity = 0;
@@ -254,15 +255,14 @@ public class Pipe {
 		if (attacks.size() > 1) {
 			outfile.println(pipeNr + "AttackCount=" + (attacks.size() - 1));
 			for (int k = 1; k < attacks.size(); k++) {
-				outfile.println(pipeNr + "Attack" + String.format("%03d", k)
-						+ "=." + File.separator + attacks.get(k).fileName);
+				outfile.println(pipeNr + "Attack" + NumberUtil.format(k) + "=."
+						+ File.separator + attacks.get(k).fileName);
 				if (attacks.get(k).isTremulant != -1)
-					outfile.println(pipeNr + "Attack"
-							+ String.format("%03d", k) + "IsTremulant="
-							+ attacks.get(k).isTremulant);
+					outfile.println(pipeNr + "Attack" + NumberUtil.format(k)
+							+ "IsTremulant=" + attacks.get(k).isTremulant);
 				if (!attacks.get(k).loadRelease)
-					outfile.println(pipeNr + "Attack"
-							+ String.format("%03d", k) + "LoadRelease=N");
+					outfile.println(pipeNr + "Attack" + NumberUtil.format(k)
+							+ "LoadRelease=N");
 			}
 		}
 	}
@@ -272,15 +272,13 @@ public class Pipe {
 		if (!releases.isEmpty()) {
 			outfile.println(pipeNr + "ReleaseCount=" + releases.size());
 			for (int k = 0; k < releases.size(); k++) {
-				outfile.println(pipeNr + "Release"
-						+ String.format("%03d", (k + 1)) + "=."
-						+ File.separator + releases.get(k).fileName);
-				outfile.println(pipeNr + "Release"
-						+ String.format("%03d", (k + 1)) + "MaxKeyPressTime="
-						+ releases.get(k).maxKeyPressTime);
+				outfile.println(pipeNr + "Release" + NumberUtil.format(k + 1)
+						+ "=." + File.separator + releases.get(k).fileName);
+				outfile.println(pipeNr + "Release" + NumberUtil.format(k + 1)
+						+ "MaxKeyPressTime=" + releases.get(k).maxKeyPressTime);
 				if (releases.get(k).isTremulant != -1)
 					outfile.println(pipeNr + "Release"
-							+ String.format("%03d", (k + 1)) + "IsTremulant="
+							+ NumberUtil.format(k + 1) + "IsTremulant="
 							+ releases.get(k).isTremulant);
 			}
 		}

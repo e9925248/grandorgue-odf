@@ -155,8 +155,8 @@ public class Organ {
 		else
 			adjustedIndex = 1;
 		for (int i = 0; i < m_Manuals.size(); i++) {
-			outfile.println("[Manual"
-					+ String.format("%03d", (i + adjustedIndex)) + "]");
+			outfile.println("[Manual" + NumberUtil.format(i + adjustedIndex)
+					+ "]");
 			Manual manual = m_Manuals.get(i);
 			int midiInputNumber = adjustedIndex + i + 1;
 			manual.write(outfile, counters, midiInputNumber);
@@ -167,8 +167,7 @@ public class Organ {
 		// Windchests section
 		System.out.println("Writing windchest section.");
 		for (int i = 0; i < m_WindchestGroups.size(); i++) {
-			outfile.println("[WindchestGroup" + String.format("%03d", i + 1)
-					+ "]");
+			outfile.println("[WindchestGroup" + NumberUtil.format(i + 1) + "]");
 			WindchestGroup windchestGroup = m_WindchestGroups.get(i);
 			windchestGroup.write(outfile);
 			outfile.println();
@@ -177,7 +176,7 @@ public class Organ {
 		// Enclosures section
 		System.out.println("Writing enclosure section.");
 		for (int i = 0; i < m_Enclosures.size(); i++) {
-			outfile.println("[Enclosure" + String.format("%03d", i + 1) + "]");
+			outfile.println("[Enclosure" + NumberUtil.format(i + 1) + "]");
 			Enclosure enclosure = m_Enclosures.get(i);
 			enclosure.write(outfile, i + 1);
 			outfile.println();
@@ -186,7 +185,7 @@ public class Organ {
 		// Tremulants section
 		System.out.println("Writing tremulant section.");
 		for (int i = 0; i < m_Tremulants.size(); i++) {
-			outfile.println("[Tremulant" + String.format("%03d", i + 1) + "]");
+			outfile.println("[Tremulant" + NumberUtil.format(i + 1) + "]");
 			Tremulant tremulant = m_Tremulants.get(i);
 
 			tremulant.write(outfile);
@@ -203,7 +202,7 @@ public class Organ {
 			for (int j = 0; j < nbCouplers; j++) {
 				counters.totalNbCouplers += 1;
 				outfile.println("[Coupler"
-						+ String.format("%03d", counters.totalNbCouplers) + "]");
+						+ NumberUtil.format(counters.totalNbCouplers) + "]");
 				Coupler coupler = manual.m_Couplers.get(j);
 				coupler.write(outfile);
 				outfile.println();
@@ -216,7 +215,7 @@ public class Organ {
 		for (int i = 0; i < m_Ranks.size(); i++) {
 			Rank rank = m_Ranks.get(i);
 			System.out.println("Writing rank " + rank.name);
-			outfile.println("[Rank" + String.format("%03d", (i + 1)) + "]");
+			outfile.println("[Rank" + NumberUtil.format(i + 1) + "]");
 			rank.write(outfile);
 			outfile.println();
 		}
@@ -230,7 +229,7 @@ public class Organ {
 				Stop stop = manual.m_Stops.get(j);
 				System.out.println("Writing stop " + stop.name);
 				outfile.println("[Stop"
-						+ String.format("%03d", counters.totalNbStops) + "]");
+						+ NumberUtil.format(counters.totalNbStops) + "]");
 				stop.write(outfile);
 				outfile.println();
 			}
@@ -240,7 +239,7 @@ public class Organ {
 		if (!m_Switches.isEmpty())
 			System.out.println("Writing switch section");
 		for (int i = 0; i < m_Switches.size(); i++) {
-			outfile.println("[Switch" + String.format("%03d", (i + 1)) + "]");
+			outfile.println("[Switch" + NumberUtil.format(i + 1) + "]");
 			Switch switch_ = m_Switches.get(i);
 			outfile.println("Name=" + switch_.name);
 			switch_.write(outfile);

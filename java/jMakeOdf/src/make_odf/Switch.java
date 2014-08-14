@@ -56,7 +56,7 @@ public class Switch extends Drawstop {
 			// The switch has switches
 			outfile.println("Function=" + function.func);
 			for (int j = 0; j < m_switches.size(); j++)
-				outfile.println("Switch" + String.format("%03d", (j + 1)) + "="
+				outfile.println("Switch" + NumberUtil.format(j + 1) + "="
 						+ m_switches.get(j));
 		}
 		if (defaultToEngaged)

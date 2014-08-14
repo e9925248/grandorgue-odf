@@ -28,9 +28,10 @@ public class MIDINrSampleFilter implements FilenameFilter {
 	private String MIDINumber;
 
 	public MIDINrSampleFilter(int MIDINr) {
-		this.MIDINumber = String.format("%03d", MIDINr);
+		this.MIDINumber = NumberUtil.format(MIDINr);
 	}
 
+	@Override
 	public boolean accept(File dir, String name) {
 		if (name.endsWith(".wav") || name.endsWith(".wv")
 				|| name.endsWith(".WAV") || name.endsWith(".WV")) {
