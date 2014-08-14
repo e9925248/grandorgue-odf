@@ -67,14 +67,14 @@ public class WindchestGroup {
 		int enclosures = m_Enclosures.size();
 		outfile.println("NumberOfEnclosures=" + enclosures);
 		for (int j = 0; j < enclosures; j++) {
-			outfile.println("Enclosure" + String.format("%03d", j + 1) + "="
-					+ String.format("%03d", m_Enclosures.get(j)));
+			outfile.println("Enclosure" + NumberUtil.format(j + 1) + "="
+					+ NumberUtil.format(m_Enclosures.get(j)));
 		}
 		int tremulants = m_Tremulants.size();
 		outfile.println("NumberOfTremulants=" + tremulants);
 		for (int j = 0; j < tremulants; j++) {
-			outfile.println("Tremulant" + String.format("%03d", j + 1) + "="
-					+ String.format("%03d", m_Tremulants.get(j)));
+			outfile.println("Tremulant" + NumberUtil.format(j + 1) + "="
+					+ NumberUtil.format(m_Tremulants.get(j)));
 		}
 	}
 }

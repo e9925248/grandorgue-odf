@@ -102,7 +102,7 @@ public class Tremulant extends Drawstop {
 			int sw = m_switches.size();
 			outfile.println("SwitchCount=" + sw);
 			for (int j = 0; j < sw; j++) {
-				outfile.println("Switch" + String.format("%03d", j + 1) + "="
+				outfile.println("Switch" + NumberUtil.format(j + 1) + "="
 						+ m_switches.get(j));
 			}
 		}
