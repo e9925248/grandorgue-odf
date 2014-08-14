@@ -35,11 +35,7 @@ public class MIDINrSampleFilter implements FilenameFilter {
 	public boolean accept(File dir, String name) {
 		if (name.endsWith(".wav") || name.endsWith(".wv")
 				|| name.endsWith(".WAV") || name.endsWith(".WV")) {
-			if (name.startsWith(MIDINumber)) {
-				return true;
-			} else {
-				return false;
-			}
+			return name.startsWith(MIDINumber);
 		} else {
 			return false;
 		}
