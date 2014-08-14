@@ -43,11 +43,7 @@ public class Enclosure {
 		List<String> stringParts = tok.readAndSplitLine();
 		name = stringParts.get(0);
 		ampMinimumLevel = Tokenizer.convertToInt(stringParts.get(1));
-		if (stringParts.get(2).equalsIgnoreCase("yes")) {
-			displayed = true;
-		} else {
-			displayed = false;
-		}
+		displayed = Tokenizer.convertToBoolean(stringParts.get(2));
 		textBreakWidth = Tokenizer.convertToInt(stringParts.get(3));
 	}
 

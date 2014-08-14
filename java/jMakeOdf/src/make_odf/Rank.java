@@ -60,10 +60,7 @@ public class Rank {
 		pitchTuning = Tokenizer.convertToFloat(stringParts.get(5));
 		pitchCorrection = Tokenizer.convertToFloat(stringParts.get(6));
 		m_windchestGroup = Tokenizer.convertToInt(stringParts.get(7));
-		if (stringParts.get(8).equalsIgnoreCase("yes"))
-			isPercussive = true;
-		else
-			isPercussive = false;
+		isPercussive = Tokenizer.convertToBoolean(stringParts.get(8));
 		return nbPipes;
 	}
 
@@ -75,7 +72,8 @@ public class Rank {
 		case 'L':
 			String pathToSearch = stringParts.get(2);
 			String loadAttRel = stringParts.get(3);
-			boolean pipePercussive = stringParts.get(4).equalsIgnoreCase("yes");
+			boolean pipePercussive = Tokenizer.convertToBoolean(stringParts
+					.get(4));
 			int startMidiNote = Tokenizer.convertToInt(loadString.substring(1,
 					loadString.length()));
 			for (int j = 0; j < pipesThisLine; j++) {
@@ -149,7 +147,7 @@ public class Rank {
 				Attack a = new Attack();
 				a.fileName = stringParts.get(nextIndex);
 				nextIndex++;
-				if (stringParts.get(nextIndex).equalsIgnoreCase("no")) {
+				if (Tokenizer.convertToBooleanInverted(stringParts.get(nextIndex))) {
 					a.loadRelease = false;
 					a.attackVelocity = 0;
 					a.maxKeyPressTime = -1;

@@ -32,18 +32,13 @@ public class Switch extends Drawstop {
 	void read(Tokenizer tok) {
 		List<String> stringParts = tok.readAndSplitLine();
 		name = stringParts.get(0);
-		if (stringParts.get(1).equalsIgnoreCase("yes"))
-			defaultToEngaged = true;
-		else
-			defaultToEngaged = false;
-		if (stringParts.get(2).equalsIgnoreCase("yes")) {
-			displayed = true;
+		defaultToEngaged = Tokenizer.convertToBoolean(stringParts.get(1));
+		displayed = Tokenizer.convertToBoolean(stringParts.get(2));
+		if (displayed) {
 			dispImageNum = Tokenizer.convertToInt(stringParts.get(3));
 			dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(4));
 			dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(5));
 			textBreakWidth = Tokenizer.convertToInt(stringParts.get(6));
-		} else {
-			displayed = false;
 		}
 		stringParts = tok.readAndSplitLine();
 		function = Enum.valueOf(Function.class, stringParts.get(0)

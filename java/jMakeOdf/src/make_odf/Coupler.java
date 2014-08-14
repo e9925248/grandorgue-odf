@@ -70,18 +70,13 @@ public class Coupler extends Drawstop {
 					+ name + " is not recognized!");
 		}
 		destinationManualCode = stringParts.get(3);
-		if (stringParts.get(4).equalsIgnoreCase("yes"))
-			defaultToEngaged = true;
-		else
-			defaultToEngaged = false;
-		if (stringParts.get(5).equalsIgnoreCase("yes")) {
-			displayed = true;
+		defaultToEngaged = Tokenizer.convertToBoolean(stringParts.get(4));
+		displayed = Tokenizer.convertToBoolean(stringParts.get(5));
+		if (displayed) {
 			dispImageNum = Tokenizer.convertToInt(stringParts.get(6));
 			dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(7));
 			dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(8));
 			textBreakWidth = Tokenizer.convertToInt(stringParts.get(9));
-		} else {
-			displayed = false;
 		}
 		stringParts = tok.readAndSplitLine();
 		function = Enum.valueOf(Function.class, stringParts.get(0)
