@@ -25,18 +25,10 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 public class TremulantFolderFilter implements FilenameFilter {
+	@Override
 	public boolean accept(File dir, String name) {
 		File f = new File(dir, name);
-		boolean containTrem;
-		String tremStr = "trem";
-		if (name.toLowerCase().contains(tremStr.toLowerCase()))
-			containTrem = true;
-		else
-			containTrem = false;
-		if (containTrem && f.isDirectory()) {
-			return true;
-		} else {
-			return false;
-		}
+		return name.toLowerCase().contains("trem".toLowerCase())
+				&& f.isDirectory();
 	}
 }
