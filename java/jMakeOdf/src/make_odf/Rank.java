@@ -80,11 +80,9 @@ public class Rank {
 				Pipe p = Pipe.loadSamples(startMidiNote + j, loadString,
 						pathToSearch, loadAttRel, pipePercussive,
 						loadOneSamplePerPipe);
-				p.amplitudeLevel = amplitudeLevel;
-				p.harmonicNumber = harmonicNumber;
-				p.pitchTuning = pitchTuning;
-				p.pitchCorrection = pitchCorrection;
-				p.windchestGroup = m_windchestGroup;
+				// FIXME isPercussive - is it omitted here on purpose? compare
+				// to next calls of setBasicAttributes
+				setBasicAttributes(p);
 				m_Pipes.add(p);
 			}
 			break;
@@ -94,14 +92,9 @@ public class Rank {
 			String keybCode = stringParts.get(2);
 			int stop = Tokenizer.convertToInt(stringParts.get(3));
 			for (int j = 0; j < pipesThisLine; j++) {
-				Pipe p = new Pipe();
-				p = Pipe.createReference(startPipe + j, keybCode, stop);
+				Pipe p = Pipe.createReference(startPipe + j, keybCode, stop);
 				p.isPercussive = isPercussive;
-				p.amplitudeLevel = amplitudeLevel;
-				p.harmonicNumber = harmonicNumber;
-				p.pitchTuning = pitchTuning;
-				p.pitchCorrection = pitchCorrection;
-				p.windchestGroup = m_windchestGroup;
+				setBasicAttributes(p);
 				m_Pipes.add(p);
 			}
 			break;
@@ -110,33 +103,9 @@ public class Rank {
 					loadString.length())) - 1;
 			float pitchChange = Tokenizer.convertToFloat(stringParts.get(2));
 			for (int j = 0; j < pipesThisLine; j++) {
-				Pipe p = new Pipe();
+				Pipe source = m_Pipes.get(startCopy + j);
+				Pipe p = new Pipe(source);
 				p.pitchTuning = pitchChange;
-				p.isPercussive = m_Pipes.get(startCopy + j).isPercussive;
-				p.amplitudeLevel = m_Pipes.get(startCopy + j).amplitudeLevel;
-				p.harmonicNumber = m_Pipes.get(startCopy + j).harmonicNumber;
-				p.pitchCorrection = m_Pipes.get(startCopy + j).pitchCorrection;
-				p.windchestGroup = m_Pipes.get(startCopy + j).windchestGroup;
-				p.isTremulant = m_Pipes.get(startCopy + j).isTremulant;
-				for (int k = 0; k < m_Pipes.get(startCopy + j).attacks.size(); k++) {
-					Attack a = new Attack();
-					a.fileName = m_Pipes.get(startCopy + j).attacks.get(k).fileName;
-					a.loadRelease = m_Pipes.get(startCopy + j).attacks.get(k).loadRelease;
-					a.attackVelocity = m_Pipes.get(startCopy + j).attacks
-							.get(k).attackVelocity;
-					a.maxKeyPressTime = m_Pipes.get(startCopy + j).attacks
-							.get(k).maxKeyPressTime;
-					a.isTremulant = m_Pipes.get(startCopy + j).attacks.get(k).isTremulant;
-					p.attacks.add(a);
-				}
-				for (int k = 0; k < m_Pipes.get(startCopy + j).releases.size(); k++) {
-					Release r = new Release();
-					r.fileName = m_Pipes.get(startCopy + j).releases.get(k).fileName;
-					r.maxKeyPressTime = m_Pipes.get(startCopy + j).releases
-							.get(k).maxKeyPressTime;
-					r.isTremulant = m_Pipes.get(startCopy + j).releases.get(k).isTremulant;
-					p.releases.add(r);
-				}
 				m_Pipes.add(p);
 			}
 			break;
@@ -147,7 +116,8 @@ public class Rank {
 				Attack a = new Attack();
 				a.fileName = stringParts.get(nextIndex);
 				nextIndex++;
-				if (Tokenizer.convertToBooleanInverted(stringParts.get(nextIndex))) {
+				if (Tokenizer.convertToBooleanInverted(stringParts
+						.get(nextIndex))) {
 					a.loadRelease = false;
 					a.attackVelocity = 0;
 					a.maxKeyPressTime = -1;
@@ -165,11 +135,7 @@ public class Rank {
 					p.attacks.add(a);
 				}
 				p.isPercussive = isPercussive;
-				p.amplitudeLevel = amplitudeLevel;
-				p.harmonicNumber = harmonicNumber;
-				p.pitchTuning = pitchTuning;
-				p.pitchCorrection = pitchCorrection;
-				p.windchestGroup = m_windchestGroup;
+				setBasicAttributes(p);
 				m_Pipes.add(p);
 			}
 			break;
@@ -178,6 +144,14 @@ public class Rank {
 					+ loadString + " for stop " + name + " is invalid!");
 		}
 		return pipesThisLine;
+	}
+
+	public void setBasicAttributes(Pipe p) {
+		p.amplitudeLevel = amplitudeLevel;
+		p.harmonicNumber = harmonicNumber;
+		p.pitchTuning = pitchTuning;
+		p.pitchCorrection = pitchCorrection;
+		p.windchestGroup = m_windchestGroup;
 	}
 
 	public void read(Tokenizer tok, boolean loadOneSamplePerPipe) {

@@ -82,18 +82,16 @@ public class Stop extends Drawstop {
 			case 'L':
 				String pathToSearch = stringParts.get(2);
 				String loadAttRel = stringParts.get(3);
-				boolean pipePercussive = Tokenizer.convertToBoolean(stringParts.get(4));
+				boolean pipePercussive = Tokenizer.convertToBoolean(stringParts
+						.get(4));
 				int startMidiNote = Tokenizer.convertToInt(loadString
 						.substring(1, loadString.length()));
 				for (int k = 0; k < nbPipesToLoad; k++) {
 					Pipe p = Pipe.loadSamples(startMidiNote + k, loadString,
 							pathToSearch, loadAttRel, pipePercussive,
 							loadOneSamplePerPipe);
-					p.amplitudeLevel = amplitudeLevel;
-					p.harmonicNumber = harmonicNumber;
-					p.pitchTuning = pitchTuning;
-					p.pitchCorrection = pitchCorrection;
-					p.windchestGroup = m_windchestGroup;
+					// FIXME isPercussive - the same issue as in Rank
+					setBasicAttributes(p);
 					m_Pipes.add(p);
 				}
 				break;
@@ -103,14 +101,11 @@ public class Stop extends Drawstop {
 				String keybCode = stringParts.get(2);
 				int stop = Tokenizer.convertToInt(stringParts.get(3));
 				for (int k = 0; k < nbPipesToLoad; k++) {
-					Pipe p = new Pipe();
-					p = Pipe.createReference(startPipe + k, keybCode, stop);
+					Pipe p = Pipe
+							.createReference(startPipe + k, keybCode, stop);
+
 					p.isPercussive = isPercussive;
-					p.amplitudeLevel = amplitudeLevel;
-					p.harmonicNumber = harmonicNumber;
-					p.pitchTuning = pitchTuning;
-					p.pitchCorrection = pitchCorrection;
-					p.windchestGroup = m_windchestGroup;
+					setBasicAttributes(p);
 					m_Pipes.add(p);
 				}
 				break;
@@ -133,7 +128,8 @@ public class Stop extends Drawstop {
 					Attack a = new Attack();
 					a.fileName = stringParts.get(nextIndex);
 					nextIndex++;
-					if (Tokenizer.convertToBooleanInverted(stringParts.get(nextIndex))) {
+					if (Tokenizer.convertToBooleanInverted(stringParts
+							.get(nextIndex))) {
 						a.loadRelease = false;
 						a.attackVelocity = 0;
 						a.maxKeyPressTime = -1;
@@ -151,11 +147,7 @@ public class Stop extends Drawstop {
 						p.attacks.add(a);
 					}
 					p.isPercussive = isPercussive;
-					p.amplitudeLevel = amplitudeLevel;
-					p.harmonicNumber = harmonicNumber;
-					p.pitchTuning = pitchTuning;
-					p.pitchCorrection = pitchCorrection;
-					p.windchestGroup = m_windchestGroup;
+					setBasicAttributes(p);
 					m_Pipes.add(p);
 				}
 				break;
@@ -170,6 +162,14 @@ public class Stop extends Drawstop {
 			pipesLoaded = numberOfAccessiblePipes;
 		}
 		return pipesLoaded;
+	}
+
+	public void setBasicAttributes(Pipe p) {
+		p.amplitudeLevel = amplitudeLevel;
+		p.harmonicNumber = harmonicNumber;
+		p.pitchTuning = pitchTuning;
+		p.pitchCorrection = pitchCorrection;
+		p.windchestGroup = m_windchestGroup;
 	}
 
 	public void read(Tokenizer tok, boolean loadOneSamplePerPipe) {
