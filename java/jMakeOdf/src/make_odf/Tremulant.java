@@ -52,36 +52,26 @@ public class Tremulant extends Drawstop {
 			ampModDepth = Tokenizer.convertToInt(stringParts.get(3));
 			startRate = Tokenizer.convertToInt(stringParts.get(4));
 			stopRate = Tokenizer.convertToInt(stringParts.get(5));
-			if (stringParts.get(6).equalsIgnoreCase("yes"))
-				defaultToEngaged = true;
-			else
-				defaultToEngaged = false;
+			defaultToEngaged = Tokenizer.convertToBoolean(stringParts.get(6));
 
-			if (stringParts.get(7).equalsIgnoreCase("yes")) {
-				displayed = true;
+			displayed = Tokenizer.convertToBoolean(stringParts.get(7));
+			if (displayed) {
 				dispImageNum = Tokenizer.convertToInt(stringParts.get(8));
 				dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(9));
 				dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(10));
 				textBreakWidth = Tokenizer.convertToInt(stringParts.get(11));
-			} else {
-				displayed = false;
 			}
 			break;
 		case "wave":
 			tremType = stringParts.get(1);
-			if (stringParts.get(2).equalsIgnoreCase("yes"))
-				defaultToEngaged = true;
-			else
-				defaultToEngaged = false;
+			defaultToEngaged = Tokenizer.convertToBoolean(stringParts.get(2));
 
-			if (stringParts.get(3).equalsIgnoreCase("yes")) {
-				displayed = true;
+			displayed = Tokenizer.convertToBoolean(stringParts.get(3));
+			if (displayed) {
 				dispImageNum = Tokenizer.convertToInt(stringParts.get(4));
 				dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(5));
 				dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(6));
 				textBreakWidth = Tokenizer.convertToInt(stringParts.get(7));
-			} else {
-				displayed = false;
 			}
 			break;
 		default:

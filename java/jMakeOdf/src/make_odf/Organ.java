@@ -67,9 +67,7 @@ public class Organ {
 		extraDrawstopRows = tok.readIntLine();
 		extraDrawstopCols = tok.readIntLine();
 
-		boolean loadOneSamplePerPipe;
-
-		loadOneSamplePerPipe = tok.readLine().equalsIgnoreCase("yes");
+		boolean loadOneSamplePerPipe = Tokenizer.convertToBoolean(tok.readLine());
 
 		int nbSwitches = tok.readIntLine();
 		for (int i = 0; i < nbSwitches; i++) {

@@ -83,12 +83,15 @@ public class Pipe {
 			hasTremSamples = false;
 		}
 
+		boolean loadRelease = Tokenizer.convertToBoolean(loadAttRel);
+
 		MIDINrSampleFilter nrFilter = new MIDINrSampleFilter(midiNr);
 		String[] fileList = listFolder(f1, nrFilter);
+
 		for (String str : fileList) {
 			Attack a = new Attack();
 			a.fileName = path + File.separator + str;
-			a.loadRelease = loadAttRel.equalsIgnoreCase("yes");
+			a.loadRelease = loadRelease;
 			a.attackVelocity = 0;
 			a.maxKeyPressTime = -1;
 			if (hasTremSamples && (!loadOneSamplePerPipe)) {
@@ -109,7 +112,7 @@ public class Pipe {
 					Attack a = new Attack();
 					a.fileName = path + File.separator + tremFolders[i]
 							+ File.separator + trems;
-					a.loadRelease = loadAttRel.equalsIgnoreCase("yes");
+					a.loadRelease = loadRelease;
 					a.attackVelocity = 0;
 					a.maxKeyPressTime = -1;
 					a.isTremulant = 1;
@@ -174,7 +177,7 @@ public class Pipe {
 				if (hasTremSamples && (!loadOneSamplePerPipe)) {
 					r.isTremulant = 0;
 				}
-				if (loadOneSamplePerPipe && loadAttRel.equalsIgnoreCase("no")) {
+				if (loadOneSamplePerPipe && !loadRelease) {
 					p.releases.add(r);
 					break;
 				} else {

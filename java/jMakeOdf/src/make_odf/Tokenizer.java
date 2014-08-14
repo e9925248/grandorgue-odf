@@ -97,6 +97,14 @@ public class Tokenizer implements AutoCloseable {
 		}
 	}
 
+	public static boolean convertToBoolean(String string) {
+		return string.equalsIgnoreCase("yes");
+	}
+
+	public static boolean convertToBooleanInverted(String string) {
+		return string.equalsIgnoreCase("no");
+	}
+
 	private static List<String> getParts(String str) {
 		if (str.isEmpty()) {
 			throw new TextFileParserException("ERROR: No string to split!");
