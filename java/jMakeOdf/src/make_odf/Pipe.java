@@ -61,7 +61,6 @@ public class Pipe {
 			attacks.add(a);
 		}
 		for (int l = 0; l < source.releases.size(); l++) {
-
 			Release release = source.releases.get(l);
 			Release r = new Release(release);
 			releases.add(r);
