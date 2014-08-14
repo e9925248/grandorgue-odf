@@ -67,7 +67,8 @@ public class Organ {
 		extraDrawstopRows = tok.readIntLine();
 		extraDrawstopCols = tok.readIntLine();
 
-		boolean loadOneSamplePerPipe = Tokenizer.convertToBoolean(tok.readLine());
+		boolean loadOneSamplePerPipe = Tokenizer.convertToBoolean(tok
+				.readLine());
 
 		int nbSwitches = tok.readIntLine();
 		for (int i = 0; i < nbSwitches; i++) {
@@ -119,7 +120,7 @@ public class Organ {
 		hasPedals = false;
 
 		for (Manual manual : m_Manuals) {
-			if (manual.keyboardCode.equalsIgnoreCase("PED")) {
+			if (Manual.isPedalCode(manual.keyboardCode)) {
 				hasPedals = true;
 				break;
 			}

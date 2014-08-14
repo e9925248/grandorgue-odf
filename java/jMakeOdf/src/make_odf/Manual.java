@@ -52,7 +52,7 @@ public class Manual implements Comparable<Manual> {
 	}
 
 	public static int translateKeyCode(String keybCode) {
-		if (keybCode.equalsIgnoreCase("PED"))
+		if (isPedalCode(keybCode))
 			return 0;
 		else {
 			int nr = 0;
@@ -76,6 +76,10 @@ public class Manual implements Comparable<Manual> {
 			}
 			return nr;
 		}
+	}
+
+	public static boolean isPedalCode(String keybCode) {
+		return keybCode.equalsIgnoreCase("PED");
 	}
 
 	public static int CalculateRomans(int i, int prevNr, int nr) {
