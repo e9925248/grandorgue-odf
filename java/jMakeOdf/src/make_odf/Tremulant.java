@@ -89,12 +89,8 @@ public class Tremulant extends Drawstop {
 		outfile.println("Name=" + name);
 		if (function != Function.INPUT) {
 			outfile.println("Function=" + function.func);
-			int sw = m_switches.size();
-			outfile.println("SwitchCount=" + sw);
-			for (int j = 0; j < sw; j++) {
-				outfile.println("Switch" + NumberUtil.format(j + 1) + "="
-						+ m_switches.get(j));
-			}
+			outfile.println("SwitchCount=" + m_switches.size());
+			OdfWriter.writeReferences(outfile, "Switch", m_switches);
 		}
 		if (tremType.equalsIgnoreCase("Synth")) {
 			outfile.println("Period=" + period);

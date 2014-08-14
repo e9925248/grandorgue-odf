@@ -26,6 +26,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 public class OdfWriter {
 	public OdfWriter() {
@@ -40,6 +41,14 @@ public class OdfWriter {
 
 		} catch (IOException ie) {
 			throw new OdfWriterException("ERROR: Couldn't write ODF file!", ie);
+		}
+	}
+
+	public static void writeReferences(PrintWriter outfile, String elementName,
+			ArrayList<Integer> list) {
+		for (int k = 0; k < list.size(); k++) {
+			outfile.println(elementName + NumberUtil.format(k + 1) + "="
+					+ list.get(k));
 		}
 	}
 }

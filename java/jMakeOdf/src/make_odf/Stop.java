@@ -199,17 +199,12 @@ public class Stop extends Drawstop {
 			// This stop has switches
 			outfile.println("Function=" + function.func);
 			outfile.println("SwitchCount=" + m_switches.size());
-			for (int k = 0; k < m_switches.size(); k++)
-				outfile.println("Switch" + NumberUtil.format(k + 1) + "="
-						+ m_switches.get(k));
+			OdfWriter.writeReferences(outfile, "Switch", m_switches);
 		}
 		if (!m_Ranks.isEmpty()) {
 			// This stop has ranks
 			outfile.println("NumberOfRanks=" + m_Ranks.size());
-			for (int k = 0; k < m_Ranks.size(); k++)
-				outfile.println("Rank" + NumberUtil.format(k + 1) + "="
-						+ m_Ranks.get(k));
-
+			OdfWriter.writeReferences(outfile, "Rank", m_Ranks);
 			outfile.println("NumberOfAccessiblePipes="
 					+ numberOfAccessiblePipes);
 			outfile.println("FirstAccessiblePipeLogicalKeyNumber="
