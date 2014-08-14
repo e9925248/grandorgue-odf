@@ -35,4 +35,12 @@ public class Attack {
 		this.maxKeyPressTime = -1;
 		this.isTremulant = -1;
 	}
+
+	public Attack(Attack attack) {
+		fileName = attack.fileName;
+		loadRelease = attack.loadRelease;
+		attackVelocity = attack.attackVelocity;
+		maxKeyPressTime = attack.maxKeyPressTime;
+		isTremulant = attack.isTremulant;
+	}
 }
