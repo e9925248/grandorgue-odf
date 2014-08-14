@@ -90,9 +90,7 @@ public class Coupler extends Drawstop {
 			// The coupler has switches
 			outfile.println("Function=" + function.func);
 			outfile.println("SwitchCount=" + m_switches.size());
-			for (int k = 0; k < m_switches.size(); k++)
-				outfile.println("Switch" + NumberUtil.format(k + 1) + "="
-						+ m_switches.get(k));
+			OdfWriter.writeReferences(outfile, "Switch", m_switches);
 		}
 		if (m_type != CouplerType.NORMAL)
 			outfile.println("CouplerType=" + m_type.type);

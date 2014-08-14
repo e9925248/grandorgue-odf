@@ -133,24 +133,17 @@ public class Manual implements Comparable<Manual> {
 			outfile.println("Stop" + NumberUtil.format(j + 1) + "="
 					+ NumberUtil.format(counters.totalNbStops));
 		}
+
 	}
 
 	public void writeSwitchesReferences(PrintWriter outfile) {
-		int nbSwitches = m_Switches.size();
-		outfile.println("NumberOfSwitches=" + nbSwitches);
-		for (int j = 0; j < nbSwitches; j++) {
-			outfile.println("Switch" + NumberUtil.format(j + 1) + "="
-					+ NumberUtil.format(m_Switches.get(j)));
-		}
+		outfile.println("NumberOfSwitches=" + m_Switches.size());
+		OdfWriter.writeReferences(outfile, "Switch", m_Switches);
 	}
 
 	public void writeTremulantsReferences(PrintWriter outfile) {
-		int nbTrems = m_Tremulants.size();
-		outfile.println("NumberOfTremulants=" + nbTrems);
-		for (int j = 0; j < nbTrems; j++) {
-			outfile.println("Tremulant" + NumberUtil.format(j + 1) + "="
-					+ NumberUtil.format(m_Tremulants.get(j)));
-		}
+		outfile.println("NumberOfTremulants=" + m_Tremulants.size());
+		OdfWriter.writeReferences(outfile, "Tremulant", m_Tremulants);
 	}
 
 	public void write(PrintWriter outfile, Counters counters,
