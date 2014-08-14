@@ -31,4 +31,10 @@ public class Release {
 		maxKeyPressTime = -1;
 		isTremulant = -1;
 	}
+
+	public Release(Release release) {
+		fileName = release.fileName;
+		maxKeyPressTime = release.maxKeyPressTime;
+		isTremulant = release.isTremulant;
+	}
 }

@@ -48,6 +48,26 @@ public class Pipe {
 		this.isTremulant = -1;
 	}
 
+	public Pipe(Pipe source) {
+		isPercussive = source.isPercussive;
+		amplitudeLevel = source.amplitudeLevel;
+		harmonicNumber = source.harmonicNumber;
+		pitchCorrection = source.pitchCorrection;
+		windchestGroup = source.windchestGroup;
+		isTremulant = source.isTremulant;
+		for (int l = 0; l < source.attacks.size(); l++) {
+			Attack attack = source.attacks.get(l);
+			Attack a = new Attack(attack);
+			attacks.add(a);
+		}
+		for (int l = 0; l < source.releases.size(); l++) {
+
+			Release release = source.releases.get(l);
+			Release r = new Release(release);
+			releases.add(r);
+		}
+	}
+
 	static Pipe loadSamples(int midiNr, String loadtype, String path,
 			String loadAttRel, boolean percussive, boolean loadOneSamplePerPipe) {
 		Pipe p = new Pipe();
@@ -257,10 +277,11 @@ public class Pipe {
 			for (int k = 1; k < attacks.size(); k++) {
 				Attack attack = attacks.get(k);
 				String attackName = pipeNr + "Attack" + NumberUtil.format(k);
-				outfile.println(attackName + "=."
-						+ File.separator + attack.fileName);
+				outfile.println(attackName + "=." + File.separator
+						+ attack.fileName);
 				if (attack.isTremulant != -1)
-					outfile.println(attackName + "IsTremulant=" + attack.isTremulant);
+					outfile.println(attackName + "IsTremulant="
+							+ attack.isTremulant);
 				if (!attack.loadRelease)
 					outfile.println(attackName + "LoadRelease=N");
 			}
@@ -273,12 +294,14 @@ public class Pipe {
 			outfile.println(pipeNr + "ReleaseCount=" + releases.size());
 			for (int k = 0; k < releases.size(); k++) {
 				Release release = releases.get(k);
-				String releaseName = pipeNr + "Release" + NumberUtil.format(k + 1);
-				outfile.println(releaseName + "=." + File.separator + release.fileName);
-				outfile.println(releaseName + "MaxKeyPressTime=" + release.maxKeyPressTime);
+				String releaseName = pipeNr + "Release"
+						+ NumberUtil.format(k + 1);
+				outfile.println(releaseName + "=." + File.separator
+						+ release.fileName);
+				outfile.println(releaseName + "MaxKeyPressTime="
+						+ release.maxKeyPressTime);
 				if (release.isTremulant != -1)
-					outfile.println(releaseName
-							+ "IsTremulant="
+					outfile.println(releaseName + "IsTremulant="
 							+ release.isTremulant);
 			}
 		}
