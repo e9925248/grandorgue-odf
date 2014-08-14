@@ -92,10 +92,7 @@ public class Manual implements Comparable<Manual> {
 		keyboardCode = stringParts.get(1);
 		keyboardSize = Tokenizer.convertToInt(stringParts.get(2));
 		keyboardFirstMidiCode = Tokenizer.convertToInt(stringParts.get(3));
-		if (stringParts.get(4).equalsIgnoreCase("yes"))
-			isDisplayed = true;
-		else
-			isDisplayed = false;
+		isDisplayed = Tokenizer.convertToBoolean(stringParts.get(4));
 	}
 
 	public void read(Tokenizer tok, boolean loadOneSamplePerPipe) {
