@@ -64,17 +64,9 @@ public class WindchestGroup {
 
 	public void write(PrintWriter outfile) {
 		outfile.println("Name=" + name);
-		int enclosures = m_Enclosures.size();
-		outfile.println("NumberOfEnclosures=" + enclosures);
-		for (int j = 0; j < enclosures; j++) {
-			outfile.println("Enclosure" + NumberUtil.format(j + 1) + "="
-					+ NumberUtil.format(m_Enclosures.get(j)));
-		}
-		int tremulants = m_Tremulants.size();
-		outfile.println("NumberOfTremulants=" + tremulants);
-		for (int j = 0; j < tremulants; j++) {
-			outfile.println("Tremulant" + NumberUtil.format(j + 1) + "="
-					+ NumberUtil.format(m_Tremulants.get(j)));
-		}
+		outfile.println("NumberOfEnclosures=" + m_Enclosures.size());
+		OdfWriter.writeReferences(outfile, "Enclosure", m_Enclosures);
+		outfile.println("NumberOfTremulants=" + m_Tremulants.size());
+		OdfWriter.writeReferences(outfile, "Tremulant", m_Tremulants);
 	}
 }
