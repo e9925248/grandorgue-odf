@@ -255,14 +255,14 @@ public class Pipe {
 		if (attacks.size() > 1) {
 			outfile.println(pipeNr + "AttackCount=" + (attacks.size() - 1));
 			for (int k = 1; k < attacks.size(); k++) {
-				outfile.println(pipeNr + "Attack" + NumberUtil.format(k) + "=."
-						+ File.separator + attacks.get(k).fileName);
-				if (attacks.get(k).isTremulant != -1)
-					outfile.println(pipeNr + "Attack" + NumberUtil.format(k)
-							+ "IsTremulant=" + attacks.get(k).isTremulant);
-				if (!attacks.get(k).loadRelease)
-					outfile.println(pipeNr + "Attack" + NumberUtil.format(k)
-							+ "LoadRelease=N");
+				Attack attack = attacks.get(k);
+				String attackName = pipeNr + "Attack" + NumberUtil.format(k);
+				outfile.println(attackName + "=."
+						+ File.separator + attack.fileName);
+				if (attack.isTremulant != -1)
+					outfile.println(attackName + "IsTremulant=" + attack.isTremulant);
+				if (!attack.loadRelease)
+					outfile.println(attackName + "LoadRelease=N");
 			}
 		}
 	}
@@ -272,14 +272,14 @@ public class Pipe {
 		if (!releases.isEmpty()) {
 			outfile.println(pipeNr + "ReleaseCount=" + releases.size());
 			for (int k = 0; k < releases.size(); k++) {
-				outfile.println(pipeNr + "Release" + NumberUtil.format(k + 1)
-						+ "=." + File.separator + releases.get(k).fileName);
-				outfile.println(pipeNr + "Release" + NumberUtil.format(k + 1)
-						+ "MaxKeyPressTime=" + releases.get(k).maxKeyPressTime);
-				if (releases.get(k).isTremulant != -1)
-					outfile.println(pipeNr + "Release"
-							+ NumberUtil.format(k + 1) + "IsTremulant="
-							+ releases.get(k).isTremulant);
+				Release release = releases.get(k);
+				String releaseName = pipeNr + "Release" + NumberUtil.format(k + 1);
+				outfile.println(releaseName + "=." + File.separator + release.fileName);
+				outfile.println(releaseName + "MaxKeyPressTime=" + release.maxKeyPressTime);
+				if (release.isTremulant != -1)
+					outfile.println(releaseName
+							+ "IsTremulant="
+							+ release.isTremulant);
 			}
 		}
 	}

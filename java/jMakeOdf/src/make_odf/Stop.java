@@ -131,34 +131,31 @@ public class Stop extends Drawstop {
 				for (int k = 0; k < nbPipesToLoad; k++) {
 					Pipe p = new Pipe();
 					p.pitchTuning = pitchChange;
-					p.isPercussive = m_Pipes.get(startCopy + k).isPercussive;
-					p.amplitudeLevel = m_Pipes.get(startCopy + k).amplitudeLevel;
-					p.harmonicNumber = m_Pipes.get(startCopy + k).harmonicNumber;
-					p.pitchCorrection = m_Pipes.get(startCopy + k).pitchCorrection;
-					p.windchestGroup = m_Pipes.get(startCopy + k).windchestGroup;
-					p.isTremulant = m_Pipes.get(startCopy + k).isTremulant;
-					for (int l = 0; l < m_Pipes.get(startCopy + k).attacks
+					Pipe source = m_Pipes.get(startCopy + k);
+					p.isPercussive = source.isPercussive;
+					p.amplitudeLevel = source.amplitudeLevel;
+					p.harmonicNumber = source.harmonicNumber;
+					p.pitchCorrection = source.pitchCorrection;
+					p.windchestGroup = source.windchestGroup;
+					p.isTremulant = source.isTremulant;
+					for (int l = 0; l < source.attacks
 							.size(); l++) {
 						Attack a = new Attack();
-						a.fileName = m_Pipes.get(startCopy + k).attacks.get(l).fileName;
-						a.loadRelease = m_Pipes.get(startCopy + k).attacks
-								.get(l).loadRelease;
-						a.attackVelocity = m_Pipes.get(startCopy + k).attacks
-								.get(l).attackVelocity;
-						a.maxKeyPressTime = m_Pipes.get(startCopy + k).attacks
-								.get(l).maxKeyPressTime;
-						a.isTremulant = m_Pipes.get(startCopy + k).attacks
-								.get(l).isTremulant;
+						Attack attack = source.attacks.get(l);
+						a.fileName = attack.fileName;
+						a.loadRelease = attack.loadRelease;
+						a.attackVelocity = attack.attackVelocity;
+						a.maxKeyPressTime = attack.maxKeyPressTime;
+						a.isTremulant = attack.isTremulant;
 						p.attacks.add(a);
 					}
-					for (int l = 0; l < m_Pipes.get(startCopy + k).releases
+					for (int l = 0; l < source.releases
 							.size(); l++) {
 						Release r = new Release();
-						r.fileName = m_Pipes.get(startCopy + k).releases.get(l).fileName;
-						r.maxKeyPressTime = m_Pipes.get(startCopy + k).releases
-								.get(l).maxKeyPressTime;
-						r.isTremulant = m_Pipes.get(startCopy + k).releases
-								.get(l).isTremulant;
+						Release release = source.releases.get(l);
+						r.fileName = release.fileName;
+						r.maxKeyPressTime = release.maxKeyPressTime;
+						r.isTremulant = release.isTremulant;
 						p.releases.add(r);
 					}
 					m_Pipes.add(p);
