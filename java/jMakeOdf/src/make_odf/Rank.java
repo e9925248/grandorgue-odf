@@ -196,7 +196,7 @@ public class Rank {
 		writeHeader(outfile);
 		for (int j = 0; j < m_Pipes.size(); j++) {
 			// First attack must always exist
-			String pipeNr = "Pipe" + String.format("%03d", (j + 1));
+			String pipeNr = "Pipe" + NumberUtil.format(j + 1);
 			boolean isRankPercussive = isPercussive;
 			Pipe pipe = m_Pipes.get(j);
 			pipe.writeInsideRank(outfile, pipeNr, isRankPercussive);

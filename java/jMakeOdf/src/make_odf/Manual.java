@@ -129,8 +129,8 @@ public class Manual implements Comparable<Manual> {
 		outfile.println("NumberOfStops=" + nbStops);
 		for (int j = 0; j < nbStops; j++) {
 			counters.totalNbStops++;
-			outfile.println("Stop" + String.format("%03d", (j + 1)) + "="
-					+ String.format("%03d", counters.totalNbStops));
+			outfile.println("Stop" + NumberUtil.format(j + 1) + "="
+					+ NumberUtil.format(counters.totalNbStops));
 		}
 	}
 
@@ -138,8 +138,8 @@ public class Manual implements Comparable<Manual> {
 		int nbSwitches = m_Switches.size();
 		outfile.println("NumberOfSwitches=" + nbSwitches);
 		for (int j = 0; j < nbSwitches; j++) {
-			outfile.println("Switch" + String.format("%03d", (j + 1)) + "="
-					+ String.format("%03d", m_Switches.get(j)));
+			outfile.println("Switch" + NumberUtil.format(j + 1) + "="
+					+ NumberUtil.format(m_Switches.get(j)));
 		}
 	}
 
@@ -147,8 +147,8 @@ public class Manual implements Comparable<Manual> {
 		int nbTrems = m_Tremulants.size();
 		outfile.println("NumberOfTremulants=" + nbTrems);
 		for (int j = 0; j < nbTrems; j++) {
-			outfile.println("Tremulant" + String.format("%03d", (j + 1)) + "="
-					+ String.format("%03d", m_Tremulants.get(j)));
+			outfile.println("Tremulant" + NumberUtil.format(j + 1) + "="
+					+ NumberUtil.format(m_Tremulants.get(j)));
 		}
 	}
 
@@ -178,8 +178,8 @@ public class Manual implements Comparable<Manual> {
 		outfile.println("NumberOfCouplers=" + nbCouplers);
 		for (int j = 0; j < nbCouplers; j++) {
 			counters.totalNbCouplers++;
-			outfile.println("Coupler" + String.format("%03d", (j + 1)) + "="
-					+ String.format("%03d", counters.totalNbCouplers));
+			outfile.println("Coupler" + NumberUtil.format(j + 1) + "="
+					+ NumberUtil.format(counters.totalNbCouplers));
 		}
 	}
 }

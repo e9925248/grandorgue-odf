@@ -238,14 +238,14 @@ public class Stop extends Drawstop {
 			outfile.println("Function=" + function.func);
 			outfile.println("SwitchCount=" + m_switches.size());
 			for (int k = 0; k < m_switches.size(); k++)
-				outfile.println("Switch" + String.format("%03d", (k + 1)) + "="
+				outfile.println("Switch" + NumberUtil.format(k + 1) + "="
 						+ m_switches.get(k));
 		}
 		if (!m_Ranks.isEmpty()) {
 			// This stop has ranks
 			outfile.println("NumberOfRanks=" + m_Ranks.size());
 			for (int k = 0; k < m_Ranks.size(); k++)
-				outfile.println("Rank" + String.format("%03d", (k + 1)) + "="
+				outfile.println("Rank" + NumberUtil.format(k + 1) + "="
 						+ m_Ranks.get(k));
 
 			outfile.println("NumberOfAccessiblePipes="
@@ -293,7 +293,7 @@ public class Stop extends Drawstop {
 			// This stop has pipes
 			for (int k = 0; k < m_Pipes.size(); k++) {
 				// First attack must always exist
-				String pipeNr = "Pipe" + String.format("%03d", (k + 1));
+				String pipeNr = "Pipe" + NumberUtil.format(k + 1);
 				Pipe pipe = m_Pipes.get(k);
 				pipe.writeInsideStop(outfile, pipeNr, isPercussive);
 			}

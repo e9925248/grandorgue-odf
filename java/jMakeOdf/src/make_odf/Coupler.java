@@ -96,15 +96,15 @@ public class Coupler extends Drawstop {
 			outfile.println("Function=" + function.func);
 			outfile.println("SwitchCount=" + m_switches.size());
 			for (int k = 0; k < m_switches.size(); k++)
-				outfile.println("Switch" + String.format("%03d", (k + 1)) + "="
+				outfile.println("Switch" + NumberUtil.format(k + 1) + "="
 						+ m_switches.get(k));
 		}
 		if (m_type != CouplerType.NORMAL)
 			outfile.println("CouplerType=" + m_type.type);
 		outfile.println("UnisonOff=N");
 		outfile.println("DestinationManual="
-				+ String.format("%03d",
-						Manual.translateKeyCode(destinationManualCode)));
+				+ NumberUtil.format(Manual
+						.translateKeyCode(destinationManualCode)));
 		outfile.println("DestinationKeyshift=" + destinationKeyShift);
 		outfile.println("CoupleToSubsequentUnisonIntermanualCouplers=N");
 		outfile.println("CoupleToSubsequentUpwardIntermanualCouplers=N");
