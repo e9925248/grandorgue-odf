@@ -129,35 +129,9 @@ public class Stop extends Drawstop {
 				float pitchChange = Tokenizer
 						.convertToFloat(stringParts.get(2));
 				for (int k = 0; k < nbPipesToLoad; k++) {
-					Pipe p = new Pipe();
-					p.pitchTuning = pitchChange;
 					Pipe source = m_Pipes.get(startCopy + k);
-					p.isPercussive = source.isPercussive;
-					p.amplitudeLevel = source.amplitudeLevel;
-					p.harmonicNumber = source.harmonicNumber;
-					p.pitchCorrection = source.pitchCorrection;
-					p.windchestGroup = source.windchestGroup;
-					p.isTremulant = source.isTremulant;
-					for (int l = 0; l < source.attacks
-							.size(); l++) {
-						Attack a = new Attack();
-						Attack attack = source.attacks.get(l);
-						a.fileName = attack.fileName;
-						a.loadRelease = attack.loadRelease;
-						a.attackVelocity = attack.attackVelocity;
-						a.maxKeyPressTime = attack.maxKeyPressTime;
-						a.isTremulant = attack.isTremulant;
-						p.attacks.add(a);
-					}
-					for (int l = 0; l < source.releases
-							.size(); l++) {
-						Release r = new Release();
-						Release release = source.releases.get(l);
-						r.fileName = release.fileName;
-						r.maxKeyPressTime = release.maxKeyPressTime;
-						r.isTremulant = release.isTremulant;
-						p.releases.add(r);
-					}
+					Pipe p = new Pipe(source);
+					p.pitchTuning = pitchChange;
 					m_Pipes.add(p);
 				}
 				break;
