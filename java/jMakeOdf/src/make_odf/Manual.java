@@ -157,7 +157,7 @@ public class Manual implements Comparable<Manual> {
 				+ keyboardFirstMidiCode);
 		writeStopsReferences(outfile, counters);
 		writeSwitchesReferences(outfile);
-		writeCouplersRefernces(outfile, counters);
+		writeCouplersReferences(outfile, counters);
 		writeTremulantsReferences(outfile);
 		outfile.println("NumberOfDivisionals=0");
 		if (isDisplayed) {
@@ -167,7 +167,7 @@ public class Manual implements Comparable<Manual> {
 			outfile.println("Displayed=N");
 	}
 
-	public void writeCouplersRefernces(PrintWriter outfile, Counters counters) {
+	public void writeCouplersReferences(PrintWriter outfile, Counters counters) {
 		int nbCouplers = m_Couplers.size();
 		outfile.println("NumberOfCouplers=" + nbCouplers);
 		for (int j = 0; j < nbCouplers; j++) {
