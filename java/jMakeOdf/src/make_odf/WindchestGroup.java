@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 Lars Palo
+/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+ * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,14 +22,52 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class WindchestGroup {
 	String name;
 	ArrayList<Integer> m_Enclosures = new ArrayList<Integer>();
 	ArrayList<Integer> m_Tremulants = new ArrayList<Integer>();
-	
+
 	public WindchestGroup() {
 		name = "";
+	}
+
+	void read(Tokenizer tok) {
+		List<String> stringParts = tok.readAndSplitLine();
+		name = stringParts.get(0);
+		int enclosures = Tokenizer.convertToInt(stringParts.get(1));
+		if (enclosures > 0) {
+			int lastIndex = 0;
+			for (int j = 0; j < enclosures; j++) {
+				int enclosureRef = Tokenizer.convertToInt(stringParts
+						.get(j + 2));
+				m_Enclosures.add(enclosureRef);
+				lastIndex = j + 2;
+			}
+			int tremulants = Tokenizer.convertToInt(stringParts.get(lastIndex));
+			for (int j = 0; j < tremulants; j++) {
+				int tremulantRef = Tokenizer.convertToInt(stringParts
+						.get(lastIndex + 1 + j));
+				m_Tremulants.add(tremulantRef);
+			}
+		} else {
+			int tremulants = Tokenizer.convertToInt(stringParts.get(2));
+			for (int j = 0; j < tremulants; j++) {
+				int tremulantRef = Tokenizer.convertToInt(stringParts
+						.get(j + 3));
+				m_Tremulants.add(tremulantRef);
+			}
+		}
+	}
+
+	public void write(PrintWriter outfile) {
+		outfile.println("Name=" + name);
+		outfile.println("NumberOfEnclosures=" + m_Enclosures.size());
+		OdfWriter.writeReferences(outfile, "Enclosure", m_Enclosures);
+		outfile.println("NumberOfTremulants=" + m_Tremulants.size());
+		OdfWriter.writeReferences(outfile, "Tremulant", m_Tremulants);
 	}
 }

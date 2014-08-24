@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 Lars Palo
+/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+ * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +29,7 @@ public class Drawstop extends Button {
 	ArrayList<Integer> m_switches = new ArrayList<Integer>();
 	boolean defaultToEngaged;
 	int gcState;
-	
+
 	public Drawstop() {
 		super();
 		this.function = Function.INPUT;

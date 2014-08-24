@@ -22,26 +22,17 @@
 
 package make_odf;
 
-public class Button {
-	String name;
-	boolean displayed;
-	String dispLabelText;
-	int dispImageNum;
-	int dispButtonRow;
-	int dispButtonCol;
-	int dispDrawstopRow;
-	int dispDrawstopCol;
-	int textBreakWidth;
+public interface IPipeSet {
 
-	public Button() {
-		this.name = "";
-		this.displayed = true;
-		this.dispLabelText = "";
-		this.dispImageNum = 1;
-		this.dispButtonRow = 1;
-		this.dispButtonCol = 1;
-		this.dispDrawstopRow = 1;
-		this.dispDrawstopCol = 1;
-		this.textBreakWidth = -1;
-	}
+	public void addPipe(Pipe p);
+
+	public String getKindName();
+
+	public String getName();
+
+	public Pipe getPipe(int index);
+
+	public boolean isPercussive();
+
+	public void setBasicAttributes(Pipe p);
 }

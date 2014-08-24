@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 Lars Palo
+/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+ * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,22 +22,21 @@
 
 package make_odf;
 
-import java.io.*;
+import java.io.File;
+import java.io.FilenameFilter;
 
 public class MIDINrSampleFilter implements FilenameFilter {
 	private String MIDINumber;
-	
+
 	public MIDINrSampleFilter(int MIDINr) {
-		this.MIDINumber = String.format("%03d", MIDINr);
+		this.MIDINumber = NumberUtil.format(MIDINr);
 	}
-	
+
+	@Override
 	public boolean accept(File dir, String name) {
-		if (name.endsWith(".wav") || name.endsWith(".wv") || name.endsWith(".WAV") || name.endsWith(".WV")) {
-			if (name.startsWith(MIDINumber)) {
-				return true;
-			} else {
-				return false;
-			}
+		if (name.endsWith(".wav") || name.endsWith(".wv")
+				|| name.endsWith(".WAV") || name.endsWith(".WV")) {
+			return name.startsWith(MIDINumber);
 		} else {
 			return false;
 		}

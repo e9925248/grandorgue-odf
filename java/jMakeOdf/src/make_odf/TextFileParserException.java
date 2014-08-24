@@ -22,26 +22,28 @@
 
 package make_odf;
 
-public class Button {
-	String name;
-	boolean displayed;
-	String dispLabelText;
-	int dispImageNum;
-	int dispButtonRow;
-	int dispButtonCol;
-	int dispDrawstopRow;
-	int dispDrawstopCol;
-	int textBreakWidth;
+public class TextFileParserException extends RuntimeException {
 
-	public Button() {
-		this.name = "";
-		this.displayed = true;
-		this.dispLabelText = "";
-		this.dispImageNum = 1;
-		this.dispButtonRow = 1;
-		this.dispButtonCol = 1;
-		this.dispDrawstopRow = 1;
-		this.dispDrawstopCol = 1;
-		this.textBreakWidth = -1;
+	private static final long serialVersionUID = 1L;
+
+	public TextFileParserException() {
 	}
+
+	public TextFileParserException(String message) {
+		super(message);
+	}
+
+	public TextFileParserException(Throwable cause) {
+		super(cause);
+	}
+
+	public TextFileParserException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public TextFileParserException(String message, Throwable cause,
+			boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
+
 }

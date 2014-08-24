@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 Lars Palo
+/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+ * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,9 +22,11 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
-public class Stop extends Drawstop {
+public class Stop extends Drawstop implements IPipeSet {
 	ArrayList<Integer> m_Ranks = new ArrayList<Integer>();
 	int firstAccessiblePipeLogicalKeyNumber;
 	int numberOfAccessiblePipes;
@@ -35,7 +38,7 @@ public class Stop extends Drawstop {
 	float pitchCorrection;
 	int m_windchestGroup;
 	ArrayList<Pipe> m_Pipes = new ArrayList<Pipe>();
-	
+
 	public Stop() {
 		super();
 		this.firstAccessiblePipeLogicalKeyNumber = 1;
@@ -48,4 +51,161 @@ public class Stop extends Drawstop {
 		this.pitchCorrection = 0;
 		this.m_windchestGroup = 1;
 	}
+
+	void readHeader(Tokenizer tok) {
+		List<String> stringParts = tok.readAndSplitLine();
+		name = stringParts.get(0);
+		numberOfAccessiblePipes = Tokenizer.convertToInt(stringParts.get(1));
+		firstAccessiblePipeLogicalKeyNumber = Tokenizer
+				.convertToInt(stringParts.get(2));
+		amplitudeLevel = Tokenizer.convertToFloat(stringParts.get(3));
+		harmonicNumber = Tokenizer.convertToInt(stringParts.get(4));
+		pitchTuning = Tokenizer.convertToFloat(stringParts.get(5));
+		pitchCorrection = Tokenizer.convertToFloat(stringParts.get(6));
+		m_windchestGroup = Tokenizer.convertToInt(stringParts.get(7));
+		isPercussive = Tokenizer.convertToBoolean(stringParts.get(8));
+		defaultToEngaged = Tokenizer.convertToBoolean(stringParts.get(9));
+		displayed = Tokenizer.convertToBoolean(stringParts.get(10));
+		if (displayed) {
+			dispImageNum = Tokenizer.convertToInt(stringParts.get(11));
+			dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(12));
+			dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(13));
+			textBreakWidth = Tokenizer.convertToInt(stringParts.get(14));
+		}
+	}
+
+	int readPipesPortion(List<String> stringParts, int pipesLoaded,
+			int nbPipesToLoad, boolean loadOneSamplePerPipe) {
+		if (nbPipesToLoad > 0) {
+			// The stop have it's own pipes to load
+			PipeSetUtil.readPipeSet(this, loadOneSamplePerPipe, stringParts,
+					nbPipesToLoad);
+			pipesLoaded += nbPipesToLoad;
+		} else {
+			// The stops have ranks instead
+			Tokenizer.readNumericReferencesOffset1(stringParts, m_Ranks);
+			pipesLoaded = numberOfAccessiblePipes;
+		}
+		return pipesLoaded;
+	}
+
+	public void read(Tokenizer tok, boolean loadOneSamplePerPipe) {
+		List<String> stringParts;
+		readHeader(tok);
+
+		int pipesLoaded = 0;
+		System.out.println("Trying to read pipes for stop " + name);
+		while (pipesLoaded < numberOfAccessiblePipes) {
+			stringParts = tok.readAndSplitLine();
+
+			int nbPipesToLoad = Tokenizer.convertToInt(stringParts.get(0));
+			pipesLoaded = readPipesPortion(stringParts, pipesLoaded,
+					nbPipesToLoad, loadOneSamplePerPipe);
+		}
+
+		stringParts = tok.readAndSplitLine();
+
+		function = Enum.valueOf(Function.class, stringParts.get(0)
+				.toUpperCase());
+		Tokenizer.readNumericReferencesOffset1(stringParts, m_switches);
+	}
+
+	public void write(PrintWriter outfile) {
+		outfile.println("Name=" + name);
+		if (function != Function.INPUT) {
+			// This stop has switches
+			outfile.println("Function=" + function.func);
+			outfile.println("SwitchCount=" + m_switches.size());
+			OdfWriter.writeReferences(outfile, "Switch", m_switches);
+		}
+		if (!m_Ranks.isEmpty()) {
+			// This stop has ranks
+			outfile.println("NumberOfRanks=" + m_Ranks.size());
+			OdfWriter.writeReferences(outfile, "Rank", m_Ranks);
+			outfile.println("NumberOfAccessiblePipes="
+					+ numberOfAccessiblePipes);
+			outfile.println("FirstAccessiblePipeLogicalKeyNumber="
+					+ firstAccessiblePipeLogicalKeyNumber);
+		} else {
+			outfile.println("NumberOfLogicalPipes=" + numberOfAccessiblePipes);
+			outfile.println("NumberOfAccessiblePipes="
+					+ numberOfAccessiblePipes);
+			outfile.println("FirstAccessiblePipeLogicalPipeNumber="
+					+ firstAccessiblePipeLogicalPipeNumber);
+			outfile.println("FirstAccessiblePipeLogicalKeyNumber="
+					+ firstAccessiblePipeLogicalKeyNumber);
+			outfile.println("WindchestGroup=" + m_windchestGroup);
+			if (isPercussive)
+				outfile.println("Percussive=Y");
+			else
+				outfile.println("Percussive=N");
+			outfile.println("AmplitudeLevel=" + amplitudeLevel);
+			outfile.println("PitchTuning=" + pitchTuning);
+			outfile.println("PitchCorrection=" + pitchCorrection);
+			outfile.println("HarmonicNumber=" + harmonicNumber);
+		}
+		if (function == Function.INPUT) {
+			if (defaultToEngaged)
+				outfile.println("DefaultToEngaged=Y");
+			else
+				outfile.println("DefaultToEngaged=N");
+		}
+		if (displayed) {
+			outfile.println("Displayed=Y");
+			outfile.println("DispImageNum=" + dispImageNum);
+			outfile.println("DispDrawstopCol=" + dispDrawstopCol);
+			outfile.println("DispDrawstopRow=" + dispDrawstopRow);
+			outfile.println("DispLabelColour=Black");
+			outfile.println("DispLabelFontSize=Normal");
+			outfile.println("DisplayInInvertedState=N");
+			if (textBreakWidth >= 0)
+				outfile.println("TextBreakWidth=" + textBreakWidth);
+		} else {
+			outfile.println("Displayed=N");
+		}
+		if (m_Ranks.isEmpty()) {
+			// This stop has pipes
+			for (int k = 0; k < m_Pipes.size(); k++) {
+				// First attack must always exist
+				String pipeNr = "Pipe" + NumberUtil.format(k + 1);
+				Pipe pipe = m_Pipes.get(k);
+				pipe.writeInsideStop(outfile, pipeNr, isPercussive);
+			}
+		}
+	}
+
+	@Override
+	public void addPipe(Pipe p) {
+		m_Pipes.add(p);
+	}
+
+	@Override
+	public String getKindName() {
+		return "stop";
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public Pipe getPipe(int index) {
+		return m_Pipes.get(index);
+	}
+
+	@Override
+	public boolean isPercussive() {
+		return isPercussive;
+	}
+
+	@Override
+	public void setBasicAttributes(Pipe p) {
+		p.amplitudeLevel = amplitudeLevel;
+		p.harmonicNumber = harmonicNumber;
+		p.pitchTuning = pitchTuning;
+		p.pitchCorrection = pitchCorrection;
+		p.windchestGroup = m_windchestGroup;
+	}
+
 }
