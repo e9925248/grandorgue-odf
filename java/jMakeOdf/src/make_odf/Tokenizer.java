@@ -35,7 +35,7 @@ public class Tokenizer implements AutoCloseable {
 	private int currentLineNumber = 0;
 
 	public Tokenizer(File f) throws FileNotFoundException {
-		this.scanner = new Scanner(f);
+		this.scanner = new Scanner(f, "ISO-8859-1");
 	}
 
 	public String readLine() {
