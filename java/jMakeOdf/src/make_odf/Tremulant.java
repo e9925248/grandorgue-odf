@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 Lars Palo
+/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+ * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,13 +22,17 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tremulant extends Drawstop {
 	String tremType;
 	int period;
 	int startRate;
 	int stopRate;
 	int ampModDepth;
-	
+
 	public Tremulant() {
 		super();
 		this.tremType = "Synth";
@@ -35,5 +40,82 @@ public class Tremulant extends Drawstop {
 		this.startRate = 8;
 		this.stopRate = 8;
 		this.ampModDepth = 18;
+	}
+
+	void read(Tokenizer tok) {
+		List<String> stringParts = tok.readAndSplitLine();
+		name = stringParts.get(0);
+		String type = stringParts.get(1);
+		switch (type.toLowerCase()) {
+		case "synth":
+			tremType = stringParts.get(1);
+			period = Tokenizer.convertToInt(stringParts.get(2));
+			ampModDepth = Tokenizer.convertToInt(stringParts.get(3));
+			startRate = Tokenizer.convertToInt(stringParts.get(4));
+			stopRate = Tokenizer.convertToInt(stringParts.get(5));
+			defaultToEngaged = Tokenizer.convertToBoolean(stringParts.get(6));
+
+			displayed = Tokenizer.convertToBoolean(stringParts.get(7));
+			if (displayed) {
+				dispImageNum = Tokenizer.convertToInt(stringParts.get(8));
+				dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(9));
+				dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(10));
+				textBreakWidth = Tokenizer.convertToInt(stringParts.get(11));
+			}
+			break;
+		case "wave":
+			tremType = stringParts.get(1);
+			defaultToEngaged = Tokenizer.convertToBoolean(stringParts.get(2));
+
+			displayed = Tokenizer.convertToBoolean(stringParts.get(3));
+			if (displayed) {
+				dispImageNum = Tokenizer.convertToInt(stringParts.get(4));
+				dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(5));
+				dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(6));
+				textBreakWidth = Tokenizer.convertToInt(stringParts.get(7));
+			}
+			break;
+		default:
+			throw new TextFileParserException("ERROR: Tremulant type " + type
+					+ " is not valid!");
+		}
+		stringParts = tok.readAndSplitLine();
+		function = Enum.valueOf(Function.class, stringParts.get(0)
+				.toUpperCase());
+		ArrayList<Integer> references = m_switches;
+		Tokenizer.readNumericReferencesOffset1(stringParts, references);
+	}
+
+	public void write(PrintWriter outfile) {
+		outfile.println("Name=" + name);
+		if (function != Function.INPUT) {
+			outfile.println("Function=" + function.func);
+			outfile.println("SwitchCount=" + m_switches.size());
+			OdfWriter.writeReferences(outfile, "Switch", m_switches);
+		}
+		if (tremType.equalsIgnoreCase("Synth")) {
+			outfile.println("Period=" + period);
+			outfile.println("AmpModDepth=" + ampModDepth);
+			outfile.println("StartRate=" + startRate);
+			outfile.println("StopRate=" + stopRate);
+		} else {
+			outfile.println("TremulantType=" + tremType);
+		}
+		if (displayed) {
+			outfile.println("Displayed=Y");
+			if (textBreakWidth >= 0)
+				outfile.println("TextBreakWidth=" + textBreakWidth);
+			outfile.println("DispDrawstopCol=" + dispDrawstopCol);
+			outfile.println("DispDrawstopRow=" + dispDrawstopRow);
+			outfile.println("DispImageNum=" + dispImageNum);
+		} else {
+			outfile.println("Displayed=N");
+		}
+		if (function == Function.INPUT) {
+			if (defaultToEngaged)
+				outfile.println("DefaultToEngaged=Y");
+			else
+				outfile.println("DefaultToEngaged=N");
+		}
 	}
 }

@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 Lars Palo
+/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+ * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +23,11 @@
 package make_odf;
 
 public enum Function {
-	INPUT("Input"),
-	AND("And"),
-	XOR("Xor"),
-	NAND("Nand"),
-	NOR("Nor"),
-	OR("Or"),
-	NOT("Not");
-	
+	INPUT("Input"), AND("And"), XOR("Xor"), NAND("Nand"), NOR("Nor"), OR("Or"), NOT(
+			"Not");
+
 	public final String func;
-	
+
 	Function(String str) {
 		func = str;
 	}

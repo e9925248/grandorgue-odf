@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 Lars Palo
+/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+ * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +26,16 @@ public class Release {
 	String fileName;
 	int maxKeyPressTime;
 	int isTremulant;
-	
+
 	public Release() {
 		fileName = "";
 		maxKeyPressTime = -1;
 		isTremulant = -1;
+	}
+
+	public Release(Release release) {
+		fileName = release.fileName;
+		maxKeyPressTime = release.maxKeyPressTime;
+		isTremulant = release.isTremulant;
 	}
 }

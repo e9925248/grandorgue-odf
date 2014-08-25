@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 Lars Palo
+/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+ * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,15 +22,13 @@
 
 package make_odf;
 
-import java.io.*;
+import java.io.File;
+import java.io.FilenameFilter;
 
 public class ReleaseFolderFilter implements FilenameFilter {
+	@Override
 	public boolean accept(File dir, String name) {
 		File f = new File(dir, name);
-		if (name.toLowerCase().startsWith("rel") && f.isDirectory()) {
-			return true;
-		} else {
-			return false;
-		}
+		return name.toLowerCase().startsWith("rel") && f.isDirectory();
 	}
 }

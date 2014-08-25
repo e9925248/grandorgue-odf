@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 Lars Palo
+/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+ * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +22,9 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Manual implements Comparable<Manual> {
 	String keyboardName;
@@ -33,7 +36,7 @@ public class Manual implements Comparable<Manual> {
 	ArrayList<Stop> m_Stops = new ArrayList<Stop>();
 	ArrayList<Integer> m_Tremulants = new ArrayList<Integer>();
 	ArrayList<Integer> m_Switches = new ArrayList<Integer>();
-	
+
 	public Manual() {
 		keyboardName = "";
 		keyboardCode = "";
@@ -41,18 +44,16 @@ public class Manual implements Comparable<Manual> {
 		keyboardFirstMidiCode = 0;
 		isDisplayed = true;
 	}
-	
+
+	@Override
 	public int compareTo(Manual m) {
-		if (translateKeyCode(keyboardCode) < translateKeyCode(m.keyboardCode))
-			return -1;
-		else if (translateKeyCode(keyboardCode) > translateKeyCode(m.keyboardCode))
-			return 1;
-		else
-			return 0;
+		int thisCode = translateKeyCode(keyboardCode);
+		int thatCode = translateKeyCode(m.keyboardCode);
+		return Integer.compare(thisCode, thatCode);
 	}
-	
-	private int translateKeyCode(String keybCode) {
-		if (keybCode.equalsIgnoreCase("PED"))
+
+	public static int translateKeyCode(String keybCode) {
+		if (isPedalCode(keybCode))
 			return 0;
 		else {
 			int nr = 0;
@@ -78,11 +79,102 @@ public class Manual implements Comparable<Manual> {
 		}
 	}
 
-	private int CalculateRomans(int i, int prevNr, int nr) {
+	public static boolean isPedalCode(String keybCode) {
+		return keybCode.equalsIgnoreCase("PED");
+	}
+
+	public static int CalculateRomans(int i, int prevNr, int nr) {
 		if (prevNr > i) {
 			return nr - i;
 		} else {
 			return nr + i;
+		}
+	}
+
+	void readHeader(Tokenizer tok) {
+		List<String> stringParts = tok.readAndSplitLine();
+		keyboardName = stringParts.get(0);
+		keyboardCode = stringParts.get(1);
+		keyboardSize = Tokenizer.convertToInt(stringParts.get(2));
+		keyboardFirstMidiCode = Tokenizer.convertToInt(stringParts.get(3));
+		isDisplayed = Tokenizer.convertToBoolean(stringParts.get(4));
+	}
+
+	public void read(Tokenizer tok, boolean loadOneSamplePerPipe) {
+		readHeader(tok);
+
+		int nbCouplers = tok.readIntLine();
+		for (int j = 0; j < nbCouplers; j++) {
+			Coupler cp = new Coupler();
+
+			cp.read(tok);
+
+			m_Couplers.add(cp);
+		}
+
+		tok.readLineOfReferences(m_Tremulants);
+
+		tok.readLineOfReferences(m_Switches);
+
+		int nbStops = tok.readIntLine();
+		for (int j = 0; j < nbStops; j++) {
+			Stop s = new Stop();
+
+			s.read(tok, loadOneSamplePerPipe);
+
+			m_Stops.add(s);
+		}
+	}
+
+	public void writeStopsReferences(PrintWriter outfile, Counters counters) {
+		int nbStops = m_Stops.size();
+		outfile.println("NumberOfStops=" + nbStops);
+		for (int j = 0; j < nbStops; j++) {
+			counters.totalNbStops++;
+			outfile.println("Stop" + NumberUtil.format(j + 1) + "="
+					+ NumberUtil.format(counters.totalNbStops));
+		}
+
+	}
+
+	public void writeSwitchesReferences(PrintWriter outfile) {
+		outfile.println("NumberOfSwitches=" + m_Switches.size());
+		OdfWriter.writeReferences(outfile, "Switch", m_Switches);
+	}
+
+	public void writeTremulantsReferences(PrintWriter outfile) {
+		outfile.println("NumberOfTremulants=" + m_Tremulants.size());
+		OdfWriter.writeReferences(outfile, "Tremulant", m_Tremulants);
+	}
+
+	public void write(PrintWriter outfile, Counters counters,
+			int midiInputNumber) {
+		outfile.println("Name=" + keyboardName);
+		outfile.println("MIDIInputNumber=" + midiInputNumber);
+		outfile.println("NumberOfLogicalKeys=" + keyboardSize);
+		outfile.println("NumberOfAccessibleKeys=" + keyboardSize);
+		outfile.println("FirstAccessibleKeyLogicalKeyNumber=1");
+		outfile.println("FirstAccessibleKeyMIDINoteNumber="
+				+ keyboardFirstMidiCode);
+		writeStopsReferences(outfile, counters);
+		writeSwitchesReferences(outfile);
+		writeCouplersReferences(outfile, counters);
+		writeTremulantsReferences(outfile);
+		outfile.println("NumberOfDivisionals=0");
+		if (isDisplayed) {
+			outfile.println("Displayed=Y");
+			outfile.println("DispKeyColourInverted=N");
+		} else
+			outfile.println("Displayed=N");
+	}
+
+	public void writeCouplersReferences(PrintWriter outfile, Counters counters) {
+		int nbCouplers = m_Couplers.size();
+		outfile.println("NumberOfCouplers=" + nbCouplers);
+		for (int j = 0; j < nbCouplers; j++) {
+			counters.totalNbCouplers++;
+			outfile.println("Coupler" + NumberUtil.format(j + 1) + "="
+					+ NumberUtil.format(counters.totalNbCouplers));
 		}
 	}
 }
