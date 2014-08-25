@@ -23,8 +23,9 @@
 package make_odf;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
@@ -36,7 +37,7 @@ public class OdfWriter {
 		System.out.println("Writing ODF file " + fileName);
 
 		try (PrintWriter outfile = new PrintWriter(new BufferedWriter(
-				new FileWriter(fileName)));) {
+				new OutputStreamWriter(new FileOutputStream(fileName), "ISO-8859-1")));) {
 			org.write(outfile);
 
 		} catch (IOException ie) {
