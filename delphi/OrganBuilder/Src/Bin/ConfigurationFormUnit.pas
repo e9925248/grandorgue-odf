@@ -22,8 +22,9 @@ type
   private
     FName: string;
     FAddresses: TList;
+    FOffset: Integer;
   public
-    constructor Create(AName: string; var AStringArray: array of string);
+    constructor Create(AName: string; var AStringArray: array of string; AOffset: Integer);
     destructor Destroy; override;
   end;
 
@@ -43,7 +44,7 @@ type
     procedure ButtonResetClick(Sender: TObject);
   private
     FLangFolder: string;
-    FConfigurationFolder: string;
+    FConfigurationFolder: string;      
     FHelpFolder: string;
     FFirstRun: Boolean;
 
@@ -63,7 +64,7 @@ type
 
     procedure RegisterLocalizableStrings;
     procedure RegisterLocalizableString(AName: string; AAddress: PString);
-    procedure RegisterLocalizableStringArray(AName: string; var AStringArray: array of string);
+    procedure RegisterLocalizableStringArray(AName: string; var AStringArray: array of string; AOffset: Integer = 0);
 
     procedure LoadConfiguration;
     procedure SaveConfiguration;
@@ -226,13 +227,15 @@ end;
 
 { TLocalizableStringArray }
 
-constructor TLocalizableStringArray.Create(AName: string; var AStringArray: array of string);
+constructor TLocalizableStringArray.Create(AName: string;
+  var AStringArray: array of string; AOffset: Integer);
 var
   a: Integer;
 begin
   inherited Create;
   FName := AName;
   FAddresses := TList.Create;
+  FOffset := AOffset;
   for a := Low(AStringArray) to High(AStringArray) do
     FAddresses.Add(@AStringArray[a]);
 end;
@@ -402,7 +405,7 @@ begin
     for a:=0 to FLocalizableStringArrays.Count - 1 do
       with TLocalizableStringArray(FLocalizableStringArrays[a]) do
         for b := 0 to FAddresses.Count - 1 do
-          f.WriteString(FName, 'Item[' + IntToStr(b) + ']', PString(FAddresses[b])^);
+          f.WriteString(FName, 'Item[' + IntToStr(b + FOffset) + ']', PString(FAddresses[b])^);
     f.UpdateFile;
   finally
     f.Destroy;
@@ -479,7 +482,7 @@ begin
       for a:=0 to FLocalizableStringArrays.Count - 1 do
         with TLocalizableStringArray(FLocalizableStringArrays[a]) do
           for b := 0 to FAddresses.Count - 1 do
-            PString(FAddresses[b])^ := Unpurge(f.ReadString(FName, 'Item[' + IntToStr(b) + ']', PString(FAddresses[b])^));
+            PString(FAddresses[b])^ := Unpurge(f.ReadString(FName, 'Item[' + IntToStr(b + FOffset) + ']', PString(FAddresses[b])^));
       for a := 0 to Screen.FormCount - 1 do
         with Screen.Forms[a] do begin
           s := Name;
@@ -541,6 +544,7 @@ begin
   RegisterLocalizableString('NamedBackgroundImageToEdit', @S_NamedBackgroundImageToEdit);
   RegisterLocalizableString('NoProblemDetected', @S_NoProblemDetected);
   RegisterLocalizableString('Information', @S_Information);
+  RegisterLocalizableString('LoadReleaseFromAttackSample', @S_LoadReleaseFromAttackSample);
 
   RegisterLocalizableString('ValuedDuration', @S_ValuedDuration);
   RegisterLocalizableString('ErrorCannotObtainFormat', @S_ErrorCannotObtainFormat);
@@ -557,7 +561,7 @@ begin
 //  RegisterLocalizableString('Version', @S_Version);
   RegisterLocalizableString('SomeFontsWereUnavailable', @S_SomeFontsWereUnavailable);
   RegisterLocalizableString('Warning', @S_Warning);
-  RegisterLocalizableStringArray('Warnings', S_Warnings);
+  RegisterLocalizableStringArray('Warnings', S_Warnings, 1);
   RegisterLocalizableStringArray('ManualNames', S_ManualNames);
   RegisterLocalizableStringArray('StopFamilyNames', S_StopFamilyNames);
 
@@ -573,9 +577,9 @@ begin
 end;
 
 procedure TConfigurationForm.RegisterLocalizableStringArray(AName: string;
-  var AStringArray: array of string);
+  var AStringArray: array of string; AOffset: Integer);
 begin
-  FLocalizableStringArrays.Add(TLocalizableStringArray.Create(AName, AStringArray));
+  FLocalizableStringArrays.Add(TLocalizableStringArray.Create(AName, AStringArray, AOffset));
 end;
 
 procedure TConfigurationForm.Execute;

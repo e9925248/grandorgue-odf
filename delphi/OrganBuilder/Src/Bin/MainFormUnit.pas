@@ -541,6 +541,7 @@ var
   S_NamedBackgroundImageToEdit: string = 'Background image: %s (click to edit)';
   S_NoProblemDetected: string = 'No problem detected.';
   S_Information: string = 'Information';
+  S_LoadReleaseFromAttackSample: string = 'Extract from attack sample';
 
 
 implementation
@@ -730,8 +731,9 @@ begin
       Percussive := CheckBoxRankPercusive.Checked;
       ChannelAssignment := TChannelAssignment(ComboBoxRankChannelAssignment.ItemIndex);
       HarmonicNumber := ComboBoxRankHarmonicNumber.ItemIndex;
+      LoadRelease := CheckListBoxRankReleases.Checked[0];
       for a := 0 to NumberOfReleases - 1 do
-        ReleaseEnabled[a] := CheckListBoxRankReleases.Checked[a];
+        ReleaseEnabled[a] := CheckListBoxRankReleases.Checked[a + 1];
     end;
   if FCurrentPanelObject = FOrgan then begin
     FOrgan.Layout.Labels.Image := ComboBoxMainPanelLabelsImage.ItemIndex;
@@ -1106,9 +1108,10 @@ begin
         CheckListBoxRankReleases.Items.BeginUpdate;
         try
           CheckListBoxRankReleases.Items.Clear;
+          CheckListBoxRankReleases.Checked[CheckListBoxRankReleases.Items.Add(S_LoadReleaseFromAttackSample)] := LoadRelease;
           for a := 0 to NumberOfReleases - 1 do begin
-            CheckListBoxRankReleases.Items.Add(ExtractFilename(ReleasePath[a]));
-            CheckListBoxRankReleases.Checked[a] := ReleaseEnabled[a];
+            c := CheckListBoxRankReleases.Items.Add(ExtractFilename(ReleasePath[a]));
+            CheckListBoxRankReleases.Checked[c] := ReleaseEnabled[a];
           end;
         finally
           CheckListBoxRankReleases.Items.EndUpdate;
@@ -1581,9 +1584,9 @@ begin
   if (Source is TOrganDragObject) and Assigned(p) then
     with Source as TOrganDragObject do begin
       if p.Data is TManual then
-        Accept := (FData is TRank) or (FData is TList);
+        Accept := (FData is TRank) or (FData is TList) or (FData is TStop);
       if p.Data is TStop then
-        Accept := (FData is TRank) or (FData is TList);
+        Accept := (FData is TRank) or (FData is TList) or (FData is TStop) and (p.Data <> FData);
       if p.Data is TRank then
         Accept := (FData is TRank) or (FData is TList);
     end;
@@ -1630,6 +1633,11 @@ begin
                 FDataSync := FDataSync - [dsStopStructure, dsRankStructure];
               end;
             end;
+        if FData is TStop then begin
+          FOrgan.MoveStopToManual(FData as TStop, p.Data as TManual);
+          FOrgan.MarkModified;
+          FDataSync := FDataSync - [dsStopStructure, dsRankStructure];
+        end;
       end;
       if p.Data is TStop then
         with p.Data as TStop do begin
@@ -1648,6 +1656,11 @@ begin
                 FCurrentStopObject := TRank(Items[Count - 1]);
                 FDataSync := FDataSync - [dsStopStructure, dsRankStructure];
               end;
+          if FData is TStop then begin
+            FOrgan.MoveStopToStop(FData as TStop, p.Data as TStop);
+            FOrgan.MarkModified;
+            FDataSync := FDataSync - [dsStopStructure, dsRankStructure];
+          end;
         end;
       if p.Data is TRank then
         with p.Data as TRank do begin
@@ -1695,7 +1708,7 @@ end;
 procedure TMainForm.VirtualStringTreeStopsStartDrag(Sender: TObject;
   var DragObject: TDragObject);
 begin
-  if FCurrentStopObject is TRank then
+  if (FCurrentStopObject is TRank) or (FCurrentStopObject is TStop) then
     DragObject := TOrganDragObject.Create(FCurrentStopObject);
 end;
 
@@ -2058,9 +2071,12 @@ end;
 procedure TMainForm.MenuItemOpenClick(Sender: TObject);
 begin
   if QuerySaveFile and OpenDialogProject.Execute then begin
-    FOrgan.LoadFromFile(OpenDialogProject.FileName);
-    ConfigurationForm.AddToRecents(FOrgan.Filename);
-    ResetGUI(True);
+    try
+      FOrgan.LoadFromFile(OpenDialogProject.FileName);
+      ConfigurationForm.AddToRecents(FOrgan.Filename);
+    finally
+      ResetGUI(True);
+    end;
   end;
 end;
 
@@ -2589,9 +2605,12 @@ begin
   ResetGUI(True);
   if ParamCount > 0 then
     try
-      FOrgan.LoadFromFile(ParamStr(1));
-      ConfigurationForm.AddToRecents(ParamStr(1));
-      ResetGUI(True);
+      try
+        FOrgan.LoadFromFile(ParamStr(1));
+        ConfigurationForm.AddToRecents(ParamStr(1));
+      finally
+        ResetGUI(True);
+      end;
     except
       on e: Exception do
         MessageBox(Handle, PChar(e.Message), nil, 0);
@@ -2629,9 +2648,12 @@ procedure TMainForm.MenuItemRecentClick(Sender: TObject);
 begin
   if QuerySaveFile then
     with Sender as TMenuItem do begin
-      FOrgan.LoadFromFile(Hint);
-      ConfigurationForm.AddToRecents(FOrgan.Filename);
-      ResetGUI(True);
+      try
+        FOrgan.LoadFromFile(Hint);
+        ConfigurationForm.AddToRecents(FOrgan.Filename);
+      finally
+        ResetGUI(True);
+      end;
     end;
 end;
 

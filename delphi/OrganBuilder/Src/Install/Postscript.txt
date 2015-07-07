@@ -1,5 +1,14 @@
+Changes for version 1.0.2:
+- 64' harmonic number is now available
+- Experimental feature for ranks with varrying harmonic number like mixtures: autodetect harmonic number per pipe using pitch data extracted from wave file
+- Allowed tremulant period interval increased (now 32..32767)
+- Stops can be moved accross and inside divisions
+- Releases can be loaded from attack sample
+- Various bug fixes
+
 Changes for version 1.0.1:
 - Bug fix for couplers not being correctly saved in .odp files
+- Small fix for missing localization flags
 - Info file path export has been made absolute
 - Wine fix: configuration and lang folders are now relative to executable folder
-- Wine fix: non case-sensitive font names matches
+- Wine fix: non case-sensitive font name matches

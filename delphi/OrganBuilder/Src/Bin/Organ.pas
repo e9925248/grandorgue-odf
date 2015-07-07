@@ -11,8 +11,7 @@ var
   S_SomeFontsWereUnavailable: string = 'Some fonts were not available on your system and have been replaced by default fonts.';
   S_Warning: string = 'Warning';
 
-  S_Warnings: array[0 .. 11] of string = (
-    'Info HTML file [%s] cannot be made relative to the destination path.',
+  S_Warnings: array[1 .. 13] of string = (
     'The specified width for the main panel (%s) might be too small.',
     'The specified height for the main panel (%s) might be too small.',
     'Pipe folder [%s] cannot be made relative to the destination path.',
@@ -23,7 +22,9 @@ var
     'Stop "%s" (%s) has not been placed on the main panel.',
     'Tremulant of division "%s" has not been placed on the main panel.',
     '*** [%d warning(s) have been issued] ***',
-    'The resulting GrandOrgue file may not work as expected.'
+    'The resulting GrandOrgue file may not work as expected.',
+    'Cannot extract sample pitch information in file [%s] for automatic harmonic number detection.',
+    'Suspicious harmonic number detected in file [%s]: %.4f seems too far from the closest standard value (%.4f).'
   );
 
   S_ManualNames: array[0 .. 5] of string = (
@@ -93,7 +94,7 @@ type
     FCouplers: TCouplers;
     FTremulants: TTremulants;
     FEnclosures: TEnclosures;
-    
+
     FStopFamilies: TObjectList;
 
     FPistons: TObjectList;
@@ -112,7 +113,7 @@ type
 
     function GetNumberOfManuals: Integer;
     procedure SetNumberOfManuals(const Value: Integer);
-    function GetManual(const Index: Integer): TManual;  
+    function GetManual(const Index: Integer): TManual;
     function GetHasPedals: Boolean;
     procedure SetHasPedals(const Value: Boolean);
 
@@ -153,6 +154,8 @@ type
     procedure RemoveRank(ARank: TRank);
     function AddStop(AName: string; AManual: TManual): TStop;
     procedure RemoveStop(AStop: TStop);
+    procedure MoveStopToManual(AStop: TStop; ADestination: TManual);
+    procedure MoveStopToStop(AStop: TStop; ADestination: TStop);
 
     property Filename: string read FFilename;
     property Modified: Boolean read FModified;
@@ -424,6 +427,7 @@ type
     FFirstPipe: Integer;
     FNumberOfPipes: Integer;
     FReleases: TStringList;
+    FLoadRelease: Boolean;
     FPercussive: Boolean;
     FChannelAssignment: TChannelAssignment;
     FHarmonicNumber: Integer;
@@ -446,13 +450,14 @@ type
     property Path: string read FPath;
     property FirstPipe: Integer read FFirstPipe;
     property NumberOfPipes: Integer read FNumberOfPipes;
-    property Percussive: Boolean read FPercussive write FPercussive;
-    property HarmonicNumber: Integer read FHarmonicNumber write FHarmonicNumber;
     property ReleasePath[const Index: Integer]: string read GetReleasePath;
     property ReleaseValue[const Index: Integer]: Integer read GetReleaseValue;
     property ReleaseEnabled[const Index: Integer]: Boolean read GetReleaseEnabled write SetReleaseEnabled;
     property NumberOfReleases: Integer read GetNumberOfReleases;
+    property LoadRelease: Boolean read FLoadRelease write FLoadRelease;
+    property Percussive: Boolean read FPercussive write FPercussive;
     property ChannelAssignment: TChannelAssignment read FChannelAssignment write FChannelAssignment;
+    property HarmonicNumber: Integer read FHarmonicNumber write FHarmonicNumber;
 
     property PipeFilename[const Index: Integer]: string read GetPipeFilename;
     property ReleaseFilename[const Index, Release: Integer]: string read GetReleaseFilename;
@@ -719,7 +724,8 @@ const
     'LARGE'
   );
 
-  GHarmonicNumbers: array[0 .. 16] of Double = (
+  GHarmonicNumbers: array[0 .. 17] of Double = (
+    64,
     32,
     16,
     10 + 2 / 3,
@@ -740,6 +746,109 @@ const
   );
 
 implementation
+
+function GetWaveFileMidiNote(AFilename: string; var AValue: Double): Boolean;
+type
+  string4 = array[1..4] of Char;
+  TRIFFHeader = packed record
+    cSignature: string4;
+    dwSize: cardinal;
+    cType: string4;
+  end;
+  TSampleChunkData = packed record
+    Manufacturer: Cardinal;
+    Product: Cardinal;
+    SamplePeriod: Cardinal;
+    MIDIUnityNote: Cardinal;
+    MIDIPitchFraction: Cardinal;
+    SMPTEFormat: Cardinal;
+    SMPTEOffset: Cardinal;
+    NumSampleLoops: Cardinal;
+    SamplerData: Cardinal;
+  end;
+  PSampleChunkData = ^TSampleChunkData;
+const
+  RIFF_SIGNATURE = 'RIFF';
+  WAVE_SIGNATURE = 'WAVE';
+  SMPL_SIGNATURE = 'SMPL';
+var
+  f: TFileStream;
+  p: PSampleChunkData;
+  Header: TRIFFHeader;
+  ChunkType: string4;
+  ChunkSize: Cardinal;
+begin
+  Result := False;
+  f := TFileStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
+  try
+    if (f.Read(Header, SizeOf(Header)) = SizeOf(Header)) and
+       (AnsiCompareText(Header.cSignature, RIFF_SIGNATURE) = 0) and
+       (AnsiCompareText(Header.cType, WAVE_SIGNATURE) = 0) then
+      while (f.Position < f.Size) and not Result do begin
+        f.Read(Cardinal(ChunkType), sizeof(ChunkType));
+        f.Read(ChunkSize, sizeof(ChunkSize));
+        Result := (ChunkSize >= SizeOf(TSampleChunkData)) and (AnsiCompareText(ChunkType, SMPL_SIGNATURE) = 0);
+        if Result then begin
+          GetMem(p, ChunkSize);
+          try
+            Result := f.Read(p^, ChunkSize) = Integer(ChunkSize);
+            if Result then begin
+              AValue := p.MIDIUnityNote + p.MIDIPitchFraction / $FFFFFFFF;
+            end;
+          finally
+            FreeMem(p);
+          end;
+        end else
+          f.Seek(ChunkSize, soFromCurrent);
+      end;
+  finally
+    f.Destroy;
+  end;
+end;
+
+function GetRankPipeHarmonicNumber(ARank: TRank; APipe: Integer; var AValue, ACloseKnownValue: Double): Boolean; overload;
+var
+  a: Integer;
+  x: Double;
+begin
+  Result := GetWaveFileMidiNote(ARank.GetPipeFilename(APipe), x);
+  if Result then begin
+    AValue := Power(2, ({Round}(x) - (ARank.FFirstPipe + APipe)) / 12 + 3);
+    ACloseKnownValue := 64 / GHarmonicNumbers[0];
+    for a := 1 to High(GHarmonicNumbers) do begin
+      if Abs(64 / GHarmonicNumbers[a] - AValue) < Abs(ACloseKnownValue - AValue) then
+        ACloseKnownValue := 64 / GHarmonicNumbers[a];
+    end;
+  end;
+end;
+
+function GetRankPipeHarmonicNumber(ARank: TRank; APipe: Integer): Double; overload;
+var
+  x, y: Double;
+begin
+  if GetRankPipeHarmonicNumber(ARank, APipe, x, y) then
+    Result := y
+  else
+    Result := 8;
+end;
+
+{procedure TForm1.Button1Click(Sender: TObject);
+var
+  a: Integer;
+  c: Double;
+  s: string;
+begin
+  AllocConsole;
+  for a := 36 to 96 do begin
+    s := 'E:\Media\Organ\Hauptwerk\SampleSets\HauptwerkSampleSetsAndComponents\OrganInstallationPackages\001319\pipe\go\Quinte223\0' + IntToStr(a) + '-' + GKeyNames[(a + 3) mod 12] + '.wav';
+    if GetWaveFileMidiNote(s, c) then begin
+      c := c - a;
+      c := 8 * Power(2, c / 12);
+      WriteLn('0' + IntToStr(a) + '-' + GKeyNames[(a + 3) mod 12], ' : ', FloatToStr(c), ' - ', Round(c));
+    end else
+      WriteLn('ERROR');
+  end;
+end;}
 
 var
   GDefaultFontName: string = 'Times New Roman';
@@ -904,9 +1013,11 @@ var
   StopFamily: TStopFamily;
   Stop: TStop;
   Rank: TRank;
+  Version: string;
 begin
   Clear;
   FFontWarning := False;
+  Version := AFile.ReadString('System', 'Version', '');
   for a := Low(FInfos) to High(FInfos) do
     if a <> 6 then
       FInfos[a] := AFile.ReadString('Organ', 'Info[' + IntToStr(a) + ']', FInfos[a]);
@@ -928,9 +1039,13 @@ begin
     d := AFile.ReadInteger(s, 'NumberOfReleases', 0);
     for c := 0 to d - 1 do
       Rank.FReleases.AddObject(AFile.ReadPath(s, 'Release' + IntToStr(c) + 'Path', ''), TObject(AFile.ReadInteger(s, 'Release' + IntToStr(c) + 'Value', 0)));
+    Rank.FLoadRelease := AFile.ReadBool(s, 'LoadRelease', Rank.FReleases.Count = 0);
     Rank.FPercussive := AFile.ReadBool(s, 'Percussive', False);
-    Rank.FHarmonicNumber := AFile.ReadInteger(s, 'HarmonicNumber', Rank.FHarmonicNumber);
-    Rank.FChannelAssignment := TChannelAssignment(AFile.ReadInteger(s, 'ChannelAssignment', 0));  
+    if Version <= '1.0.1.0' then
+      Rank.FHarmonicNumber := AFile.ReadInteger(s, 'HarmonicNumber', Rank.FHarmonicNumber - 1) + 1
+    else
+      Rank.FHarmonicNumber := AFile.ReadInteger(s, 'HarmonicNumber', Rank.FHarmonicNumber);
+    Rank.FChannelAssignment := TChannelAssignment(AFile.ReadInteger(s, 'ChannelAssignment', 0));
   end;
   b := AFile.ReadInteger('Organ', 'NumberOfStops', 0);
   for a := 0 to b - 1 do begin
@@ -997,8 +1112,13 @@ var
 begin
   f := TProjectFile.Create(AFilename);
   try
-    LoadFromFile(f);
-    FFilename := AFilename;
+    try
+      LoadFromFile(f);
+      FFilename := AFilename;
+    except
+      Clear;
+      raise;
+    end;
   finally
     f.Destroy;
   end;
@@ -1058,6 +1178,7 @@ begin
       AFile.WritePath(s, 'Release' + IntToStr(b) + 'Path', Rank.FReleases[b]);
       AFile.WriteInteger(s, 'Release' + IntToStr(b) + 'Value', Integer(Rank.FReleases.Objects[b]));
     end;
+    AFile.WriteBool(s, 'LoadRelease', Rank.FLoadRelease);
     AFile.WriteBool(s, 'Percussive', Rank.FPercussive);
     AFile.WriteInteger(s, 'HarmonicNumber', Rank.FHarmonicNumber);
     AFile.WriteInteger(s, 'ChannelAssignment', Integer(Rank.FChannelAssignment));
@@ -1675,10 +1796,13 @@ begin
           f.WriteInteger(s, 'NumberOfLogicalPipes', Rank[0].FNumberOfPipes);
           f.WriteInteger(s, 'WindchestGroup', IndexOfManual(FManual) + 1 - e);
           f.WriteBool(s, 'Percussive', Rank[0].FPercussive);
-          f.WriteFloat(s, 'HarmonicNumber', 64 / GHarmonicNumbers[Rank[0].FHarmonicNumber]);
+          if Rank[0].FHarmonicNumber <= High(GHarmonicNumbers) then
+            f.WriteFloat(s, 'HarmonicNumber', 64 / GHarmonicNumbers[Rank[0].FHarmonicNumber]);
           for b := 0 to Rank[0].FNumberOfPipes - 1 do begin
             f.WriteString(s, Format('Pipe%.3d', [b + 1]), ExtractRelativePath(AFilename, Rank[0].PipeFilename[b]));
-            f.WriteBool(s, Format('Pipe%.3dLoadRelease', [b + 1]), False);
+            f.WriteBool(s, Format('Pipe%.3dLoadRelease', [b + 1]), Rank[0].FLoadRelease);
+            if Rank[0].FHarmonicNumber > High(GHarmonicNumbers) then
+              f.WriteFloat(s, Format('Pipe%.3dHarmonicNumber', [b + 1]), GetRankPipeHarmonicNumber(Rank[0], b));
             d := 0;
             for c := 0 to Rank[0].FReleases.Count - 1 do
               if Rank[0].GetReleaseEnabled(c) then begin
@@ -1730,10 +1854,13 @@ begin
         f.WriteInteger(s, 'NumberOfLogicalPipes', FNumberOfPipes);
         f.WriteInteger(s, 'WindchestGroup', IndexOfManual(FStop.FManual) + 1 - e);
         f.WriteBool(s, 'Percussive', FPercussive);
-        f.WriteFloat(s, 'HarmonicNumber', 64 / GHarmonicNumbers[FHarmonicNumber]);
+        if FHarmonicNumber <= High(GHarmonicNumbers) then
+          f.WriteFloat(s, 'HarmonicNumber', 64 / GHarmonicNumbers[FHarmonicNumber]);
         for b := 0 to FNumberOfPipes - 1 do begin
           f.WriteString(s, Format('Pipe%.3d', [b + 1]), ExtractRelativePath(AFilename, PipeFilename[b]));
-          f.WriteBool(s, Format('Pipe%.3dLoadRelease', [b + 1]), False);
+          f.WriteBool(s, Format('Pipe%.3dLoadRelease', [b + 1]), FLoadRelease);
+          if FHarmonicNumber > High(GHarmonicNumbers) then
+            f.WriteFloat(s, Format('Pipe%.3dHarmonicNumber', [b + 1]), GetRankPipeHarmonicNumber(TRank(Ranks[a]), b));
           d := 0;
           for c := 0 to FReleases.Count - 1 do
             if GetReleaseEnabled(c) then begin
@@ -1964,6 +2091,7 @@ end;
 procedure TOrgan.Inspect(AFilename: string);
 var
   a, b, c, n: Integer;
+  x, y: Double;
 
   function SameDrive(s, t: string) : Boolean;
   begin
@@ -1993,7 +2121,17 @@ begin
           AddWarning(S_Warnings[3], [FPath]);
         for b := 0 to FNumberOfPipes - 1 do begin
           if not FileExists(GetPipeFilename(b)) then
-            AddWarning(S_Warnings[4], [GetPipeFilename(b)]);
+            AddWarning(S_Warnings[4], [GetPipeFilename(b)])
+          else begin
+            if FHarmonicNumber > High(GHarmonicNumbers) then begin
+              if not GetRankPipeHarmonicNumber(TRank(FRanks[a]), b, x, y) then
+                AddWarning(S_Warnings[12], [GetPipeFilename(b)])
+              else begin
+                if Abs(x - y) > x * 0.03 then
+                  AddWarning(S_Warnings[13], [GetPipeFilename(b), 64 / x, 64 / y]);
+              end;
+            end;
+          end;
           for c := 0 to FReleases.Count - 1 do
             if GetReleaseEnabled(c) and not FileExists(GetReleaseFilename(b, c)) then
               AddWarning(S_Warnings[5], [GetReleaseFilename(b, c)]);
@@ -2030,6 +2168,27 @@ begin
     FWarnings.Insert(0, Format(S_Warnings[10], [n]));
     FWarnings.Insert(1, S_Warnings[11]);
     FWarnings.Insert(2, '');
+  end;
+end;
+
+procedure TOrgan.MoveStopToManual(AStop: TStop; ADestination: TManual);
+begin
+  AStop.FManual.FStops.Remove(AStop);
+  AStop.FManual := nil;
+  ADestination.FStops.Add(AStop);
+  AStop.FManual := ADestination;
+end;
+
+procedure TOrgan.MoveStopToStop(AStop, ADestination: TStop);
+var
+  a: Integer;
+begin
+  if AStop <> ADestination then begin
+    a := ADestination.FManual.FStops.IndexOf(ADestination);
+    AStop.FManual.FStops.Remove(AStop);
+    AStop.FManual := nil;
+    ADestination.FManual.FStops.Insert(a, AStop);
+    AStop.FManual := ADestination.FManual;
   end;
 end;
 
@@ -2512,6 +2671,7 @@ begin
   Assert((High(AReleasePaths)=High(AReleaseValues)) and (Low(AReleasePaths)=Low(AReleaseValues)));
   for a := Low(AReleasePaths) to High(AReleasePaths) do
     FReleases.AddObject(AReleasePaths[a], TObject(AReleaseValues[a]));
+  FLoadRelease := FReleases.Count = 0;
 end;
 
 constructor TRank.Create(AOwner: TOrgan);
@@ -2519,7 +2679,7 @@ begin
   inherited Create(AOwner);
   FReleases := TStringList.Create;
   FReleases.Sorted := True;
-  FHarmonicNumber := 3;
+  FHarmonicNumber := 4;
 end;
 
 destructor TRank.Destroy;

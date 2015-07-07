@@ -93,6 +93,8 @@ This tab will let the user manage pipe samples. Assuming the available samples f
 
 By dragging and dropping ranks onto the list on the right, the user can group ranks together to define \textit{stops}. A stop is a group of ranks. Usually, there is one rank per stop, however, some samplesets (for instance surround samplesets) have several samples for each pipe. In that case, associated ranks should be grouped together under the same stop. Defining en audio channel for such grouped ranks make it easier to assign audio groups in GrandOrgue when working with multichannel sample sets.
 
+Also, an important feature is the ability to set the harmonic number of ranks. This setting should be set to the harmonic height of the corresponding real-world pipe rank height (eg. 16', 8', 4' etc.). This value is used by GrandOrgue to correctly apply temperaments. OrganBuilder has an experimental feature to deal with varying harmonic number ranks like mixtures. For such ranks, the experimental \textit{autodetect} setting can be used. However, if harmonic numbers are not set properly, GrandOrgue temperament corrections might be wrong unless \textit{Ignore pitch info in organ samples wav files} is checked in GrandOrgue organ settings.
+
 \subsection{The \textit{Panel layout} tab}
 
 This tab will let the user define the layout of the main organ panel, once the available couplers, tremulants, families and stops have been defined through the previous tabs.
