@@ -262,10 +262,11 @@ const
 {$ENDIF}
 begin
   inherited;
-  FLangFolder := ExtractFilePath(Application.ExeName) + 'Lang\';
 {$IFDEF PORTABLE}
-  FConfigurationFolder := ExtractFilePath(Application.ExeName);
+  FLangFolder := 'Lang/';
+  FConfigurationFolder := '';
 {$ELSE}
+  FLangFolder := ExtractFilePath(Application.ExeName) + 'Lang\';
   if not GetSpecialFolderPath(CSIDL_COMMON_APPDATA, s) then begin
     MessageBox(0, PChar(S_CouldNotLocateAppDataFolder), nil, MB_ICONERROR or MB_SETFOREGROUND);
     FConfigurationFolder := '';
@@ -280,7 +281,7 @@ begin
   if FindFirst(FLangFolder + '*.dat', faAnyFile, r) = 0 then
     try
       repeat
-        FLocalizations.Add(TLocalization.Create(FLangFolder + '\' + r.Name));
+        FLocalizations.Add(TLocalization.Create(FLangFolder + r.Name));
       until FindNext(r) <> 0;
     finally
       FindClose(r);
@@ -310,7 +311,7 @@ begin
       if Assigned(FSmallFlag) then
         c := ComboBoxLanguage.Items.AddObject(FDisplayName, TObject(ImageListFlags.Add(FSmallFlag, nil)))
       else
-        c := ComboBoxLanguage.Items.AddObject(FDisplayName, TObject(-1));
+        c := ComboBoxLanguage.Items.AddObject(FDisplayName, TObject(-2));
       if FDefault then
         FDefaultLocalizationIndex := c;
       if (FDefaultLocalizationIndex = -1) and (UpperCase(FName) = 'ENGLISH') then

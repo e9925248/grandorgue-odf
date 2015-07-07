@@ -17,6 +17,7 @@ DefaultDirName={pf}\OrganBuilder
 DefaultGroupName=Organ Builder
 AllowNoIcons=yes
 LicenseFile=License.txt
+InfoAfterFile=Postscript.txt
 OutputDir=..\..
 OutputBaseFilename=OrganBuilderSetup_{#Version}
 Compression=lzma

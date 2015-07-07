@@ -4,10 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, IniFiles, StdCtrls, Grids, ValEdit, ComCtrls, XPMan,
+  Dialogs, IniFiles, StdCtrls, Grids, ComCtrls, XPMan,
   ExtCtrls, Buttons, Organ, ToolWin, Menus, MMSystem, VirtualTrees, ImgList,
   ActiveX, ShellAPI, ComObj, ListenFormUnit, CheckLst, ObjectMatrixFrameUnit,
-  Themes, UxTheme, AppEvnts, ShlObj, WoodFormUnit, ScanFormUnit, ExportFormUnit,
+  Themes, UxTheme, ShlObj, WoodFormUnit, ScanFormUnit, ExportFormUnit,
   WarningFormUnit, ConfigurationFormUnit, SplashFormUnit;
 
 type
@@ -324,7 +324,6 @@ type
     MenuItemHelpIndex: TMenuItem;
     MenuItemSeparator4: TMenuItem;
     MenuItemAbout: TMenuItem;
-    ApplicationEvents: TApplicationEvents;
     OpenDialogProject: TOpenDialog;
     SaveDialogProject: TSaveDialog;
     SaveDialogExport: TSaveDialog;
@@ -452,7 +451,6 @@ type
     procedure PaintBoxEnclosuresExamplePaint(Sender: TObject);
     procedure MenuItemSettingsClick(Sender: TObject);
     procedure MenuItemAboutClick(Sender: TObject);
-    procedure ApplicationEventsDeactivate(Sender: TObject);
     procedure MenuItemFileClick(Sender: TObject);
     procedure MenuItemHelpIndexClick(Sender: TObject);
   private
@@ -1901,6 +1899,18 @@ procedure TMainForm.VirtualStringTreeCouplersAfterCellPaint(Sender: TBaseVirtual
   TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   CellRect: TRect);
 
+  function GetWineAvail: boolean;
+  var H: cardinal;
+  begin
+   Result := False;
+   H := LoadLibrary('ntdll.dll');
+   if H > HINSTANCE_ERROR then
+   begin
+     Result := Assigned(GetProcAddress(H, 'wine_get_version'));
+     FreeLibrary(H);
+   end;
+  end;
+
   procedure DrawCheckBox(Sender: TVirtualStringTree; const Canvas: TCanvas; const Rect: TRect; const Checked: Boolean);
   var
     Details: TThemedElementDetails;
@@ -1910,7 +1920,7 @@ procedure TMainForm.VirtualStringTreeCouplersAfterCellPaint(Sender: TBaseVirtual
   const
     CHECKBOX_SIZE = 13;
   begin
-    if ((Sender is TVirtualStringTree) and (toThemeAware in TVirtualStringTree(Sender).TreeOptions.PaintOptions)) or ThemeServices.ThemesEnabled then begin
+    if ThemeServices.ThemesEnabled and not GetWineAvail then begin
       if Checked then
         Details := ThemeServices.GetElementDetails(tbCheckBoxCheckedNormal)
       else
@@ -1944,6 +1954,7 @@ begin
     with POrganNode(Sender.GetNodeData(HitInfo.HitNode))^ do
       with FOrgan.Couplers[FCurrentOrganObject as TManual, Data as TManual, TCouplerDelta(HitInfo.HitColumn - 1)] do
         Active := not Active;
+    FOrgan.MarkModified;
     FDataSync := FDataSync - [dsStopStructure, dsPanelStructure];
     UpdateGUI;
   end;
@@ -2595,11 +2606,6 @@ end;
 procedure TMainForm.MenuItemAboutClick(Sender: TObject);
 begin
   SplashForm.Execute;
-end;
-
-procedure TMainForm.ApplicationEventsDeactivate(Sender: TObject);
-begin
-  SplashForm.Hide;
 end;
 
 procedure TMainForm.MenuItemFileClick(Sender: TObject);

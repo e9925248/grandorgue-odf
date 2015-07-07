@@ -2,6 +2,7 @@ program OrganBuilder;
 
 uses
   Windows,
+  Classes,
   Graphics,
   Forms,
   MainFormUnit in 'MainFormUnit.pas' {MainForm},
@@ -51,6 +52,7 @@ begin
         end;
       end;
   end;
+  TStringList(Screen.Fonts).CaseSensitive := False;
 end;
 
 begin

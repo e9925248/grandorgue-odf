@@ -742,7 +742,7 @@ const
 implementation
 
 var
-  GDefaultFontName: string = 'Times new roman';
+  GDefaultFontName: string = 'Times New Roman';
 
   GLabelPositionNames: array[lpTopLeft .. lpBottomRight] of string = (
     'TopLeft', 'BottomLeft', 'TopRight', 'BottomRight'
@@ -752,6 +752,7 @@ type
   TODFFile = class(TMemIniFile)
   public
     procedure WriteBool(const Section, Ident: string; Value: Boolean); override;
+    procedure WritePath(const Section, Ident: string; Value: string; Absolute: Boolean = False);
   end;
 
 { TOrgan }
@@ -897,6 +898,7 @@ end;
 procedure TOrgan.LoadFromFile(AFile: TProjectFile);
 var
   a, b, c, d: Integer;
+  e: TCouplerDelta;
   s: string;
   Manual: TManual;
   StopFamily: TStopFamily;
@@ -944,13 +946,13 @@ begin
     end;
     Stop.FStopFamily := (FStopFamilies[AFile.ReadInteger(s, 'StopFamily', 0)]) as TStopFamily;
   end;
-  SetNumberOfManuals(AFile.ReadInteger('Organ', 'NumberOfManuals', 1));
+  SetNumberOfManuals(AFile.ReadInteger('Organ', 'NumberOfManuals', NumberOfManuals));
   SetHasPedals(AFile.ReadBool('Organ', 'HasPedals', False));
   if HasPedals then
-    b := 0
+    c := 0
   else
-    b := 1;
-  for a := b to NumberOfManuals do begin
+    c := 1;
+  for a := c to NumberOfManuals do begin
     Manual := GetManual(a);
     s := 'Manual' + IntToStr(a);
     Manual.FName := AFile.ReadString(s, 'Name', Manual.FName);
@@ -958,8 +960,8 @@ begin
     Manual.FComment := AFile.ReadString(s, 'Comment', Manual.FComment);
     Manual.FNumberOfKeys := AFile.ReadInteger(s, 'NumberOfKeys', Manual.FNumberOfKeys);
     Manual.FFirstKey := AFile.ReadInteger(s, 'FirstKey', Manual.FFirstKey);
-    c := AFile.ReadInteger(s, 'NumberOfStops', 0);
-    for b := 0 to c - 1 do begin
+    d := AFile.ReadInteger(s, 'NumberOfStops', 0);
+    for b := 0 to d - 1 do begin
       Stop := GetStop(AFile.ReadInteger(s, 'Stop' + IntToStr(b), - 1));
       Manual.FStops.Add(Stop);
       Stop.FManual := Manual;
@@ -973,8 +975,12 @@ begin
     Manual.FTremulant.FStartRate := AFile.ReadInteger(s, 'TremulantStartRate', Manual.FTremulant.FStartRate);
     Manual.FTremulant.FStopRate := AFile.ReadInteger(s, 'TremulantStopRate', Manual.FTremulant.FStopRate);
     Manual.FTremulant.FAmpModDepth := AFile.ReadInteger(s, 'TremulantAmpModDepth', Manual.FTremulant.FAmpModDepth);
+    for b := c to NumberOfManuals do
+      for e := cdMinus8 to cdPlus8 do
+        FCouplers[GetManual(a), GetManual(b), e].FActive := AFile.ReadBool('Couplers', 'Coupler[' + IntToStr(a) + ',' + IntToStr(b) + ',' + IntToStr(Integer(e)) + ']', FCouplers[GetManual(a), GetManual(b), e].FActive);
   end;
   FCouplers.LoadFromFile(AFile, 'Organ', 'Couplers');
+  FCouplers.Update;
   FTremulants.LoadFromFile(AFile, 'Organ', 'Tremulants');
   FEnclosures.LoadFromFile(AFile, 'Organ', 'Enclosures');
   FLayout.LoadFromFile(AFile, 'Layout0');
@@ -1084,8 +1090,7 @@ begin
       AFile.WriteInteger(s, 'Stop' + IntToStr(b), FStops.IndexOf(Manual.GetStop(b)));
     for b := c to NumberOfManuals do
       for d := cdMinus8 to cdPlus8 do
-        if FCouplers[GetManual(a), GetManual(b), d].FActive then
-          AFile.WriteBool('Couplers', 'Coupler[' + IntToStr(a) + ',' + IntToStr(b) + ',' + IntToStr(Integer(d)) + ']', True);
+        AFile.WriteBool('Couplers', 'Coupler[' + IntToStr(a) + ',' + IntToStr(b) + ',' + IntToStr(Integer(d)) + ']', FCouplers[GetManual(a), GetManual(b), d].FActive);
     AFile.WriteInteger(s, 'Appearance', Manual.FAppearance);
     AFile.WriteBool(s, 'Invisible', Manual.FInvisible);
     AFile.WriteBool(s, 'HasEnclosure', Manual.FHasEnclosure);
@@ -1975,8 +1980,8 @@ begin
   FWarnings.Clear;
   n := 0;
   FLayout.Resize;
-  if not SameDrive(InfoFilename, AFileName) then
-    AddWarning(S_Warnings[0], [InfoFilename]);
+//  if not SameDrive(InfoFilename, AFileName) then
+//    AddWarning(S_Warnings[0], [InfoFilename]);
   if (FLayout.FPanelSize.cx in [1 .. 4]) and (GDefaultPanelSizes[FLayout.FPanelSize.cx].cx < FLayout.FAutoSize.cx) then
     AddWarning(S_Warnings[1], [GSizeNames[FLayout.FPanelSize.cx]]);
   if (FLayout.FPanelSize.cy in [1 .. 4]) and (GDefaultPanelSizes[FLayout.FPanelSize.cy].cy < FLayout.FAutoSize.cy) then
@@ -2690,6 +2695,15 @@ begin
   NCM.cbSize := SizeOf(NCM);
   if SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, @NCM, 0) then
     GDefaultFontName := NCM.lfMessageFont.lfFaceName;
+end;
+
+procedure TODFFile.WritePath(const Section, Ident: string; Value: string;
+  Absolute: Boolean);
+begin
+  if not Absolute and SameFilename(ExtractFileDrive(FileName), ExtractFileDrive(Value)) then
+    WriteString(Section, Ident, '.\' + ExtractRelativePath(Filename, Value))
+  else
+    WriteString(Section, Ident, Value);
 end;
 
 { TLabels }

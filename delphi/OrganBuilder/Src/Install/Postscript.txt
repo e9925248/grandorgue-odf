@@ -1,0 +1,5 @@
+Changes for version 1.0.1:
+- Bug fix for couplers not being correctly saved in .odp files
+- Info file path export has been made absolute
+- Wine fix: configuration and lang folders are now relative to executable folder
+- Wine fix: non case-sensitive font names matches
