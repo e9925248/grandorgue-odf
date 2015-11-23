@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2015 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -35,7 +35,7 @@ public class jMakeOdf {
 	}
 
 	private void run(String[] args) {
-		System.out.println("\njMakeOdf 2014-03-26");
+		System.out.println("\njMakeOdf 2015-11-23");
 		System.out.println("Released under a MIT license");
 		System.out.println("Copyright (C) 2014 Marcin Listkowski, Lars Palo");
 		System.out
