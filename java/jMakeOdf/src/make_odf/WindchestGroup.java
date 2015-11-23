@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2015 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -40,12 +40,12 @@ public class WindchestGroup {
 		name = stringParts.get(0);
 		int enclosures = Tokenizer.convertToInt(stringParts.get(1));
 		if (enclosures > 0) {
-			int lastIndex = 0;
+			int lastIndex = 2;
 			for (int j = 0; j < enclosures; j++) {
 				int enclosureRef = Tokenizer.convertToInt(stringParts
 						.get(j + 2));
 				m_Enclosures.add(enclosureRef);
-				lastIndex = j + 2;
+				lastIndex++;
 			}
 			int tremulants = Tokenizer.convertToInt(stringParts.get(lastIndex));
 			for (int j = 0; j < tremulants; j++) {
