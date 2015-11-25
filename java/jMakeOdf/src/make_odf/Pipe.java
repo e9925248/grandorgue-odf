@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2015 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -213,29 +213,12 @@ public class Pipe {
 		return p;
 	}
 
-	public void writeInsideRank(PrintWriter outfile, String pipeNr,
-			boolean isRankPercussive) {
+	public void writePipes(PrintWriter outfile, String pipeNr,
+			boolean isParentPercussive) {
 		if (!isFirstAttackRefPath()) {
 			writePath(outfile, pipeNr);
 			writeIsTremulant(outfile, pipeNr);
-			writeIsPercussive(outfile, isRankPercussive);
-			writeLoadRelease(outfile, pipeNr);
-			writeAdditionalAttacks(outfile, pipeNr);
-			writeAdditionalReleases(outfile, pipeNr);
-		} else {
-			writeRef(outfile, pipeNr);
-		}
-	}
-
-	public void writeInsideStop(PrintWriter outfile, String pipeNr,
-			boolean isStopPercusive) {
-		if (!isFirstAttackRefPath()) {
-			writePath(outfile, pipeNr);
-			writeIsTremulant(outfile, pipeNr);
-			if (pitchTuning != 0) // FIXME that's the only difference with
-									// writeInsideRank: is it intentional?
-				outfile.println(pipeNr + "PitchTuning=" + pitchTuning);
-			writeIsPercussive(outfile, isStopPercusive);
+			writeIsPercussive(outfile, isParentPercussive);
 			writeLoadRelease(outfile, pipeNr);
 			writeAdditionalAttacks(outfile, pipeNr);
 			writeAdditionalReleases(outfile, pipeNr);
@@ -254,8 +237,8 @@ public class Pipe {
 	}
 
 	public void writePath(PrintWriter outfile, String pipeNr) {
-		outfile.println(pipeNr + "=." + File.separator
-				+ attacks.get(0).fileName);
+		String fullLine = pipeNr + "=." +  File.separator	+ attacks.get(0).fileName;
+		outfile.println(fixSeparator(fullLine));
 	}
 
 	public void writeIsTremulant(PrintWriter outfile, String pipeNr) {
@@ -280,8 +263,9 @@ public class Pipe {
 			for (int k = 1; k < attacks.size(); k++) {
 				Attack attack = attacks.get(k);
 				String attackName = pipeNr + "Attack" + NumberUtil.format(k);
-				outfile.println(attackName + "=." + File.separator
-						+ attack.fileName);
+				String fullLine = attackName + "=." + File.separator
+						+ attack.fileName;
+				outfile.println(fixSeparator(fullLine));
 				if (attack.isTremulant != -1)
 					outfile.println(attackName + "IsTremulant="
 							+ attack.isTremulant);
@@ -299,8 +283,9 @@ public class Pipe {
 				Release release = releases.get(k);
 				String releaseName = pipeNr + "Release"
 						+ NumberUtil.format(k + 1);
-				outfile.println(releaseName + "=." + File.separator
-						+ release.fileName);
+				String fullLine = releaseName + "=." + File.separator
+						+ release.fileName;
+				outfile.println(fixSeparator(fullLine));
 				outfile.println(releaseName + "MaxKeyPressTime="
 						+ release.maxKeyPressTime);
 				if (release.isTremulant != -1)
@@ -312,5 +297,11 @@ public class Pipe {
 
 	public void writeRef(PrintWriter outfile, String pipeNr) {
 		outfile.println(pipeNr + "=" + attacks.get(0).fileName);
+	}
+	
+	public String fixSeparator(String pathToCheck) {
+		if (pathToCheck.contains("/"))
+			pathToCheck = pathToCheck.replace("/", "\\");
+		return pathToCheck;
 	}
 }
