@@ -35,9 +35,9 @@ public class jMakeOdf {
 	}
 
 	private void run(String[] args) {
-		System.out.println("\njMakeOdf 2015-11-23");
+		System.out.println("\njMakeOdf 2015-11-25");
 		System.out.println("Released under a MIT license");
-		System.out.println("Copyright (C) 2014 Marcin Listkowski, Lars Palo");
+		System.out.println("Copyright (C) 2015 Marcin Listkowski, Lars Palo");
 		System.out
 				.println("Based on (partly ported from) make_odf by Jean-Luc Derouineau under MIT License\n");
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2015 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,6 +28,12 @@ import java.util.Collections;
 
 public class Organ {
 	String name;
+	String address;
+	String builder;
+	String buildDate;
+	String comments;
+	String recordingDetails;
+	String infoFilename;
 	float amplitudeLevel;
 	float pitchTuning;
 	String dispScreenSizeHoriz;
@@ -46,6 +52,12 @@ public class Organ {
 
 	public Organ() {
 		this.name = "";
+		this.address = "?";
+		this.builder = "?";
+		this.buildDate = "?";
+		this.comments = "?";
+		this.recordingDetails = "?";
+		this.infoFilename = "?";
 		this.amplitudeLevel = 100;
 		this.pitchTuning = 0;
 		this.dispScreenSizeHoriz = "Medium";
@@ -251,12 +263,12 @@ public class Organ {
 
 	public void writeHeader(PrintWriter outfile) {
 		outfile.println("ChurchName=" + name);
-		outfile.println("ChurchAddress=?");
-		outfile.println("OrganBuilder=?");
-		outfile.println("OrganBuildDate=?");
-		outfile.println("OrganComments=?");
-		outfile.println("RecordingDetails=?");
-		outfile.println("InfoFilename=?");
+		outfile.println("ChurchAddress=" + address);
+		outfile.println("OrganBuilder=" + builder);
+		outfile.println("OrganBuildDate=" + buildDate);
+		outfile.println("OrganComments=" + comments);
+		outfile.println("RecordingDetails=" + recordingDetails);
+		outfile.println("InfoFilename=" + infoFilename);
 		if (hasPedals) {
 			outfile.println("NumberOfManuals=" + (m_Manuals.size() - 1));
 			outfile.println("HasPedals=Y");

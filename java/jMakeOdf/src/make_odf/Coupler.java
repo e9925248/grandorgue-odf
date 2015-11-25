@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2015 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -100,11 +100,13 @@ public class Coupler extends Drawstop {
 				+ NumberUtil.format(Manual
 						.translateKeyCode(destinationManualCode)));
 		outfile.println("DestinationKeyshift=" + destinationKeyShift);
-		outfile.println("CoupleToSubsequentUnisonIntermanualCouplers=N");
-		outfile.println("CoupleToSubsequentUpwardIntermanualCouplers=N");
-		outfile.println("CoupleToSubsequentDownwardIntermanualCouplers=N");
-		outfile.println("CoupleToSubsequentUpwardIntramanualCouplers=N");
-		outfile.println("CoupleToSubsequentDownwardIntramanualCouplers=N");
+		if (m_type == CouplerType.NORMAL) {
+			outfile.println("CoupleToSubsequentUnisonIntermanualCouplers=N");
+			outfile.println("CoupleToSubsequentUpwardIntermanualCouplers=N");
+			outfile.println("CoupleToSubsequentDownwardIntermanualCouplers=N");
+			outfile.println("CoupleToSubsequentUpwardIntramanualCouplers=N");
+			outfile.println("CoupleToSubsequentDownwardIntramanualCouplers=N");
+		}
 		if (displayed) {
 			outfile.println("Displayed=Y");
 			outfile.println("DispImageNum=" + dispImageNum);
