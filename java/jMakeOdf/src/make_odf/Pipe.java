@@ -237,7 +237,7 @@ public class Pipe {
 	}
 
 	public void writePath(PrintWriter outfile, String pipeNr) {
-		String fullLine = pipeNr + "=." +  File.separator	+ attacks.get(0).fileName;
+		String fullLine = pipeNr + "=" + attacks.get(0).fileName;
 		outfile.println(fixSeparator(fullLine));
 	}
 
@@ -263,8 +263,7 @@ public class Pipe {
 			for (int k = 1; k < attacks.size(); k++) {
 				Attack attack = attacks.get(k);
 				String attackName = pipeNr + "Attack" + NumberUtil.format(k);
-				String fullLine = attackName + "=." + File.separator
-						+ attack.fileName;
+				String fullLine = attackName + "=" + attack.fileName;
 				outfile.println(fixSeparator(fullLine));
 				if (attack.isTremulant != -1)
 					outfile.println(attackName + "IsTremulant="
@@ -283,8 +282,7 @@ public class Pipe {
 				Release release = releases.get(k);
 				String releaseName = pipeNr + "Release"
 						+ NumberUtil.format(k + 1);
-				String fullLine = releaseName + "=." + File.separator
-						+ release.fileName;
+				String fullLine = releaseName + "=" + release.fileName;
 				outfile.println(fixSeparator(fullLine));
 				outfile.println(releaseName + "MaxKeyPressTime="
 						+ release.maxKeyPressTime);

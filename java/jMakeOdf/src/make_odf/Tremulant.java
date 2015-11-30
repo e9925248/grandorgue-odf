@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2015 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -42,7 +42,7 @@ public class Tremulant extends Drawstop {
 		this.ampModDepth = 18;
 	}
 
-	void read(Tokenizer tok) {
+	void read(Tokenizer tok, Panel p, int i) {
 		List<String> stringParts = tok.readAndSplitLine();
 		name = stringParts.get(0);
 		String type = stringParts.get(1);
@@ -55,24 +55,36 @@ public class Tremulant extends Drawstop {
 			stopRate = Tokenizer.convertToInt(stringParts.get(5));
 			defaultToEngaged = Tokenizer.convertToBoolean(stringParts.get(6));
 
-			displayed = Tokenizer.convertToBoolean(stringParts.get(7));
-			if (displayed) {
-				dispImageNum = Tokenizer.convertToInt(stringParts.get(8));
-				dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(9));
-				dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(10));
-				textBreakWidth = Tokenizer.convertToInt(stringParts.get(11));
+			boolean isDisplayed = Tokenizer.convertToBoolean(stringParts.get(7));
+			if (isDisplayed) {
+				GUIElement element = new GUIElement();
+				element.type = "Tremulant";
+				GUIElement.GUITremulant trem = element.new GUITremulant();
+				trem.tremulant = i + 1;
+				trem.dispImageNum = Tokenizer.convertToInt(stringParts.get(8));
+				trem.dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(9));
+				trem.dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(10));
+				trem.textBreakWidth = Tokenizer.convertToInt(stringParts.get(11));
+				element.m_elements.add(trem);
+				p.m_GUIElements.add(element);
 			}
 			break;
 		case "wave":
 			tremType = stringParts.get(1);
 			defaultToEngaged = Tokenizer.convertToBoolean(stringParts.get(2));
 
-			displayed = Tokenizer.convertToBoolean(stringParts.get(3));
-			if (displayed) {
-				dispImageNum = Tokenizer.convertToInt(stringParts.get(4));
-				dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(5));
-				dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(6));
-				textBreakWidth = Tokenizer.convertToInt(stringParts.get(7));
+			boolean isdisplayed = Tokenizer.convertToBoolean(stringParts.get(3));
+			if (isdisplayed) {
+				GUIElement element = new GUIElement();
+				element.type = "Tremulant";
+				GUIElement.GUITremulant trem = element.new GUITremulant();
+				trem.tremulant = i + 1;
+				trem.dispImageNum = Tokenizer.convertToInt(stringParts.get(4));
+				trem.dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(5));
+				trem.dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(6));
+				trem.textBreakWidth = Tokenizer.convertToInt(stringParts.get(7));
+				element.m_elements.add(trem);
+				p.m_GUIElements.add(element);
 			}
 			break;
 		default:
@@ -100,16 +112,6 @@ public class Tremulant extends Drawstop {
 			outfile.println("StopRate=" + stopRate);
 		} else {
 			outfile.println("TremulantType=" + tremType);
-		}
-		if (displayed) {
-			outfile.println("Displayed=Y");
-			if (textBreakWidth >= 0)
-				outfile.println("TextBreakWidth=" + textBreakWidth);
-			outfile.println("DispDrawstopCol=" + dispDrawstopCol);
-			outfile.println("DispDrawstopRow=" + dispDrawstopRow);
-			outfile.println("DispImageNum=" + dispImageNum);
-		} else {
-			outfile.println("Displayed=N");
 		}
 		if (function == Function.INPUT) {
 			if (defaultToEngaged)

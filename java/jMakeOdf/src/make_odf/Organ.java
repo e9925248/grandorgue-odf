@@ -27,58 +27,65 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Organ {
-	String name;
-	String address;
-	String builder;
-	String buildDate;
-	String comments;
+	String churchName;
+	String churchAddress;
+	String organBuilder;
+	String organBuildDate;
+	String organComments;
 	String recordingDetails;
 	String infoFilename;
-	float amplitudeLevel;
-	float pitchTuning;
-	String dispScreenSizeHoriz;
-	String dispScreenSizeVert;
-	int drawstopCols;
-	int drawstopRows;
-	int extraDrawstopCols;
-	int extraDrawstopRows;
-	ArrayList<Manual> m_Manuals = new ArrayList<Manual>();
+	boolean divisionalsStoreIntermanualCouplers;
+	boolean divisionalsStoreIntramanualCouplers;
+	boolean divisionalsStoreTremulants;
+	boolean generalsStoreDivisionalCouplers;
+	boolean combinationsStoreNonDisplayedDrawstops;
 	boolean hasPedals;
+	float amplitudeLevel;
+	float gain;
+	float pitchTuning;
+	int trackerDelay;
+	ArrayList<Manual> m_Manuals = new ArrayList<Manual>();
 	ArrayList<Enclosure> m_Enclosures = new ArrayList<Enclosure>();
 	ArrayList<Tremulant> m_Tremulants = new ArrayList<Tremulant>();
 	ArrayList<WindchestGroup> m_WindchestGroups = new ArrayList<WindchestGroup>();
+	ArrayList<Panel> m_Panels = new ArrayList<Panel>();
 	ArrayList<Switch> m_Switches = new ArrayList<Switch>();
 	ArrayList<Rank> m_Ranks = new ArrayList<Rank>();
 
 	public Organ() {
-		this.name = "";
-		this.address = "?";
-		this.builder = "?";
-		this.buildDate = "?";
-		this.comments = "?";
+		this.churchName = "";
+		this.churchAddress = "?";
+		this.organBuilder = "?";
+		this.organBuildDate = "?";
+		this.organComments = "?";
 		this.recordingDetails = "?";
 		this.infoFilename = "?";
+		this.divisionalsStoreIntermanualCouplers = true;
+		this.divisionalsStoreIntramanualCouplers = true;
+		this.divisionalsStoreTremulants = true;
+		this.generalsStoreDivisionalCouplers = true;
+		this.combinationsStoreNonDisplayedDrawstops = true;
 		this.amplitudeLevel = 100;
+		this.gain = 0;
 		this.pitchTuning = 0;
-		this.dispScreenSizeHoriz = "Medium";
-		this.dispScreenSizeVert = "Medium";
-		this.drawstopCols = 2;
-		this.drawstopRows = 6;
-		this.extraDrawstopCols = 0;
-		this.extraDrawstopRows = 0;
-		this.hasPedals = true;
+		this.trackerDelay = 0;
+		this.hasPedals = false;
+		Panel mainPanel = new Panel();
+		m_Panels.add(mainPanel);
 	}
 
 	public void read(Tokenizer tok) {
-		name = tok.readLine();
+		churchName = tok.readLine();
 		amplitudeLevel = tok.readFloatLine();
 		pitchTuning = tok.readFloatLine();
-		dispScreenSizeHoriz = tok.readLine();
-		dispScreenSizeVert = tok.readLine();
-		drawstopCols = tok.readIntLine();
-		drawstopRows = tok.readIntLine();
-		extraDrawstopRows = tok.readIntLine();
-		extraDrawstopCols = tok.readIntLine();
+		
+		Panel mainPanel = m_Panels.get(0);
+		mainPanel.m_displayMetrics.dispScreenSizeHoriz = tok.readLine();
+		mainPanel.m_displayMetrics.dispScreenSizeVert = tok.readLine();
+		mainPanel.m_displayMetrics.dispDrawstopCols = tok.readIntLine();
+		mainPanel.m_displayMetrics.dispDrawstopRows = tok.readIntLine();
+		mainPanel.m_displayMetrics.dispExtraDrawstopRows = tok.readIntLine();
+		mainPanel.m_displayMetrics.dispExtraDrawstopCols = tok.readIntLine();
 
 		boolean loadOneSamplePerPipe = Tokenizer.convertToBoolean(tok
 				.readLine());
@@ -87,7 +94,7 @@ public class Organ {
 		for (int i = 0; i < nbSwitches; i++) {
 			Switch sw = new Switch();
 
-			sw.read(tok);
+			sw.read(tok, mainPanel, i);
 
 			m_Switches.add(sw);
 		}
@@ -96,7 +103,7 @@ public class Organ {
 		for (int i = 0; i < nbEnclosures; i++) {
 			Enclosure enc = new Enclosure();
 
-			enc.read(tok);
+			enc.read(tok, mainPanel, i);
 
 			m_Enclosures.add(enc);
 		}
@@ -105,7 +112,7 @@ public class Organ {
 		for (int i = 0; i < nbTremulants; i++) {
 			Tremulant trem = new Tremulant();
 
-			trem.read(tok);
+			trem.read(tok, mainPanel, i);
 
 			m_Tremulants.add(trem);
 		}
@@ -123,7 +130,7 @@ public class Organ {
 		for (int i = 0; i < keybNumber; i++) {
 			Manual m = new Manual();
 
-			m.read(tok, loadOneSamplePerPipe);
+			m.read(tok, loadOneSamplePerPipe, mainPanel);
 
 			m_Manuals.add(m);
 		}
@@ -258,15 +265,30 @@ public class Organ {
 
 			outfile.println();
 		}
+		
+		// Panel section
+		if (!m_Panels.isEmpty())
+			System.out.println("Writing panel section");
+		for (int i = 0; i < m_Panels.size(); i++) {
+			outfile.println("[Panel" + NumberUtil.format(i) + "]");
+			Panel panel_ = m_Panels.get(i);
+			if (i > 0) {
+				outfile.println("Name=" + panel_.name);
+				outfile.println("Group=" + panel_.group);
+			}
+			panel_.write(outfile, i);
+
+			outfile.println();
+		}
 		System.out.println("Done writing ODF file!");
 	}
 
 	public void writeHeader(PrintWriter outfile) {
-		outfile.println("ChurchName=" + name);
-		outfile.println("ChurchAddress=" + address);
-		outfile.println("OrganBuilder=" + builder);
-		outfile.println("OrganBuildDate=" + buildDate);
-		outfile.println("OrganComments=" + comments);
+		outfile.println("ChurchName=" + churchName);
+		outfile.println("ChurchAddress=" + churchAddress);
+		outfile.println("OrganBuilder=" + organBuilder);
+		outfile.println("OrganBuildDate=" + organBuildDate);
+		outfile.println("OrganComments=" + organComments);
 		outfile.println("RecordingDetails=" + recordingDetails);
 		outfile.println("InfoFilename=" + infoFilename);
 		if (hasPedals) {
@@ -285,43 +307,37 @@ public class Organ {
 		outfile.println("NumberOfDivisionalCouplers=0");
 		outfile.println("NumberOfImages=0");
 		outfile.println("NumberOfSetterElements=0");
-		outfile.println("NumberOfPanels=0");
+		outfile.println("NumberOfPanels=" + (m_Panels.size() - 1));
 		outfile.println("NumberOfRanks=" + m_Ranks.size());
 		outfile.println("NumberOfSwitches=" + m_Switches.size());
-		outfile.println("DispDrawstopCols=" + drawstopCols);
-		outfile.println("DispDrawstopRows=" + drawstopRows);
-		outfile.println("DispDrawstopColsOffset=N");
-		outfile.println("DispDrawstopOuterColOffsetUp=N");
-		outfile.println("DispPairDrawstopCols=N");
-		outfile.println("DispExtraDrawstopCols=" + extraDrawstopCols);
-		outfile.println("DispExtraDrawstopRows=" + extraDrawstopRows);
-		outfile.println("DispExtraDrawstopRowsAboveExtraButtonRows=N");
-		outfile.println("DispScreenSizeHoriz=" + dispScreenSizeHoriz);
-		outfile.println("DispScreenSizeVert=" + dispScreenSizeVert);
-		outfile.println("DispControlLabelFont=Arial");
-		outfile.println("DispShortcutKeyLabelFont=Arial");
-		outfile.println("DispShortcutKeyLabelColour=Yellow");
-		outfile.println("DispGroupLabelFont=Arial");
-		outfile.println("DispDrawstopBackgroundImageNum=7");
-		outfile.println("DispConsoleBackgroundImageNum=43");
-		outfile.println("DispKeyHorizBackgroundImageNum=8");
-		outfile.println("DispKeyVertBackgroundImageNum=37");
-		outfile.println("DispDrawstopInsetBackgroundImageNum=5");
-		outfile.println("DispExtraButtonRows=1");
-		outfile.println("DispButtonCols=10");
-		outfile.println("DispExtraPedalButtonRow=N");
-		outfile.println("DispExtraPedalButtonRowOffset=Y");
-		outfile.println("DispExtraPedalButtonRowOffsetRight=Y");
-		outfile.println("DispButtonsAboveManuals=N");
-		outfile.println("DispTrimAboveExtraRows=Y");
-		outfile.println("DispTrimAboveManuals=Y");
-		outfile.println("DispTrimBelowManuals=N");
-		outfile.println("DivisionalsStoreTremulants=Y");
-		outfile.println("DivisionalsStoreIntermanualCouplers=Y");
-		outfile.println("DivisionalsStoreIntramanualCouplers=Y");
-		outfile.println("GeneralsStoreDivisionalCouplers=Y");
-		outfile.println("CombinationsStoreNonDisplayedDrawstops=Y");
-		outfile.println("AmplitudeLevel=" + amplitudeLevel);
+		if (divisionalsStoreTremulants)
+			outfile.println("DivisionalsStoreTremulants=Y");
+		else
+			outfile.println("DivisionalsStoreTremulants=N");
+		if (divisionalsStoreIntermanualCouplers)
+			outfile.println("DivisionalsStoreIntermanualCouplers=Y");
+		else
+			outfile.println("DivisionalsStoreIntermanualCouplers=N");
+		if (divisionalsStoreIntramanualCouplers)
+			outfile.println("DivisionalsStoreIntramanualCouplers=Y");
+		else
+			outfile.println("DivisionalsStoreIntramanualCouplers=N");
+		if (generalsStoreDivisionalCouplers)
+			outfile.println("GeneralsStoreDivisionalCouplers=Y");
+		else
+			outfile.println("GeneralsStoreDivisionalCouplers=N");
+		if (combinationsStoreNonDisplayedDrawstops)
+			outfile.println("CombinationsStoreNonDisplayedDrawstops=Y");
+		else
+			outfile.println("CombinationsStoreNonDisplayedDrawstops=N");
+		if (amplitudeLevel != 100)
+			outfile.println("AmplitudeLevel=" + amplitudeLevel);
+		if (gain != 0)
+			outfile.println("Gain=" + gain);
+		if (pitchTuning != 0)
+			outfile.println("PitchTuning=" + pitchTuning);
+		if (trackerDelay != 0)
+			outfile.println("TrackerDelay=" + trackerDelay);
 	}
 
 }

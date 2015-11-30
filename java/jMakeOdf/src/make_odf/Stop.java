@@ -52,7 +52,7 @@ public class Stop extends Drawstop implements IPipeSet {
 		this.m_windchestGroup = 1;
 	}
 
-	void readHeader(Tokenizer tok) {
+	void readHeader(Tokenizer tok, Panel p, int orderNr, String keyboardCode) {
 		List<String> stringParts = tok.readAndSplitLine();
 		name = stringParts.get(0);
 		numberOfAccessiblePipes = Tokenizer.convertToInt(stringParts.get(1));
@@ -65,12 +65,19 @@ public class Stop extends Drawstop implements IPipeSet {
 		m_windchestGroup = Tokenizer.convertToInt(stringParts.get(7));
 		isPercussive = Tokenizer.convertToBoolean(stringParts.get(8));
 		defaultToEngaged = Tokenizer.convertToBoolean(stringParts.get(9));
-		displayed = Tokenizer.convertToBoolean(stringParts.get(10));
-		if (displayed) {
-			dispImageNum = Tokenizer.convertToInt(stringParts.get(11));
-			dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(12));
-			dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(13));
-			textBreakWidth = Tokenizer.convertToInt(stringParts.get(14));
+		boolean isDisplayed = Tokenizer.convertToBoolean(stringParts.get(10));
+		if (isDisplayed) {
+			GUIElement element = new GUIElement();
+			element.type = "Stop";
+			GUIElement.GUIStop stop = element.new GUIStop();
+			stop.keyboardCode = keyboardCode;
+			stop.stop = orderNr + 1;
+			stop.dispImageNum = Tokenizer.convertToInt(stringParts.get(11));
+			stop.dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(12));
+			stop.dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(13));
+			stop.textBreakWidth = Tokenizer.convertToInt(stringParts.get(14));
+			element.m_elements.add(stop);
+			p.m_GUIElements.add(element);
 		}
 	}
 
@@ -89,9 +96,9 @@ public class Stop extends Drawstop implements IPipeSet {
 		return pipesLoaded;
 	}
 
-	public void read(Tokenizer tok, boolean loadOneSamplePerPipe) {
+	public void read(Tokenizer tok, boolean loadOneSamplePerPipe, Panel p, int orderNr, String keyboardCode) {
 		List<String> stringParts;
-		readHeader(tok);
+		readHeader(tok, p, orderNr, keyboardCode);
 
 		int pipesLoaded = 0;
 		System.out.println("Trying to read pipes for stop " + name);
@@ -149,19 +156,6 @@ public class Stop extends Drawstop implements IPipeSet {
 				outfile.println("DefaultToEngaged=Y");
 			else
 				outfile.println("DefaultToEngaged=N");
-		}
-		if (displayed) {
-			outfile.println("Displayed=Y");
-			outfile.println("DispImageNum=" + dispImageNum);
-			outfile.println("DispDrawstopCol=" + dispDrawstopCol);
-			outfile.println("DispDrawstopRow=" + dispDrawstopRow);
-			outfile.println("DispLabelColour=Black");
-			outfile.println("DispLabelFontSize=Normal");
-			outfile.println("DisplayInInvertedState=N");
-			if (textBreakWidth >= 0)
-				outfile.println("TextBreakWidth=" + textBreakWidth);
-		} else {
-			outfile.println("Displayed=N");
 		}
 		if (m_Ranks.isEmpty()) {
 			// This stop has pipes

@@ -37,7 +37,7 @@ public class Coupler extends Drawstop {
 		this.m_type = CouplerType.NORMAL;
 	}
 
-	void read(Tokenizer tok) {
+	void read(Tokenizer tok, Panel p, int orderNr, String keyboardCode) {
 		List<String> stringParts = tok.readAndSplitLine();
 		name = stringParts.get(0);
 		String couplerString = stringParts.get(1);
@@ -74,10 +74,17 @@ public class Coupler extends Drawstop {
 		defaultToEngaged = Tokenizer.convertToBoolean(stringParts.get(4));
 		displayed = Tokenizer.convertToBoolean(stringParts.get(5));
 		if (displayed) {
-			dispImageNum = Tokenizer.convertToInt(stringParts.get(6));
-			dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(7));
-			dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(8));
-			textBreakWidth = Tokenizer.convertToInt(stringParts.get(9));
+			GUIElement element = new GUIElement();
+			element.type = "Coupler";
+			GUIElement.GUICoupler cplr = element.new GUICoupler();
+			cplr.dispImageNum = Tokenizer.convertToInt(stringParts.get(6));
+			cplr.dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(7));
+			cplr.dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(8));
+			cplr.textBreakWidth = Tokenizer.convertToInt(stringParts.get(9));
+			cplr.keyboardCode = keyboardCode;
+			cplr.coupler = orderNr + 1;
+			element.m_elements.add(cplr);
+			p.m_GUIElements.add(element);
 		}
 		stringParts = tok.readAndSplitLine();
 		function = Enum.valueOf(Function.class, stringParts.get(0)
@@ -107,17 +114,6 @@ public class Coupler extends Drawstop {
 			outfile.println("CoupleToSubsequentUpwardIntramanualCouplers=N");
 			outfile.println("CoupleToSubsequentDownwardIntramanualCouplers=N");
 		}
-		if (displayed) {
-			outfile.println("Displayed=Y");
-			outfile.println("DispImageNum=" + dispImageNum);
-			outfile.println("DispDrawstopCol=" + dispDrawstopCol);
-			outfile.println("DispDrawstopRow=" + dispDrawstopRow);
-			outfile.println("DispLabelColour=Black");
-			outfile.println("DispLabelFontSize=Normal");
-			if (textBreakWidth >= 0)
-				outfile.println("TextBreakWidth=" + textBreakWidth);
-		} else
-			outfile.println("Displayed=N");
 		if (function == Function.INPUT) {
 			if (defaultToEngaged)
 				outfile.println("DefaultToEngaged=Y");

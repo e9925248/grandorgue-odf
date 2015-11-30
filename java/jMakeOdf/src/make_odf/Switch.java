@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2015 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,16 +30,22 @@ public class Switch extends Drawstop {
 		super();
 	}
 
-	void read(Tokenizer tok) {
+	void read(Tokenizer tok, Panel p, int orderNr) {
 		List<String> stringParts = tok.readAndSplitLine();
 		name = stringParts.get(0);
 		defaultToEngaged = Tokenizer.convertToBoolean(stringParts.get(1));
 		displayed = Tokenizer.convertToBoolean(stringParts.get(2));
 		if (displayed) {
-			dispImageNum = Tokenizer.convertToInt(stringParts.get(3));
-			dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(4));
-			dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(5));
-			textBreakWidth = Tokenizer.convertToInt(stringParts.get(6));
+			GUIElement element = new GUIElement();
+			element.type = "Switch";
+			GUIElement.GUISwitch guiSw = element.new GUISwitch();
+			guiSw.switchNumber = orderNr;
+			guiSw.dispImageNum = Tokenizer.convertToInt(stringParts.get(3));
+			guiSw.dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(4));
+			guiSw.dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(5));
+			guiSw.textBreakWidth = Tokenizer.convertToInt(stringParts.get(6));
+			element.m_elements.add(guiSw);
+			p.m_GUIElements.add(element);
 		}
 		stringParts = tok.readAndSplitLine();
 		function = Enum.valueOf(Function.class, stringParts.get(0)
@@ -58,18 +64,5 @@ public class Switch extends Drawstop {
 			outfile.println("DefaultToEngaged=Y");
 		else
 			outfile.println("DefaultToEngaged=N");
-		if (displayed) {
-			outfile.println("Displayed=Y");
-			outfile.println("DispImageNum=" + dispImageNum);
-			outfile.println("DispDrawstopCol=" + dispDrawstopCol);
-			outfile.println("DispDrawstopRow=" + dispDrawstopRow);
-			outfile.println("DispLabelColour=Black");
-			outfile.println("DispLabelFontSize=Normal");
-			outfile.println("DisplayInInvertedState=N");
-			if (textBreakWidth >= 0)
-				outfile.println("TextBreakWidth=" + textBreakWidth);
-		} else {
-			outfile.println("Displayed=N");
-		}
 	}
 }

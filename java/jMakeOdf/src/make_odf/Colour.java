@@ -22,40 +22,38 @@
 
 package make_odf;
 
-import java.io.PrintWriter;
-import java.util.List;
-
-public class Enclosure {
-	String name;
-	int ampMinimumLevel;
-	int MIDIInputNumber;
+public enum Colour {
+	BLACK("Black"),
+	BLUE("Blue"),
+	DARK_BLUE("Dark blue"),
+	GREEN("Green"),
+	DARK_GREEN("Dark green"),
+	CYAN("Cyan"),
+	DARK_CYAN("Dark cyan"),
+	RED("Red"),
+	DARK_RED("Dark red"),
+	MAGENTA("Magenta"),
+	DARK_MAGENTA("Dark magenta"),
+	YELLOW("Yellow"),
+	DARK_YELLOW("Dark yellow"),
+	LIGHT_GREY("Light grey"),
+	DARK_GREY("Dark grey"),
+	WHITE("White"),
+	BROWN("Brown"),
+	HTML("Html");
 	
-	public Enclosure() {
-		this.name = "";
-		this.ampMinimumLevel = 1;
-		MIDIInputNumber = 0;
+	public final String colour;
+	private String HtmlColour;
+
+	public String getHtmlColour() {
+		return HtmlColour;
 	}
 
-	void read(Tokenizer tok, Panel p, int i) {
-		List<String> stringParts = tok.readAndSplitLine();
-		name = stringParts.get(0);
-		ampMinimumLevel = Tokenizer.convertToInt(stringParts.get(1));
-		boolean isDisplayed = Tokenizer.convertToBoolean(stringParts.get(2));
-		int textBreakWidth = Tokenizer.convertToInt(stringParts.get(3));
-		if (isDisplayed) {
-			GUIElement element = new GUIElement();
-			element.type = "Enclosure";
-			GUIElement.GUIEnclosure enc = element.new GUIEnclosure();
-			enc.enclosure = i + 1;
-			enc.textBreakWidth = textBreakWidth;
-			element.m_elements.add(enc);
-			p.m_GUIElements.add(element);
-		}
+	public void setHtmlColour(String htmlColour) {
+		HtmlColour = htmlColour;
 	}
 
-	public void write(PrintWriter outfile, int midiInputNumber) {
-		outfile.println("Name=" + name);
-		outfile.println("AmpMinimumLevel=" + ampMinimumLevel);
-		outfile.println("MIDIInputNumber=" + midiInputNumber);
+	Colour(String str) {
+		colour = str;
 	}
 }
