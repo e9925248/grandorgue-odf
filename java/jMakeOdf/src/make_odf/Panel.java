@@ -23,39 +23,38 @@
 package make_odf;
 
 import java.io.PrintWriter;
-import java.util.List;
+import java.util.ArrayList;
 
-public class Enclosure {
+public class Panel {
 	String name;
-	int ampMinimumLevel;
-	int MIDIInputNumber;
+	String group;
+	boolean hasPedals;
+	DisplayMetrics m_displayMetrics;
+	ArrayList<Image> m_Images = new ArrayList<Image>();
+	ArrayList<GUIElement> m_GUIElements = new ArrayList<GUIElement>();
 	
-	public Enclosure() {
+	Panel() {
 		this.name = "";
-		this.ampMinimumLevel = 1;
-		MIDIInputNumber = 0;
+		this.group = "";
+		this.hasPedals = false;
+		m_displayMetrics = new DisplayMetrics();
 	}
-
-	void read(Tokenizer tok, Panel p, int i) {
-		List<String> stringParts = tok.readAndSplitLine();
-		name = stringParts.get(0);
-		ampMinimumLevel = Tokenizer.convertToInt(stringParts.get(1));
-		boolean isDisplayed = Tokenizer.convertToBoolean(stringParts.get(2));
-		int textBreakWidth = Tokenizer.convertToInt(stringParts.get(3));
-		if (isDisplayed) {
-			GUIElement element = new GUIElement();
-			element.type = "Enclosure";
-			GUIElement.GUIEnclosure enc = element.new GUIEnclosure();
-			enc.enclosure = i + 1;
-			enc.textBreakWidth = textBreakWidth;
-			element.m_elements.add(enc);
-			p.m_GUIElements.add(element);
+	
+	public void write(PrintWriter outfile, int orderNr) {
+		if (this.hasPedals) {
+			outfile.println("HasPedals=Y");
+		} else {
+			outfile.println("HasPedals=N");
 		}
-	}
-
-	public void write(PrintWriter outfile, int midiInputNumber) {
-		outfile.println("Name=" + name);
-		outfile.println("AmpMinimumLevel=" + ampMinimumLevel);
-		outfile.println("MIDIInputNumber=" + midiInputNumber);
+		m_displayMetrics.write(outfile);
+		outfile.println("NumberOfImages=" + m_Images.size());
+		outfile.println("NumberOfGUIElements=" + m_GUIElements.size());
+		outfile.println();
+		for (int i = 0; i < m_GUIElements.size(); i++) {
+			outfile.println("[Panel" + NumberUtil.format(orderNr) + "Element" + NumberUtil.format(i + 1) + "]");
+			GUIElement element_ = m_GUIElements.get(i);
+			element_.write(outfile);
+			outfile.println();
+		}
 	}
 }

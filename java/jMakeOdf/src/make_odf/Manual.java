@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2015 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,7 +31,6 @@ public class Manual implements Comparable<Manual> {
 	String keyboardCode;
 	int keyboardSize;
 	int keyboardFirstMidiCode;
-	boolean isDisplayed;
 	ArrayList<Coupler> m_Couplers = new ArrayList<Coupler>();
 	ArrayList<Stop> m_Stops = new ArrayList<Stop>();
 	ArrayList<Integer> m_Tremulants = new ArrayList<Integer>();
@@ -42,7 +41,6 @@ public class Manual implements Comparable<Manual> {
 		keyboardCode = "";
 		keyboardSize = 0;
 		keyboardFirstMidiCode = 0;
-		isDisplayed = true;
 	}
 
 	@Override
@@ -91,23 +89,33 @@ public class Manual implements Comparable<Manual> {
 		}
 	}
 
-	void readHeader(Tokenizer tok) {
+	void readHeader(Tokenizer tok, Panel p) {
 		List<String> stringParts = tok.readAndSplitLine();
 		keyboardName = stringParts.get(0);
 		keyboardCode = stringParts.get(1);
 		keyboardSize = Tokenizer.convertToInt(stringParts.get(2));
 		keyboardFirstMidiCode = Tokenizer.convertToInt(stringParts.get(3));
-		isDisplayed = Tokenizer.convertToBoolean(stringParts.get(4));
+		boolean isDisplayed = Tokenizer.convertToBoolean(stringParts.get(4));
+		if (isDisplayed) {
+			GUIElement element = new GUIElement();
+			element.type = "Manual";
+			GUIElement.GUIManual man = element.new GUIManual();
+			man.keyboardCode = this.keyboardCode;
+			element.m_elements.add(man);
+			p.m_GUIElements.add(element);
+			if (isPedalCode(keyboardCode))
+				p.hasPedals = true;
+		}
 	}
 
-	public void read(Tokenizer tok, boolean loadOneSamplePerPipe) {
-		readHeader(tok);
+	public void read(Tokenizer tok, boolean loadOneSamplePerPipe, Panel p) {
+		readHeader(tok, p);
 
 		int nbCouplers = tok.readIntLine();
 		for (int j = 0; j < nbCouplers; j++) {
 			Coupler cp = new Coupler();
 
-			cp.read(tok);
+			cp.read(tok, p, j, keyboardCode);
 
 			m_Couplers.add(cp);
 		}
@@ -120,7 +128,7 @@ public class Manual implements Comparable<Manual> {
 		for (int j = 0; j < nbStops; j++) {
 			Stop s = new Stop();
 
-			s.read(tok, loadOneSamplePerPipe);
+			s.read(tok, loadOneSamplePerPipe, p, j, keyboardCode);
 
 			m_Stops.add(s);
 		}
@@ -161,11 +169,6 @@ public class Manual implements Comparable<Manual> {
 		writeCouplersReferences(outfile, counters);
 		writeTremulantsReferences(outfile);
 		outfile.println("NumberOfDivisionals=0");
-		if (isDisplayed) {
-			outfile.println("Displayed=Y");
-			outfile.println("DispKeyColourInverted=N");
-		} else
-			outfile.println("Displayed=N");
 	}
 
 	public void writeCouplersReferences(PrintWriter outfile, Counters counters) {

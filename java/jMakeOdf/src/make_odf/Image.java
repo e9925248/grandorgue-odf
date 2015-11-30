@@ -22,40 +22,13 @@
 
 package make_odf;
 
-import java.io.PrintWriter;
-import java.util.List;
-
-public class Enclosure {
-	String name;
-	int ampMinimumLevel;
-	int MIDIInputNumber;
-	
-	public Enclosure() {
-		this.name = "";
-		this.ampMinimumLevel = 1;
-		MIDIInputNumber = 0;
-	}
-
-	void read(Tokenizer tok, Panel p, int i) {
-		List<String> stringParts = tok.readAndSplitLine();
-		name = stringParts.get(0);
-		ampMinimumLevel = Tokenizer.convertToInt(stringParts.get(1));
-		boolean isDisplayed = Tokenizer.convertToBoolean(stringParts.get(2));
-		int textBreakWidth = Tokenizer.convertToInt(stringParts.get(3));
-		if (isDisplayed) {
-			GUIElement element = new GUIElement();
-			element.type = "Enclosure";
-			GUIElement.GUIEnclosure enc = element.new GUIEnclosure();
-			enc.enclosure = i + 1;
-			enc.textBreakWidth = textBreakWidth;
-			element.m_elements.add(enc);
-			p.m_GUIElements.add(element);
-		}
-	}
-
-	public void write(PrintWriter outfile, int midiInputNumber) {
-		outfile.println("Name=" + name);
-		outfile.println("AmpMinimumLevel=" + ampMinimumLevel);
-		outfile.println("MIDIInputNumber=" + midiInputNumber);
-	}
+public class Image {
+	String image;
+	String mask;
+	int positionX;
+	int PositionY;
+	int width;
+	int height;
+	int tileOffsetX;
+	int tileOffsetY;
 }
