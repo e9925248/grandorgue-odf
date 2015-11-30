@@ -9,7 +9,7 @@ parameter. Read the USAGE_GUIDE.txt file for more information and also look
 at the definition_example.txt.
 
 jMakeOdf is released under a MIT license
-Copyright (C) 2014 Marcin Listkowski, Lars Palo
+Copyright (C) 2015 Marcin Listkowski, Lars Palo
 
 
 This software requires Java in version 1.7 at least.
