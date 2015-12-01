@@ -118,13 +118,7 @@ public class Stop extends Drawstop implements IPipeSet {
 	}
 
 	public void write(PrintWriter outfile) {
-		outfile.println("Name=" + name);
-		if (function != Function.INPUT) {
-			// This stop has switches
-			outfile.println("Function=" + function.func);
-			outfile.println("SwitchCount=" + m_switches.size());
-			OdfWriter.writeReferences(outfile, "Switch", m_switches);
-		}
+		super.write(outfile);
 		if (!m_Ranks.isEmpty()) {
 			// This stop has ranks
 			outfile.println("NumberOfRanks=" + m_Ranks.size());
@@ -150,12 +144,6 @@ public class Stop extends Drawstop implements IPipeSet {
 			outfile.println("PitchTuning=" + pitchTuning);
 			outfile.println("PitchCorrection=" + pitchCorrection);
 			outfile.println("HarmonicNumber=" + harmonicNumber);
-		}
-		if (function == Function.INPUT) {
-			if (defaultToEngaged)
-				outfile.println("DefaultToEngaged=Y");
-			else
-				outfile.println("DefaultToEngaged=N");
 		}
 		if (m_Ranks.isEmpty()) {
 			// This stop has pipes

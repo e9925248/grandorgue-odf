@@ -35,7 +35,7 @@ public class jMakeOdf {
 	}
 
 	private void run(String[] args) {
-		System.out.println("\njMakeOdf 2015-11-30");
+		System.out.println("\njMakeOdf 2015-12-01");
 		System.out.println("Released under a MIT license");
 		System.out.println("Copyright (C) 2015 Marcin Listkowski, Lars Palo");
 		System.out

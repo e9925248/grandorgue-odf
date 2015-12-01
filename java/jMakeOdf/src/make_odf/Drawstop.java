@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2015 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,6 +22,7 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class Drawstop extends Button {
@@ -29,11 +30,37 @@ public class Drawstop extends Button {
 	ArrayList<Integer> m_switches = new ArrayList<Integer>();
 	boolean defaultToEngaged;
 	int gcState;
+	boolean storeInDivisional;
+	boolean storeInGeneral;
 
 	public Drawstop() {
 		super();
 		this.function = Function.INPUT;
 		this.defaultToEngaged = false;
 		this.gcState = 0;
+		this.storeInDivisional = true;
+		this.storeInGeneral = true;
+	}
+	
+	public void write(PrintWriter outfile) {
+		super.write(outfile);
+		if (function != Function.INPUT) {
+			// The object has switches
+			outfile.println("Function=" + function.func);
+			outfile.println("SwitchCount=" + m_switches.size());
+			OdfWriter.writeReferences(outfile, "Switch", m_switches);
+		}
+		if (function == Function.INPUT) {
+			if (defaultToEngaged)
+				outfile.println("DefaultToEngaged=Y");
+			else
+				outfile.println("DefaultToEngaged=N");
+		}
+		if (gcState != 0)
+			outfile.println("GCState=" + gcState);
+		if (!storeInDivisional)
+			outfile.println("StoreInDivisional=N");
+		if (!storeInGeneral)
+			outfile.println("StoreInGeneral=N");
 	}
 }

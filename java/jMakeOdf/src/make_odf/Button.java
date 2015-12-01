@@ -22,26 +22,28 @@
 
 package make_odf;
 
+import java.io.PrintWriter;
+
 public class Button {
 	String name;
 	boolean displayed;
-	String dispLabelText;
-	int dispImageNum;
-	int dispButtonRow;
-	int dispButtonCol;
-	int dispDrawstopRow;
-	int dispDrawstopCol;
-	int textBreakWidth;
+	boolean displayInInvertedState;
+	int shortCutKey;
 
 	public Button() {
 		this.name = "";
-		this.displayed = true;
-		this.dispLabelText = "";
-		this.dispImageNum = 1;
-		this.dispButtonRow = 1;
-		this.dispButtonCol = 1;
-		this.dispDrawstopRow = 1;
-		this.dispDrawstopCol = 1;
-		this.textBreakWidth = -1;
+		this.displayed = false;
+		this.displayInInvertedState = false;
+		this.shortCutKey = 0;
+	}
+	
+	public void write(PrintWriter outfile) {
+		outfile.println("Name=" + name);
+		if (displayed)
+			outfile.println("Displayed=Y");
+		if (displayInInvertedState)
+			outfile.println("DisplayInInvertedState=Y");
+		if (shortCutKey != 0)
+			outfile.println("ShortCutKey=" + shortCutKey);
 	}
 }
