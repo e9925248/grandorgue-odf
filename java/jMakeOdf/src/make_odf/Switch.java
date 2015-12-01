@@ -54,15 +54,6 @@ public class Switch extends Drawstop {
 	}
 
 	public void write(PrintWriter outfile) {
-		if (function != Function.INPUT) {
-			// The switch has switches
-			outfile.println("Function=" + function.func);
-
-			OdfWriter.writeReferences(outfile, "Switch", m_switches);
-		}
-		if (defaultToEngaged)
-			outfile.println("DefaultToEngaged=Y");
-		else
-			outfile.println("DefaultToEngaged=N");
+		super.write(outfile);
 	}
 }

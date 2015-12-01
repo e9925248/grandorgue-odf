@@ -26,15 +26,31 @@ import java.io.PrintWriter;
 import java.util.List;
 
 public class Coupler extends Drawstop {
+	boolean unisonOff;
 	String destinationManualCode;
 	int destinationKeyShift;
+	boolean coupleToSubsequentUnisonIntermanualCouplers;
+	boolean coupleToSubsequentUpwardIntermanualCouplers;
+	boolean coupleToSubsequentDownwardIntermanualCouplers;
+	boolean coupleToSubsequentUpwardIntramanualCouplers;
+	boolean coupleToSubsequentDownwardIntramanualCouplers;
 	CouplerType m_type;
+	int firstMIDINoteNumber;
+	int numberOfKeys;
 
 	public Coupler() {
 		super();
+		this.unisonOff = false;
 		this.destinationManualCode = "";
 		this.destinationKeyShift = 0;
+		this.coupleToSubsequentDownwardIntermanualCouplers = false;
+		this.coupleToSubsequentDownwardIntramanualCouplers = false;
+		this.coupleToSubsequentUnisonIntermanualCouplers = false;
+		this.coupleToSubsequentUpwardIntermanualCouplers = false;
+		this.coupleToSubsequentUpwardIntramanualCouplers = false;
 		this.m_type = CouplerType.NORMAL;
+		this.firstMIDINoteNumber = 0;
+		this.numberOfKeys = 0;
 	}
 
 	void read(Tokenizer tok, Panel p, int orderNr, String keyboardCode) {
@@ -72,8 +88,8 @@ public class Coupler extends Drawstop {
 		}
 		destinationManualCode = stringParts.get(3);
 		defaultToEngaged = Tokenizer.convertToBoolean(stringParts.get(4));
-		displayed = Tokenizer.convertToBoolean(stringParts.get(5));
-		if (displayed) {
+		boolean isDisplayed = Tokenizer.convertToBoolean(stringParts.get(5));
+		if (isDisplayed) {
 			GUIElement element = new GUIElement();
 			element.type = "Coupler";
 			GUIElement.GUICoupler cplr = element.new GUICoupler();
@@ -93,32 +109,38 @@ public class Coupler extends Drawstop {
 	}
 
 	public void write(PrintWriter outfile) {
-		outfile.println("Name=" + name);
-		if (function != Function.INPUT) {
-			// The coupler has switches
-			outfile.println("Function=" + function.func);
-			outfile.println("SwitchCount=" + m_switches.size());
-			OdfWriter.writeReferences(outfile, "Switch", m_switches);
-		}
+		super.write(outfile);
 		if (m_type != CouplerType.NORMAL)
 			outfile.println("CouplerType=" + m_type.type);
-		outfile.println("UnisonOff=N");
+		if (unisonOff)
+			outfile.println("UnisonOff=Y");
+		else
+			outfile.println("UnisonOff=N");
 		outfile.println("DestinationManual="
 				+ NumberUtil.format(Manual
 						.translateKeyCode(destinationManualCode)));
 		outfile.println("DestinationKeyshift=" + destinationKeyShift);
-		if (m_type == CouplerType.NORMAL) {
-			outfile.println("CoupleToSubsequentUnisonIntermanualCouplers=N");
-			outfile.println("CoupleToSubsequentUpwardIntermanualCouplers=N");
-			outfile.println("CoupleToSubsequentDownwardIntermanualCouplers=N");
-			outfile.println("CoupleToSubsequentUpwardIntramanualCouplers=N");
-			outfile.println("CoupleToSubsequentDownwardIntramanualCouplers=N");
-		}
-		if (function == Function.INPUT) {
-			if (defaultToEngaged)
-				outfile.println("DefaultToEngaged=Y");
+		if (m_type == CouplerType.NORMAL && (!unisonOff)) {
+			if (coupleToSubsequentUnisonIntermanualCouplers)
+				outfile.println("CoupleToSubsequentUnisonIntermanualCouplers=Y");
 			else
-				outfile.println("DefaultToEngaged=N");
+				outfile.println("CoupleToSubsequentUnisonIntermanualCouplers=N");
+			if (coupleToSubsequentUpwardIntermanualCouplers)
+				outfile.println("CoupleToSubsequentUpwardIntermanualCouplers=Y");
+			else
+				outfile.println("CoupleToSubsequentUpwardIntermanualCouplers=N");
+			if (coupleToSubsequentDownwardIntermanualCouplers)
+				outfile.println("CoupleToSubsequentDownwardIntermanualCouplers=Y");
+			else
+				outfile.println("CoupleToSubsequentDownwardIntermanualCouplers=N");
+			if (coupleToSubsequentUpwardIntramanualCouplers)
+				outfile.println("CoupleToSubsequentUpwardIntramanualCouplers=Y");
+			else
+				outfile.println("CoupleToSubsequentUpwardIntramanualCouplers=N");
+			if (coupleToSubsequentDownwardIntramanualCouplers)
+				outfile.println("CoupleToSubsequentDownwardIntramanualCouplers=Y");
+			else
+				outfile.println("CoupleToSubsequentDownwardIntramanualCouplers=N");
 		}
 	}
 

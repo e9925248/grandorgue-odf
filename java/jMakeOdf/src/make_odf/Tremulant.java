@@ -99,12 +99,7 @@ public class Tremulant extends Drawstop {
 	}
 
 	public void write(PrintWriter outfile) {
-		outfile.println("Name=" + name);
-		if (function != Function.INPUT) {
-			outfile.println("Function=" + function.func);
-			outfile.println("SwitchCount=" + m_switches.size());
-			OdfWriter.writeReferences(outfile, "Switch", m_switches);
-		}
+		super.write(outfile);
 		if (tremType.equalsIgnoreCase("Synth")) {
 			outfile.println("Period=" + period);
 			outfile.println("AmpModDepth=" + ampModDepth);
@@ -112,12 +107,6 @@ public class Tremulant extends Drawstop {
 			outfile.println("StopRate=" + stopRate);
 		} else {
 			outfile.println("TremulantType=" + tremType);
-		}
-		if (function == Function.INPUT) {
-			if (defaultToEngaged)
-				outfile.println("DefaultToEngaged=Y");
-			else
-				outfile.println("DefaultToEngaged=N");
 		}
 	}
 }
