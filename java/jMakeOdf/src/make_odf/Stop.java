@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2016 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -135,14 +135,17 @@ public class Stop extends Drawstop implements IPipeSet {
 					+ firstAccessiblePipeLogicalPipeNumber);
 			outfile.println("FirstAccessiblePipeLogicalKeyNumber="
 					+ firstAccessiblePipeLogicalKeyNumber);
-			outfile.println("WindchestGroup=" + m_windchestGroup);
+			outfile.println("WindchestGroup=" + NumberUtil.format(m_windchestGroup));
 			if (isPercussive)
 				outfile.println("Percussive=Y");
 			else
 				outfile.println("Percussive=N");
-			outfile.println("AmplitudeLevel=" + amplitudeLevel);
-			outfile.println("PitchTuning=" + pitchTuning);
-			outfile.println("PitchCorrection=" + pitchCorrection);
+			if (amplitudeLevel != 100)
+				outfile.println("AmplitudeLevel=" + amplitudeLevel);
+			if (pitchTuning != 0)
+				outfile.println("PitchTuning=" + pitchTuning);
+			if (pitchCorrection != 0)
+				outfile.println("PitchCorrection=" + pitchCorrection);
 			outfile.println("HarmonicNumber=" + harmonicNumber);
 		}
 		if (m_Ranks.isEmpty()) {
