@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2016 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -303,10 +303,7 @@ public class Organ {
 		outfile.println("NumberOfTremulants=" + m_Tremulants.size());
 		outfile.println("NumberOfWindchestGroups=" + m_WindchestGroups.size());
 		outfile.println("NumberOfReversiblePistons=0");
-		outfile.println("NumberOfLabels=0");
 		outfile.println("NumberOfDivisionalCouplers=0");
-		outfile.println("NumberOfImages=0");
-		outfile.println("NumberOfSetterElements=0");
 		outfile.println("NumberOfPanels=" + (m_Panels.size() - 1));
 		outfile.println("NumberOfRanks=" + m_Ranks.size());
 		outfile.println("NumberOfSwitches=" + m_Switches.size());
