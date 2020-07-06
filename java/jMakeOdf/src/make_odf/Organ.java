@@ -260,7 +260,6 @@ public class Organ {
 		for (int i = 0; i < m_Switches.size(); i++) {
 			outfile.println("[Switch" + NumberUtil.format(i + 1) + "]");
 			Switch switch_ = m_Switches.get(i);
-			outfile.println("Name=" + switch_.name);
 			switch_.write(outfile);
 
 			outfile.println();

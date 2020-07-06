@@ -39,7 +39,7 @@ public class Switch extends Drawstop {
 			GUIElement element = new GUIElement();
 			element.type = "Switch";
 			GUIElement.GUISwitch guiSw = element.new GUISwitch();
-			guiSw.switchNumber = orderNr;
+			guiSw.switchNumber = orderNr + 1;
 			guiSw.dispImageNum = Tokenizer.convertToInt(stringParts.get(3));
 			guiSw.dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(4));
 			guiSw.dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(5));
