@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2020 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -39,6 +39,7 @@ public class Switch extends Drawstop {
 			GUIElement element = new GUIElement();
 			element.type = "Switch";
 			GUIElement.GUISwitch guiSw = element.new GUISwitch();
+			guiSw.dispLabelText = name;
 			guiSw.switchNumber = orderNr + 1;
 			guiSw.dispImageNum = Tokenizer.convertToInt(stringParts.get(3));
 			guiSw.dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(4));

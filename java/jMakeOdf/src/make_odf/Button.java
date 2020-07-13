@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2020 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -39,10 +39,6 @@ public class Button {
 	
 	public void write(PrintWriter outfile) {
 		outfile.println("Name=" + name);
-		if (displayed)
-			outfile.println("Displayed=Y");
-		if (displayInInvertedState)
-			outfile.println("DisplayInInvertedState=Y");
 		if (shortCutKey != 0)
 			outfile.println("ShortCutKey=" + shortCutKey);
 	}

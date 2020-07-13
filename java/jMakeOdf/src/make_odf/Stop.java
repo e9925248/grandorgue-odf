@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2020 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -70,6 +70,7 @@ public class Stop extends Drawstop implements IPipeSet {
 			GUIElement element = new GUIElement();
 			element.type = "Stop";
 			GUIElement.GUIStop stop = element.new GUIStop();
+			stop.dispLabelText = name;
 			stop.keyboardCode = keyboardCode;
 			stop.stop = orderNr + 1;
 			stop.dispImageNum = Tokenizer.convertToInt(stringParts.get(11));
@@ -136,7 +137,7 @@ public class Stop extends Drawstop implements IPipeSet {
 			outfile.println("FirstAccessiblePipeLogicalKeyNumber="
 					+ firstAccessiblePipeLogicalKeyNumber);
 			outfile.println("WindchestGroup=" + NumberUtil.format(m_windchestGroup));
-			if (isPercussive)
+			if (this.isPercussive)
 				outfile.println("Percussive=Y");
 			else
 				outfile.println("Percussive=N");
@@ -154,7 +155,7 @@ public class Stop extends Drawstop implements IPipeSet {
 				// First attack must always exist
 				String pipeNr = "Pipe" + NumberUtil.format(k + 1);
 				Pipe pipe = m_Pipes.get(k);
-				pipe.writePipes(outfile, pipeNr, isPercussive);
+				pipe.writePipes(outfile, pipeNr, this.isPercussive);
 			}
 		}
 	}

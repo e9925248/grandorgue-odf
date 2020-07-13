@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2020 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -46,6 +46,7 @@ public class Enclosure {
 			GUIElement element = new GUIElement();
 			element.type = "Enclosure";
 			GUIElement.GUIEnclosure enc = element.new GUIEnclosure();
+			enc.dispLabelText = name;
 			enc.enclosure = i + 1;
 			enc.textBreakWidth = textBreakWidth;
 			element.m_elements.add(enc);
