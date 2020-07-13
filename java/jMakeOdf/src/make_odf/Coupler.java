@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2020 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -93,6 +93,7 @@ public class Coupler extends Drawstop {
 			GUIElement element = new GUIElement();
 			element.type = "Coupler";
 			GUIElement.GUICoupler cplr = element.new GUICoupler();
+			cplr.dispLabelText = name;
 			cplr.dispImageNum = Tokenizer.convertToInt(stringParts.get(6));
 			cplr.dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(7));
 			cplr.dispDrawstopRow = Tokenizer.convertToInt(stringParts.get(8));

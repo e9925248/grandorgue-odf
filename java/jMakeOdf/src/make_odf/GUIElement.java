@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2020 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1132,11 +1132,12 @@ public class GUIElement {
 		}
 		
 		public void write(PrintWriter outfile) {
+			outfile.println("DispLabelText=" + dispLabelText);
 			if (textBreakWidth >= 0)
 				outfile.println("TextBreakWidth=" + textBreakWidth);
-			outfile.println("DispLabelColour=" + dispLabelColour.colour);
-			outfile.println("DispLabelFontSize=" + dispLabelFontSize);
-			outfile.println("DispImageNum=" + dispImageNum);
+				outfile.println("DispLabelColour=" + dispLabelColour.colour);
+				outfile.println("DispLabelFontSize=" + dispLabelFontSize);
+				outfile.println("DispImageNum=" + dispImageNum);
 			if (displayAsPiston) {
 				outfile.println("DispButtonRow=" + dispButtonRow);
 				outfile.println("DispButtonCol=" + dispButtonCol);

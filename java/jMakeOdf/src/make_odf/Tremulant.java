@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Marcin Listkowski, Lars Palo
+/* Copyright (c) 2020 Marcin Listkowski, Lars Palo
  * Based on (partly ported from) make_odf Copyright (c) 2013 Jean-Luc Derouineau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -60,6 +60,7 @@ public class Tremulant extends Drawstop {
 				GUIElement element = new GUIElement();
 				element.type = "Tremulant";
 				GUIElement.GUITremulant trem = element.new GUITremulant();
+				trem.dispLabelText = name;
 				trem.tremulant = i + 1;
 				trem.dispImageNum = Tokenizer.convertToInt(stringParts.get(8));
 				trem.dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(9));
@@ -78,6 +79,7 @@ public class Tremulant extends Drawstop {
 				GUIElement element = new GUIElement();
 				element.type = "Tremulant";
 				GUIElement.GUITremulant trem = element.new GUITremulant();
+				trem.dispLabelText = name;
 				trem.tremulant = i + 1;
 				trem.dispImageNum = Tokenizer.convertToInt(stringParts.get(4));
 				trem.dispDrawstopCol = Tokenizer.convertToInt(stringParts.get(5));
