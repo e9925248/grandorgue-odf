@@ -135,6 +135,8 @@ public class Pipe {
 					if (firstNum > -1) {
 						relTime = Tokenizer.convertToInt(str.substring(
 								firstNum, str.length()));
+						if (relTime > 99998)
+							relTime = -1;
 					}
 
 					File f4 = new File(f1, str);
@@ -166,6 +168,8 @@ public class Pipe {
 			if (firstNum > -1) {
 				relTime = Tokenizer.convertToInt(str.substring(firstNum,
 						str.length()));
+				if (relTime > 99998)
+					relTime = -1;
 			}
 
 			File f2 = new File(f1, str);
