@@ -45,10 +45,22 @@ public class Drawstop extends Button {
 	public void write(PrintWriter outfile) {
 		super.write(outfile);
 		if (function != Function.INPUT) {
-			// The object has switches
-			outfile.println("Function=" + function.func);
-			outfile.println("SwitchCount=" + m_switches.size());
-			OdfWriter.writeReferences(outfile, "Switch", m_switches);
+			if (function == Function.NOT) {
+				// Only the first switch is relevant
+				// so we might need to remove extras...
+				if (m_switches.size() > 1) {
+					int theSwitchToKeep = m_switches.get(0);
+					m_switches.clear();
+					m_switches.add(theSwitchToKeep);
+				}	
+				outfile.println("Function=" + function.func);
+				OdfWriter.writeReferences(outfile, "Switch", m_switches);
+			} else {
+				// The object can have multiple switches
+				outfile.println("Function=" + function.func);
+				outfile.println("SwitchCount=" + m_switches.size());
+				OdfWriter.writeReferences(outfile, "Switch", m_switches);
+			}
 		}
 		if (function == Function.INPUT) {
 			if (defaultToEngaged)
