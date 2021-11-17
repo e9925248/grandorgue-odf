@@ -1,2 +1,3 @@
 src/NoisePipes
 *.exe
+build/

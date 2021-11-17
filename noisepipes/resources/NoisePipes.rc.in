@@ -1,0 +1,3 @@
+#include "wx/msw/wx.rc"
+ApplicationIcon ICON "NoisePipes.ico"
+ICONPRG ICON "NoisePipes.ico"

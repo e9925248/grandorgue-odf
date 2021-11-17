@@ -1,7 +1,7 @@
 /* 
  * NoisePipes is a software to help organ definition file creation for
  * the virtual pipe organ application GrandOrgue
- * Copyright (C) 2013 Lars Palo 
+ * Copyright (C) 2021 Lars Palo 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,38 @@
  */
 
 #include "NoisePipes.h"
+#include "NPDef.h"
+#include "wx/image.h"
+#include <wx/filename.h>
+#include <wx/stdpaths.h>
 
 IMPLEMENT_APP(NoisePipesApp)
 
 bool NoisePipesApp::OnInit() {
 	// Create the frame window
-	m_frame = new NPFrame(wxT("NoisePipes"));
+	wxString fullAppName = wxT("NoisePipes ");
+	fullAppName.Append(wxT(NP_VERSION));
+
+	m_frame = new NPFrame(fullAppName);
+
+	wxFileName fn(wxStandardPaths::Get().GetExecutablePath());
+	fn = fn.GetPath();
+	wxString BaseDir = fn.GetPath();
+	wxString ResourceDir = BaseDir + wxFILE_SEP_PATH + wxT("share");
+
+	// load icons
+	wxImage::AddHandler(new wxPNGHandler);
+	m_icons = wxIconBundle(wxIcon(ResourceDir + wxFILE_SEP_PATH + wxT("icons/hicolor/16x16/apps/NoisePipes.png"), wxBITMAP_TYPE_PNG));
+	m_icons.AddIcon(wxIcon(ResourceDir + wxFILE_SEP_PATH + wxT("icons/hicolor/24x24/apps/NoisePipes.png"), wxBITMAP_TYPE_PNG));
+	m_icons.AddIcon(wxIcon(ResourceDir + wxFILE_SEP_PATH + wxT("icons/hicolor/32x32/apps/NoisePipes.png"), wxBITMAP_TYPE_PNG));
+	m_icons.AddIcon(wxIcon(ResourceDir + wxFILE_SEP_PATH + wxT("icons/hicolor/48x48/apps/NoisePipes.png"), wxBITMAP_TYPE_PNG));
+	m_icons.AddIcon(wxIcon(ResourceDir + wxFILE_SEP_PATH + wxT("icons/hicolor/64x64/apps/NoisePipes.png"), wxBITMAP_TYPE_PNG));
+	m_icons.AddIcon(wxIcon(ResourceDir + wxFILE_SEP_PATH + wxT("icons/hicolor/128x128/apps/NoisePipes.png"), wxBITMAP_TYPE_PNG));
+	m_icons.AddIcon(wxIcon(ResourceDir + wxFILE_SEP_PATH + wxT("icons/hicolor/256x256/apps/NoisePipes.png"), wxBITMAP_TYPE_PNG));
+	m_icons.AddIcon(wxIcon(ResourceDir + wxFILE_SEP_PATH + wxT("icons/hicolor/512x512/apps/NoisePipes.png"), wxBITMAP_TYPE_PNG));
+	m_icons.AddIcon(wxIcon(ResourceDir + wxFILE_SEP_PATH + wxT("icons/hicolor/1024x1024/apps/NoisePipes.png"), wxBITMAP_TYPE_PNG));
+
+	m_frame->SetIcons(m_icons);
 
 	// Show the frame
 	m_frame->Show(true);

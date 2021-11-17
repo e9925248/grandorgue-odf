@@ -1,6 +1,6 @@
 /*
  * NPFrame.cpp is a part of NoisePipes software
- * Copyright (C) 2013 Lars Palo
+ * Copyright (C) 2021 Lars Palo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include <wx/button.h>
 #include <wx/dir.h>
 #include <sndfile.hh>
+#include <wx/stdpaths.h>
+#include "NPDef.h"
 
 // Event table
 BEGIN_EVENT_TABLE(NPFrame, wxFrame)
@@ -64,7 +66,8 @@ NPFrame::NPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 	CreateStatusBar(3);
 	SetStatusText(wxT("Ready"), 0);
 
-	SetBackgroundColour(wxT("#f4f2ef"));
+	// Create frame sizer
+	wxBoxSizer *framesizer = new wxBoxSizer(wxVERTICAL);
 
 	m_notebook = new wxNotebook(
 		this,
@@ -101,7 +104,7 @@ NPFrame::NPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 		wxID_STATIC,
 		wxT("The .organ file path")
 	);
-	firstRow->Add(organPathText, 0, wxALL, 5);
+	firstRow->Add(organPathText, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
 	// The odf path textctrl
 	m_odfPathField = new wxTextCtrl(
@@ -135,7 +138,7 @@ NPFrame::NPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 		wxID_STATIC,
 		wxT("Attack samples folder: ")
 	);
-	secondRow->Add(attackPathText, 0, wxALL, 5);
+	secondRow->Add(attackPathText, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
 	// The odf path textctrl
 	m_attackPathField = new wxTextCtrl(
@@ -169,7 +172,7 @@ NPFrame::NPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 		wxID_STATIC,
 		wxT("Release samples folder: ")
 	);
-	thirdRow->Add(releasePathText, 0, wxALL, 5);
+	thirdRow->Add(releasePathText, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
 	// The odf path textctrl
 	m_releasePathField = new wxTextCtrl(
@@ -227,6 +230,10 @@ NPFrame::NPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 		wxTE_READONLY|wxTE_MULTILINE
 	);
 	outSizer->Add(m_pipesField, 1, wxEXPAND|wxALL, 2);
+	
+	// Add notebook to framesizer and use framesizer for frame
+	framesizer->Add(m_notebook, 1, wxEXPAND|wxALL);
+	SetSizerAndFit(framesizer);
 }
 
 NPFrame::~NPFrame() {
@@ -235,10 +242,10 @@ NPFrame::~NPFrame() {
 void NPFrame::OnAbout(wxCommandEvent& event) {
 	wxAboutDialogInfo info;
 	info.SetName(wxT("NoisePipes"));
-	info.SetVersion(wxT("0.1"));
-	info.SetDescription(wxT("This program creates the necessary lines for an .organ file of GrandOrgue to use noise effects with separate attacks and releases and no markers."));
-	info.SetCopyright(wxT("Copyright (C) 2013 Lars Palo <larspalo AT yahoo DOT se>\nReleased under GNU GPLv3 licence"));
-	info.SetWebSite(wxT("https://github.com/larspalo/noisepipes.git"));
+	info.SetVersion(NP_VERSION);
+	info.SetDescription(wxT("This program creates the necessary lines for a GrandOrgue .organ file stop/rank to use noise effects with separate attack(s) and release(s) from file(s) that have no embedded markers."));
+	info.SetCopyright(wxT("Copyright (C) 2021 Lars Palo <larspalo AT yahoo DOT se>\nReleased under GNU GPLv3 licence"));
+	info.SetWebSite(wxT("https://github.com/larspalo/grandorgue-odf/tree/master/noisepipes"));
 
 	wxAboutBox(info);
 }
@@ -254,7 +261,7 @@ wxString NPFrame::GetOdfDirectoryPath() {
 	if (m_odfPath != wxEmptyString)
 		defaultPath = m_odfPath;
 	else
-		defaultPath = wxT("/");
+		defaultPath = wxStandardPaths::Get().GetDocumentsDir();
 
 	wxDirDialog dirDialog(
 		this,
@@ -348,9 +355,7 @@ void NPFrame::OnGeneratePipes(wxCommandEvent& event) {
 		for (unsigned i = 0; i < atkFiles->GetCount(); i++) {
 			if (atkFiles->Item(i) != wxEmptyString) {
 				NPPipe currentPipe;
-				fileName = m_attackFolderPath;
-				fileName.append(wxT("/"));
-				fileName.append(atkFiles->Item(i));
+				fileName = m_attackFolderPath + wxFILE_SEP_PATH + atkFiles->Item(i);
 				SndfileHandle sfh;
 				unsigned fileLength = 0;
 				sfh = SndfileHandle(((const char*)fileName.mb_str()));
@@ -368,9 +373,7 @@ void NPFrame::OnGeneratePipes(wxCommandEvent& event) {
 					wxString compareWith;
 					compareWith = atkFiles->Item(j).Mid(0, 3);
 					if (compareWith.IsSameAs(numberPart)) {
-						fileName = m_attackFolderPath;
-						fileName.append(wxT("/"));
-						fileName.append(atkFiles->Item(j));
+						fileName = m_attackFolderPath + wxFILE_SEP_PATH + atkFiles->Item(j);
 						SndfileHandle sfHandle;
 						sfHandle = SndfileHandle(((const char*)fileName.mb_str()));
 
@@ -398,17 +401,23 @@ void NPFrame::OnGeneratePipes(wxCommandEvent& event) {
 	}
 	if (!m_pipes.empty()) {
 		for (unsigned i = 0; i < m_pipes.size(); i++) {
-			wxString atkFolder;
-			atkFolder = m_attackFolderPath;
-			atkFolder.Replace(m_odfPath, wxT(""));
-			atkFolder.append(wxT("/"));
-			wxString relFolder;
-			relFolder = m_releaseFolderPath;
-			relFolder.Replace(m_odfPath, wxT(""));
-			relFolder.append(wxT("/"));
+			wxString atkFolder = m_attackFolderPath;
+			if (m_attackFolderPath.Contains(m_odfPath))
+			  atkFolder.Replace(m_odfPath + wxFILE_SEP_PATH, wxT(""));
+			if (!atkFolder.IsEmpty())
+			  atkFolder.append(wxFILE_SEP_PATH);
+			if (atkFolder.Contains(wxT("/")))
+			  atkFolder.Replace(wxT("/"), wxT("\\"));
+			wxString relFolder = m_releaseFolderPath;
+			if (m_releaseFolderPath.Contains(m_odfPath))
+			relFolder.Replace(m_odfPath + wxFILE_SEP_PATH, wxT(""));
+			if (!relFolder.IsEmpty())
+			  relFolder.append(wxFILE_SEP_PATH);
+			if (relFolder.Contains(wxT("/")))
+			  relFolder.Replace(wxT("/"), wxT("\\"));
 			for (unsigned j = 0; j < m_pipes[i].GetNumberOfAttacks(); j++) {
 				if (j == 0) {
-					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3u=."), i + 1));
+					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3u="), i + 1));
 					m_pipesField->AppendText(atkFolder);
 					m_pipesField->AppendText(m_pipes[i].GetAttackPath(j));
 					m_pipesField->AppendText(wxT("\n"));
@@ -419,7 +428,7 @@ void NPFrame::OnGeneratePipes(wxCommandEvent& event) {
 					if (m_pipes[i].GetNumberOfAttacks() > 1)
 						m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3iAttackCount=%u\n"), i + 1, (m_pipes[i].GetNumberOfAttacks() - 1)));
 				} else {
-					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uAttack%0.3u=."), i + 1, j));
+					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uAttack%0.3u="), i + 1, j));
 					m_pipesField->AppendText(atkFolder);
 					m_pipesField->AppendText(m_pipes[i].GetAttackPath(j));
 					m_pipesField->AppendText(wxT("\n"));
@@ -432,7 +441,7 @@ void NPFrame::OnGeneratePipes(wxCommandEvent& event) {
 			for (unsigned j = 0; j < m_pipes[i].GetNumberOfReleases(); j++) {
 				if (j == 0)
 					m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uReleaseCount=%u\n"), i + 1, m_pipes[i].GetNumberOfReleases()));
-				m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uRelease%0.3u=."), i + 1, j + 1));
+				m_pipesField->AppendText(wxString::Format(wxT("Pipe%0.3uRelease%0.3u="), i + 1, j + 1));
 				m_pipesField->AppendText(relFolder);
 				m_pipesField->AppendText(m_pipes[i].GetReleasePath(j));
 				m_pipesField->AppendText(wxT("\n"));
