@@ -1,7 +1,6 @@
-/* 
- * NoisePipes is a software to help organ definition file creation for
- * the virtual pipe organ application GrandOrgue
- * Copyright (C) 2021 Lars Palo 
+/*
+ * NPDef.h.in is a part of NoisePipes software
+ * Copyright (C) 2021 Lars Palo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,20 +18,10 @@
  * You can contact the author on larspalo(at)yahoo.se
  */
 
-#ifndef NOISEPIPES_H
-#define NOISEPIPES_H
+#ifndef NPDEF_H
+#define NPDEF_H
 
-#include <wx/wx.h>
-#include "NPFrame.h"
-
-class NoisePipesApp : public wxApp {
-public:
-	virtual bool OnInit();
-	int OnExit();
-	NPFrame *m_frame;
-	wxIconBundle m_icons;
-};
-
-DECLARE_APP(NoisePipesApp)
+// Get version number from cmake
+#define NP_VERSION "@NoisePipes_VERSION@"
 
 #endif

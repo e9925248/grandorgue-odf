@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=NoisePipes
+GenericName=GrandOrgue ODF noise effect pipe lines generator
+Comment=NoisePipes - Software generating stop/rank noise effects pipe lines for GrandOrgue ODFs
+Exec=NoisePipes
+Icon=NoisePipes
+Terminal=false
+Type=Application
+Categories=Utility;
+MimeType=audio/x-wav;audio/wav;
